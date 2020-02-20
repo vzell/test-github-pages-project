@@ -1,0 +1,140 @@
+{
+  "apiVersion": "machine.openshift.io/v1beta1",
+  "kind": "MachineSet",
+  "metadata": {
+    "creationTimestamp": "2020-02-19T17:56:54Z",
+    "generation": 1,
+    "labels": {
+      "machine.openshift.io/cluster-api-cluster": "cluster-munich-e7ab-lqhqg"
+    },
+    "name": "infra-us-east-2c",
+    "namespace": "openshift-machine-api",
+    "resourceVersion": "10987",
+    "selfLink": "/apis/machine.openshift.io/v1beta1/namespaces/openshift-machine-api/machinesets/cluster-munich-e7ab-lqhqg-worker-us-east-2a",
+    "uid": "3710061e-5341-11ea-8707-027cbd288fd4"
+  },
+  "spec": {
+    "replicas": 3,
+    "selector": {
+      "matchLabels": {
+        "machine.openshift.io/cluster-api-cluster": "cluster-munich-e7ab-lqhqg",
+        "machine.openshift.io/cluster-api-machineset": "infra-us-east-2c"
+      }
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "machine.openshift.io/cluster-api-cluster": "cluster-munich-e7ab-lqhqg",
+          "machine.openshift.io/cluster-api-machine-role": "worker",
+          "machine.openshift.io/cluster-api-machine-type": "worker",
+          "machine.openshift.io/cluster-api-machineset": "infra-us-east-2c"
+        }
+      },
+      "spec": {
+        "metadata": {
+          "creationTimestamp": null,
+          "labels": {
+            "node-role.kubernetes.io/infra": ""
+          }
+        },
+        "providerSpec": {
+          "value": {
+            "ami": {
+              "id": "ami-0bc59aaa7363b805d"
+            },
+            "apiVersion": "awsproviderconfig.openshift.io/v1beta1",
+            "blockDevices": [
+              {
+                "ebs": {
+                  "iops": 0,
+                  "volumeSize": 120,
+                  "volumeType": "gp2"
+                }
+              }
+            ],
+            "credentialsSecret": {
+              "name": "aws-cloud-credentials"
+            },
+            "deviceIndex": 0,
+            "iamInstanceProfile": {
+              "id": "cluster-munich-e7ab-lqhqg-worker-profile"
+            },
+            "instanceType": "m5.2xlarge",
+            "kind": "AWSMachineProviderConfig",
+            "metadata": {
+              "creationTimestamp": null
+            },
+            "placement": {
+              "availabilityZone": "us-east-2a",
+              "region": "us-east-2"
+            },
+            "publicIp": null,
+            "securityGroups": [
+              {
+                "filters": [
+                  {
+                    "name": "tag:Name",
+                    "values": [
+                      "cluster-munich-e7ab-lqhqg-worker-sg"
+                    ]
+                  }
+                ]
+              }
+            ],
+            "subnet": {
+              "filters": [
+                {
+                  "name": "tag:Name",
+                  "values": [
+                    "cluster-munich-e7ab-lqhqg-private-us-east-2a"
+                  ]
+                }
+              ]
+            },
+            "tags": [
+              {
+                "name": "kubernetes.io/cluster/cluster-munich-e7ab-lqhqg",
+                "value": "owned"
+              },
+              {
+                "name": "owner",
+                "value": "stefan.kuehnlein@opitz-consulting.com"
+              },
+              {
+                "name": "platform",
+                "value": "unknown"
+              },
+              {
+                "name": "Stack",
+                "value": "project ocp4-workshop-munich-e7ab"
+              },
+              {
+                "name": "course_name",
+                "value": "unknown"
+              },
+              {
+                "name": "env_type",
+                "value": "ocp4-workshop"
+              },
+              {
+                "name": "guid",
+                "value": "munich-e7ab"
+              }
+            ],
+            "userDataSecret": {
+              "name": "worker-user-data"
+            }
+          }
+        }
+      }
+    }
+  },
+  "status": {
+    "availableReplicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1,
+    "readyReplicas": 1,
+    "replicas": 1
+  }
+}
