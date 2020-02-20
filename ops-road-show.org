@@ -1,4 +1,4 @@
-* Cluster Admin Authentication
+B* Cluster Admin Authentication
 
 #+begin_src bash
 oc explain Role
@@ -107,5 +107,44 @@ oc explain RoleBinding
 #    subjects	<[]Object>
 #      Subjects holds references to the objects the role applies to.
 # 
+#+end_example
+
+* Machineset
+
+#+begin_src bash
+cat /opt/app-root/src/support/infra-nodes.sh
+#+end_src
+
+* Deploying and Managing OpenShift Container Storage
+
+#+begin_src bash
+oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
+#+end_src
+
+#+begin_example
+# NAME                                         STATUS   ROLES    AGE    VERSION
+# ip-10-0-133-255.us-east-2.compute.internal   Ready    worker   22h    v1.14.6+9fb2d5cf9
+# ip-10-0-156-47.us-east-2.compute.internal    Ready    worker   22h    v1.14.6+9fb2d5cf9
+# ip-10-0-172-64.us-east-2.compute.internal    Ready    worker   5h7m   v1.14.6+9fb2d5cf9
+#+end_example
+
+#+begin_src bash
+oc get machinesets -n openshift-machine-api | grep -v infra
+#+end_src
+
+#+begin_example
+# NAME                                          DESIRED   CURRENT   READY   AVAILABLE   AGE
+# cluster-munich-e7ab-lqhqg-worker-us-east-2a   1         1         1       1           22h
+# cluster-munich-e7ab-lqhqg-worker-us-east-2b   1         1         1       1           22h
+# cluster-munich-e7ab-lqhqg-worker-us-east-2c   1         1         1       1           22h
+#+end_example
+
+#+begin_src bash
+CLUSTERID=$(oc get machineset -n openshift-machine-api -o jsonpath='{.items[0].metadata.labels.machine\.openshift\.io/cluster-api-cluster}')
+echo $CLUSTERID
+#+end_src
+
+#+begin_example
+cluster-munich-e7ab-lqhqg
 #+end_example
 
