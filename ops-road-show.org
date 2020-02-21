@@ -1,3 +1,886 @@
+* Installation and Verification
+** Logging in
+
+#+begin_src bash
+ssh -l lab-user bastion.munich-e7ab.sandbox1596.opentlc.com -o ServerAliveInterval=120
+#+end_src
+
+r3dh4t1!
+
+#+begin_src bash
+export GUID=`hostname | cut -d. -f2`
+#+end_src
+
+** Login to OpenShift
+
+#+begin_src bash
+ls -al ~/cluster-$GUID
+#+end_src
+
+#+begin_example
+# total 2824
+# drwxrwxr-x.  4 ec2-user ec2-user     209 Feb 19 18:02 ./
+# drwx------. 15 lab-user users       4096 Feb 20 16:01 ../
+# drwxr-xr-x.  2 ec2-user ec2-user      50 Feb 19 17:44 auth/
+# -rw-r--r--.  1 ec2-user ec2-user     292 Feb 19 17:44 metadata.json
+# -rw-r--r--.  1 ec2-user ec2-user  129762 Feb 19 18:08 .openshift_install.log
+# -rw-r--r--.  1 ec2-user ec2-user 2294231 Feb 19 17:50 .openshift_install_state.json
+# -rw-r--r--.  1 ec2-user ec2-user     772 Feb 19 17:44 terraform.aws.auto.tfvars.json
+# -rw-r--r--.  1 ec2-user ec2-user  130217 Feb 19 18:02 terraform.tfstate
+# -rw-r--r--.  1 ec2-user ec2-user  315708 Feb 19 17:44 terraform.tfvars.json
+# drwxr-xr-x.  2 ec2-user ec2-user      62 Feb 19 17:44 tls/
+#+end_example
+
+#+begin_src bash
+tail -n5 ~/cluster-$GUID/.openshift_install.log
+#+end_src
+
+#+begin_example
+# time="2020-02-19T18:08:42Z" level=debug msg="OpenShift console route is created"
+# time="2020-02-19T18:08:42Z" level=info msg="Install complete!"
+# time="2020-02-19T18:08:42Z" level=info msg="To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/home/ec2-user/cluster-munich-e7ab/auth/kubeconfig'"
+# time="2020-02-19T18:08:42Z" level=info msg="Access the OpenShift web-console here: https://console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
+# time="2020-02-19T18:08:42Z" level=info msg="Login to the console with user: kubeadmin, password: RmEAm-FN5EH-XhpAH-YYbf8"
+#+end_example
+
+#+begin_src bash
+oc whoami
+#+end_src
+
+#+begin_example
+# kube:admin
+#+end_example
+
+** Examine the Cluster Version
+
+#+begin_src bash
+oc get clusterversion
+#+end_src
+
+#+begin_example
+# NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+# version   4.2.7     True        False         45h     Cluster version is 4.2.7
+#+end_example
+
+#+begin_src bash
+oc describe clusterversion
+#+end_src
+
+#+begin_example
+# Name:         version
+# Namespace:    
+# Labels:       <none>
+# Annotations:  <none>
+# API Version:  config.openshift.io/v1
+# Kind:         ClusterVersion
+# Metadata:
+#   Creation Timestamp:  2020-02-19T17:56:01Z
+#   Generation:          1
+#   Resource Version:    918522
+#   Self Link:           /apis/config.openshift.io/v1/clusterversions/version
+#   UID:                 170b699c-5341-11ea-8707-027cbd288fd4
+# Spec:
+#   Channel:     stable-4.2
+#   Cluster ID:  52701483-cceb-4ad4-8560-67c2e725de2a
+#   Upstream:    https://api.openshift.com/api/upgrades_info/v1/graph
+# Status:
+#   Available Updates:
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:4bf307b98beba4d42da3316464013eac120c6e5a398646863ef92b0e2c621230
+#     Version:  4.2.8
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:782b41750f3284f3c8ee2c1f8cb896896da074e362cf8a472846356d1617752d
+#     Version:  4.2.13
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:e5a6e348721c38a78d9299284fbb5c60fb340135a86b674b038500bf190ad514
+#     Version:  4.2.16
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:dc2e38fb00085d6b7f722475f8b7b758a0cb3a02ba42d9acf8a8298a6d510d9c
+#     Version:  4.2.10
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:77ade34c373062c6a6c869e0e56ef93b2faaa373adadaac1430b29484a24d843
+#     Version:  4.2.12
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:3fabe939da31f9a31f509251b9f73d321e367aba2d09ff392c2f452f6433a95a
+#     Version:  4.2.14
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:f28cbabd1227352fe704a00df796a4511880174042dece96233036a10ac61639
+#     Version:  4.2.9
+#   Conditions:
+#     Last Transition Time:  2020-02-19T18:08:42Z
+#     Message:               Done applying 4.2.7
+#     Status:                True
+#     Type:                  Available
+#     Last Transition Time:  2020-02-20T17:48:12Z
+#     Status:                False
+#     Type:                  Failing
+#     Last Transition Time:  2020-02-19T18:08:42Z
+#     Message:               Cluster version is 4.2.7
+#     Status:                False
+#     Type:                  Progressing
+#     Last Transition Time:  2020-02-19T17:56:14Z
+#     Status:                True
+#     Type:                  RetrievedUpdates
+#   Desired:
+#     Force:    false
+#     Image:    quay.io/openshift-release-dev/ocp-release@sha256:bac62983757570b9b8f8bc84c740782984a255c16372b3e30cfc8b52c0a187b9
+#     Version:  4.2.7
+#   History:
+#     Completion Time:    2020-02-19T18:08:42Z
+#     Image:              quay.io/openshift-release-dev/ocp-release@sha256:bac62983757570b9b8f8bc84c740782984a255c16372b3e30cfc8b52c0a187b9
+#     Started Time:       2020-02-19T17:56:14Z
+#     State:              Completed
+#     Verified:           false
+#     Version:            4.2.7
+#   Observed Generation:  1
+#   Version Hash:         SmE5nyYNooU=
+# Events:                 <none>
+#+end_example
+
+** Look at the Nodes
+
+#+begin_src bash
+oc get nodes
+#+end_src
+
+#+begin_example
+# NAME                                         STATUS   ROLES          AGE     VERSION
+# ip-10-0-131-190.us-east-2.compute.internal   Ready    worker         7h29m   v1.14.6+9fb2d5cf9
+# ip-10-0-131-54.us-east-2.compute.internal    Ready    infra,worker   25h     v1.14.6+9fb2d5cf9
+# ip-10-0-131-55.us-east-2.compute.internal    Ready    master         46h     v1.14.6+9fb2d5cf9
+# ip-10-0-133-255.us-east-2.compute.internal   Ready    worker         45h     v1.14.6+9fb2d5cf9
+# ip-10-0-137-100.us-east-2.compute.internal   Ready    infra,worker   25h     v1.14.6+9fb2d5cf9
+# ip-10-0-137-236.us-east-2.compute.internal   Ready    infra,worker   25h     v1.14.6+9fb2d5cf9
+# ip-10-0-143-103.us-east-2.compute.internal   Ready    worker         4h37m   v1.14.6+9fb2d5cf9
+# ip-10-0-147-203.us-east-2.compute.internal   Ready    worker         7h29m   v1.14.6+9fb2d5cf9
+# ip-10-0-150-228.us-east-2.compute.internal   Ready    master         46h     v1.14.6+9fb2d5cf9
+# ip-10-0-153-85.us-east-2.compute.internal    Ready    worker         4h36m   v1.14.6+9fb2d5cf9
+# ip-10-0-156-47.us-east-2.compute.internal    Ready    worker         45h     v1.14.6+9fb2d5cf9
+# ip-10-0-163-36.us-east-2.compute.internal    Ready    worker         4h36m   v1.14.6+9fb2d5cf9
+# ip-10-0-172-64.us-east-2.compute.internal    Ready    worker         28h     v1.14.6+9fb2d5cf9
+# ip-10-0-173-76.us-east-2.compute.internal    Ready    master         46h     v1.14.6+9fb2d5cf9
+# ip-10-0-174-204.us-east-2.compute.internal   Ready    worker         7h30m   v1.14.6+9fb2d5cf9
+#+end_example
+
+** Check the Web Console
+
+https://console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.com
+
+** You will now exit the ssh session
+
+#+begin_src bash
+exit
+#+end_src
+
+* Application Management Basics
+** Projects
+
+#+begin_src bash
+oc new-project app-management
+#+end_src
+
+#+begin_example
+# Now using project "app-management" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
+
+** Deploy a Sample Application
+
+#+begin_src bash
+oc new-app quay.io/thoraxe/mapit
+#+end_src
+
+#+begin_example
+# --> Found container image 7ce7ade (2 years old) from quay.io for "quay.io/thoraxe/mapit"
+# 
+#     * An image stream tag will be created as "mapit:latest" that will track this image
+#     * This image will be deployed in deployment config "mapit"
+#     * Ports 8080/tcp, 8778/tcp, 9779/tcp will be load balanced by service "mapit"
+#       * Other containers can access this service through the hostname "mapit"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "mapit" created
+#     deploymentconfig.apps.openshift.io "mapit" created
+#     service "mapit" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/mapit' 
+#     Run 'oc status' to view your app.
+#+end_example
+
+** Pods
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   0/1     ContainerCreating   0          3s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   1/1     Running             0          26s
+# mapit-1-dt5k7    0/1     ContainerCreating   0          18s
+#+end_example
+
+#+begin_src bash
+oc describe pod $(oc get pods | grep "Running" | awk '{ print $1 }')
+#+end_src
+
+#+begin_example
+# Name:               mapit-1-dt5k7
+# Namespace:          app-management
+# Priority:           0
+# PriorityClassName:  <none>
+# Node:               ip-10-0-172-64.us-east-2.compute.internal/10.0.172.64
+# Start Time:         Fri, 21 Feb 2020 16:10:57 +0000
+# Labels:             app=mapit
+#                     deployment=mapit-1
+#                     deploymentconfig=mapit
+# Annotations:        k8s.v1.cni.cncf.io/networks-status:
+#                       [{
+#                           "name": "openshift-sdn",
+#                           "interface": "eth0",
+#                           "ips": [
+#                               "10.130.2.13"
+#                           ],
+#                           "default": true,
+#                           "dns": {}
+#                       }]
+#                     kubernetes.io/limit-ranger: LimitRanger plugin set: cpu, memory request for container mapit; cpu, memory limit for container mapit
+#                     openshift.io/deployment-config.latest-version: 1
+#                     openshift.io/deployment-config.name: mapit
+#                     openshift.io/deployment.name: mapit-1
+#                     openshift.io/generated-by: OpenShiftNewApp
+#                     openshift.io/scc: restricted
+# Status:             Running
+# IP:                 10.130.2.13
+# Controlled By:      ReplicationController/mapit-1
+# Containers:
+#   mapit:
+#     Container ID:   cri-o://5c6adb041ba82010938d70def3b37f6bbb25db27c87108b675698ae6db9bc553
+#     Image:          quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Image ID:       quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Ports:          8080/TCP, 8778/TCP, 9779/TCP
+#     Host Ports:     0/TCP, 0/TCP, 0/TCP
+#     State:          Running
+#       Started:      Fri, 21 Feb 2020 16:11:14 +0000
+#     Ready:          True
+#     Restart Count:  0
+#     Limits:
+#       cpu:     4
+#       memory:  1Gi
+#     Requests:
+#       cpu:        100m
+#       memory:     512Mi
+#     Environment:  <none>
+#     Mounts:
+#       /var/run/secrets/kubernetes.io/serviceaccount from default-token-w6rh2 (ro)
+# Conditions:
+#   Type              Status
+#   Initialized       True 
+#   Ready             True 
+#   ContainersReady   True 
+#   PodScheduled      True 
+# Volumes:
+#   default-token-w6rh2:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  default-token-w6rh2
+#     Optional:    false
+# QoS Class:       Burstable
+# Node-Selectors:  <none>
+# Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule
+#                  node.kubernetes.io/not-ready:NoExecute for 300s
+#                  node.kubernetes.io/unreachable:NoExecute for 300s
+# Events:
+#   Type    Reason     Age    From                                                Message
+#   ----    ------     ----   ----                                                -------
+#   Normal  Scheduled  4m5s   default-scheduler                                   Successfully assigned app-management/mapit-1-dt5k7 to ip-10-0-172-64.us-east-2.compute.internal
+#   Normal  Pulling    3m58s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Pulling image "quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d"
+#   Normal  Pulled     3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Successfully pulled image "quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d"
+#   Normal  Created    3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Created container mapit
+#   Normal  Started    3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Started container mapit
+#+end_example
+
+** Services
+
+#+begin_src bash
+oc get services
+#+end_src
+
+#+begin_example
+# NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+# mapit   ClusterIP   172.30.67.133   <none>        8080/TCP,8778/TCP,9779/TCP   4m48s
+#+end_example
+
+#+begin_src bash
+oc describe service mapit
+#+end_src
+
+#+begin_example
+# Name:              mapit
+# Namespace:         app-management
+# Labels:            app=mapit
+# Annotations:       openshift.io/generated-by: OpenShiftNewApp
+# Selector:          app=mapit,deploymentconfig=mapit
+# Type:              ClusterIP
+# IP:                172.30.67.133
+# Port:              8080-tcp  8080/TCP
+# TargetPort:        8080/TCP
+# Endpoints:         10.130.2.13:8080
+# Port:              8778-tcp  8778/TCP
+# TargetPort:        8778/TCP
+# Endpoints:         10.130.2.13:8778
+# Port:              9779-tcp  9779/TCP
+# TargetPort:        9779/TCP
+# Endpoints:         10.130.2.13:9779
+# Session Affinity:  None
+# Events:            <none>
+#+end_example
+
+#+begin_src bash
+oc get service mapit -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   annotations:
+#     openshift.io/generated-by: OpenShiftNewApp
+#   creationTimestamp: "2020-02-21T16:10:46Z"
+#   labels:
+#     app: mapit
+#   name: mapit
+#   namespace: app-management
+#   resourceVersion: "928455"
+#   selfLink: /api/v1/namespaces/app-management/services/mapit
+#   uid: b7acba15-54c4-11ea-9d6d-06399a073c9e
+# spec:
+#   clusterIP: 172.30.67.133
+#   ports:
+#   - name: 8080-tcp
+#     port: 8080
+#     protocol: TCP
+#     targetPort: 8080
+#   - name: 8778-tcp
+#     port: 8778
+#     protocol: TCP
+#     targetPort: 8778
+#   - name: 9779-tcp
+#     port: 9779
+#     protocol: TCP
+#     targetPort: 9779
+#   selector:
+#     app: mapit
+#     deploymentconfig: mapit
+#   sessionAffinity: None
+#   type: ClusterIP
+# status:
+#   loadBalancer: {}
+#+end_example
+
+#+begin_src bash
+oc get pod $(oc get pods | grep "Running" | awk '{ print $1 }') -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   annotations:
+#     k8s.v1.cni.cncf.io/networks-status: |-
+#       [{
+#           "name": "openshift-sdn",
+#           "interface": "eth0",
+#           "ips": [
+#               "10.130.2.13"
+#           ],
+#           "default": true,
+#           "dns": {}
+#       }]
+#     kubernetes.io/limit-ranger: 'LimitRanger plugin set: cpu, memory request for container
+#       mapit; cpu, memory limit for container mapit'
+#     openshift.io/deployment-config.latest-version: "1"
+#     openshift.io/deployment-config.name: mapit
+#     openshift.io/deployment.name: mapit-1
+#     openshift.io/generated-by: OpenShiftNewApp
+#     openshift.io/scc: restricted
+#   creationTimestamp: "2020-02-21T16:10:57Z"
+#   generateName: mapit-1-
+#   labels:
+#     app: mapit
+#     deployment: mapit-1
+#     deploymentconfig: mapit
+#   name: mapit-1-dt5k7
+#   namespace: app-management
+#   ownerReferences:
+#   - apiVersion: v1
+#     blockOwnerDeletion: true
+#     controller: true
+#     kind: ReplicationController
+#     name: mapit-1
+#     uid: b96b188f-54c4-11ea-8e4e-029a3b7b53fa
+#   resourceVersion: "928735"
+#   selfLink: /api/v1/namespaces/app-management/pods/mapit-1-dt5k7
+#   uid: be5766ef-54c4-11ea-9d6d-06399a073c9e
+# spec:
+#   containers:
+#   - image: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     imagePullPolicy: Always
+#     name: mapit
+#     ports:
+#     - containerPort: 8080
+#       protocol: TCP
+#     - containerPort: 8778
+#       protocol: TCP
+#     - containerPort: 9779
+#       protocol: TCP
+#     resources:
+#       limits:
+#         cpu: "4"
+#         memory: 1Gi
+#       requests:
+#         cpu: 100m
+#         memory: 512Mi
+#     securityContext:
+#       capabilities:
+#         drop:
+#         - KILL
+#         - MKNOD
+#         - SETGID
+#         - SETUID
+#       runAsUser: 1000890000
+#     terminationMessagePath: /dev/termination-log
+#     terminationMessagePolicy: File
+#     volumeMounts:
+#     - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+#       name: default-token-w6rh2
+#       readOnly: true
+#   dnsPolicy: ClusterFirst
+#   enableServiceLinks: true
+#   imagePullSecrets:
+#   - name: default-dockercfg-sgc84
+#   nodeName: ip-10-0-172-64.us-east-2.compute.internal
+#   priority: 0
+#   restartPolicy: Always
+#   schedulerName: default-scheduler
+#   securityContext:
+#     fsGroup: 1000890000
+#     seLinuxOptions:
+#       level: s0:c30,c10
+#   serviceAccount: default
+#   serviceAccountName: default
+#   terminationGracePeriodSeconds: 30
+#   tolerations:
+#   - effect: NoSchedule
+#     key: node.kubernetes.io/memory-pressure
+#     operator: Exists
+#   - effect: NoExecute
+#     key: node.kubernetes.io/not-ready
+#     operator: Exists
+#     tolerationSeconds: 300
+#   - effect: NoExecute
+#     key: node.kubernetes.io/unreachable
+#     operator: Exists
+#     tolerationSeconds: 300
+#   volumes:
+#   - name: default-token-w6rh2
+#     secret:
+#       defaultMode: 420
+#       secretName: default-token-w6rh2
+# status:
+#   conditions:
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:10:57Z"
+#     status: "True"
+#     type: Initialized
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:11:15Z"
+#     status: "True"
+#     type: Ready
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:11:15Z"
+#     status: "True"
+#     type: ContainersReady
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:10:57Z"
+#     status: "True"
+#     type: PodScheduled
+#   containerStatuses:
+#   - containerID: cri-o://5c6adb041ba82010938d70def3b37f6bbb25db27c87108b675698ae6db9bc553
+#     image: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     imageID: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     lastState: {}
+#     name: mapit
+#     ready: true
+#     restartCount: 0
+#     state:
+#       running:
+#         startedAt: "2020-02-21T16:11:14Z"
+#   hostIP: 10.0.172.64
+#   phase: Running
+#   podIP: 10.130.2.13
+#   qosClass: Burstable
+#   startTime: "2020-02-21T16:10:57Z"
+#+end_example
+
+** Exploring Deployment-related Objects
+
+#+begin_src bash
+oc get dc
+#+end_src
+
+#+begin_example
+# NAME    REVISION   DESIRED   CURRENT   TRIGGERED BY
+# mapit   1          1         1         config,image(mapit:latest)
+#+end_example
+
+#+begin_src bash
+oc get rc
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   1         1         1       7m57s
+#+end_example
+
+** Scaling the Application
+
+#+begin_src bash
+oc scale --replicas=2 dc/mapit
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit scaled
+#+end_example
+
+#+begin_src bash
+oc get rc
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   2         2         2       8m19s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          8m39s
+# mapit-1-dt5k7    1/1     Running     0          8m31s
+# mapit-1-zwxg6    1/1     Running     0          40s
+#+end_example
+
+#+begin_src bash
+oc describe svc mapit
+#+end_src
+
+#+begin_example
+# Name:              mapit
+# Namespace:         app-management
+# Labels:            app=mapit
+# Annotations:       openshift.io/generated-by: OpenShiftNewApp
+# Selector:          app=mapit,deploymentconfig=mapit
+# Type:              ClusterIP
+# IP:                172.30.67.133
+# Port:              8080-tcp  8080/TCP
+# TargetPort:        8080/TCP
+# Endpoints:         10.129.6.18:8080,10.130.2.13:8080
+# Port:              8778-tcp  8778/TCP
+# TargetPort:        8778/TCP
+# Endpoints:         10.129.6.18:8778,10.130.2.13:8778
+# Port:              9779-tcp  9779/TCP
+# TargetPort:        9779/TCP
+# Endpoints:         10.129.6.18:9779,10.130.2.13:9779
+# Session Affinity:  None
+# Events:            <none>
+#+end_example
+
+#+begin_src bash
+oc get endpoints mapit
+#+end_src
+
+#+begin_example
+# NAME    ENDPOINTS                                                        AGE
+# mapit   10.129.6.18:8080,10.130.2.13:8080,10.129.6.18:9779 + 3 more...   9m2s
+#+end_example
+
+** Application "Self Healing"
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          10m
+# mapit-1-dt5k7    1/1     Running     0          10m
+# mapit-1-zwxg6    1/1     Running     0          2m34s
+#+end_example
+
+#+begin_src bash
+oc delete pod mapit-1-zwxg6
+#+end_src
+
+#+begin_example
+# pod "mapit-1-zwxg6" deleted
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          11m
+# mapit-1-dt5k7    1/1     Running     0          11m
+# mapit-1-wcsfm    1/1     Running     0          17s
+#+end_example
+
+** Background: Routes
+
+#+begin_src bash
+oc describe deployment router-default -n openshift-ingress
+#+end_src
+
+#+begin_example
+# Name:                   router-default
+# Namespace:              openshift-ingress
+# CreationTimestamp:      Wed, 19 Feb 2020 18:02:18 +0000
+# Labels:                 ingresscontroller.operator.openshift.io/owning-ingresscontroller=default
+# Annotations:            deployment.kubernetes.io/revision: 2
+# Selector:               ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+# Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+# StrategyType:           RollingUpdate
+# MinReadySeconds:        0
+# RollingUpdateStrategy:  25% max unavailable, 0 max surge
+# Pod Template:
+#   Labels:           ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+#   Service Account:  router
+#   Containers:
+#    router:
+#     Image:       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7476ec12a318b52bd7a8f83eb9fec6f2fdd87e3f594562aeea2c29d5af536690
+#     Ports:       80/TCP, 443/TCP, 1936/TCP
+#     Host Ports:  0/TCP, 0/TCP, 0/TCP
+#     Requests:
+#       cpu:      100m
+#       memory:   256Mi
+#     Liveness:   http-get http://:1936/healthz delay=10s timeout=1s period=10s #success=1 #failure=3
+#     Readiness:  http-get http://:1936/healthz/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+#     Environment:
+#       STATS_PORT:                    1936
+#       ROUTER_SERVICE_NAMESPACE:      openshift-ingress
+#       DEFAULT_CERTIFICATE_DIR:       /etc/pki/tls/private
+#       ROUTER_SERVICE_NAME:           default
+#       STATS_USERNAME:                <set to the key 'statsUsername' in secret 'router-stats-default'>  Optional: false
+#       STATS_PASSWORD:                <set to the key 'statsPassword' in secret 'router-stats-default'>  Optional: false
+#       ROUTER_METRICS_TYPE:           haproxy
+#       ROUTER_METRICS_TLS_CERT_FILE:  /etc/pki/tls/metrics-certs/tls.crt
+#       ROUTER_METRICS_TLS_KEY_FILE:   /etc/pki/tls/metrics-certs/tls.key
+#       ROUTER_CANONICAL_HOSTNAME:     apps.cluster-munich-e7ab.sandbox1596.opentlc.com
+#       ROUTER_USE_PROXY_PROTOCOL:     true
+#       ROUTER_THREADS:                4
+#     Mounts:
+#       /etc/pki/tls/metrics-certs from metrics-certs (ro)
+#       /etc/pki/tls/private from default-certificate (ro)
+#   Volumes:
+#    default-certificate:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  router-certs-default
+#     Optional:    false
+#    metrics-certs:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  router-metrics-certs-default
+#     Optional:    false
+# Conditions:
+#   Type           Status  Reason
+#   ----           ------  ------
+#   Available      True    MinimumReplicasAvailable
+#   Progressing    True    NewReplicaSetAvailable
+# OldReplicaSets:  router-default-5d5f9f8649 (2/2 replicas created)
+# NewReplicaSet:   <none>
+# Events:          <none>
+#+end_example
+
+** Creating a Route
+
+#+begin_src bash
+oc expose service mapit
+#+end_src
+
+#+begin_example
+# route.route.openshift.io/mapit exposed
+#+end_example
+
+#+begin_src bash
+oc get route
+#+end_src
+
+#+begin_example
+# NAME    HOST/PORT                                                               PATH   SERVICES   PORT       TERMINATION   WILDCARD
+# mapit   mapit-app-management.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          mapit      8080-tcp                 None
+#+end_example
+
+** Scale Down
+
+#+begin_src bash
+oc scale --replicas=1 dc/mapit
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit scaled
+#+end_example
+
+** Add Probes to the Application
+
+#+begin_src bash
+curl mapit-app-management.apps.cluster-munich-e7ab.sandbox1596.opentlc.com/health
+#+end_src
+
+#+begin_example
+# 
+# 
+#+end_example
+
+#+begin_src bash
+oc set probe dc/mapit --liveness --get-url=http://:8080/health --initial-delay-seconds=30
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit probes updated
+#+end_example
+
+#+begin_src bash
+oc describe dc mapit
+#+end_src
+
+#+begin_example
+# Name:		mapit
+# Namespace:	app-management
+# Created:	12 minutes ago
+# Labels:		app=mapit
+# Annotations:	openshift.io/generated-by=OpenShiftNewApp
+# Latest Version:	2
+# Selector:	app=mapit,deploymentconfig=mapit
+# Replicas:	1
+# Triggers:	Config, Image(mapit@latest, auto=true)
+# Strategy:	Rolling
+# Template:
+# Pod Template:
+#   Labels:	app=mapit
+# 		deploymentconfig=mapit
+#   Annotations:	openshift.io/generated-by: OpenShiftNewApp
+#   Containers:
+#    mapit:
+#     Image:		quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Ports:		8080/TCP, 8778/TCP, 9779/TCP
+#     Host Ports:		0/TCP, 0/TCP, 0/TCP
+#     Liveness:		http-get http://:8080/health delay=30s timeout=1s period=10s #success=1 #failure=3
+#     Environment:	<none>
+#     Mounts:		<none>
+#   Volumes:		<none>
+# 
+# Deployment #2 (latest):
+# 	Created:	3 seconds ago
+# 	Status:		Pending
+# 	Replicas:	0 current / 0 desired
+# Deployment #1:
+# 	Name:		mapit-1
+# 	Created:	12 minutes ago
+# 	Status:		Complete
+# 	Replicas:	1 current / 1 desired
+# 	Selector:	app=mapit,deployment=mapit-1,deploymentconfig=mapit
+# 	Labels:		app=mapit,openshift.io/deployment-config.name=mapit
+# 	Pods Status:	1 Running / 0 Waiting / 0 Succeeded / 0 Failed
+# 
+# Events:
+#   Type		Reason				Age	From				Message
+#   ----		------				----	----				-------
+#   Normal	DeploymentCreated		12m	deploymentconfig-controller	Created new replication controller "mapit-1" for version 1
+#   Normal	ReplicationControllerScaled	4m4s	deploymentconfig-controller	Scaled replication controller "mapit-1" from 1 to 2
+#   Normal	ReplicationControllerScaled	16s	deploymentconfig-controller	Scaled replication controller "mapit-1" from 2 to 1
+#   Normal	DeploymentCreated		3s	deploymentconfig-controller	Created new replication controller "mapit-2" for version 2
+#+end_example
+
+#+begin_src bash
+oc set probe dc/mapit --readiness --get-url=http://:8080/health --initial-delay-seconds=30
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit probes updated
+#+end_example
+
+** Examining DeploymentConfigs and ReplicationControllers
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed           0          12m
+# mapit-2-bwrhg    1/1     Running             0          37s
+# mapit-2-deploy   0/1     Completed           0          46s
+# mapit-3-deploy   0/1     ContainerCreating   0          7s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          13m
+# mapit-2-bwrhg    1/1     Running     0          65s
+# mapit-2-deploy   0/1     Completed   0          74s
+# mapit-3-deploy   1/1     Running     0          35s
+# mapit-3-rbjmb    0/1     Running     0          26s
+#+end_example
+
+#+begin_src bash
+oc get deploymentconfigs
+#+end_src
+
+#+begin_example
+# NAME    REVISION   DESIRED   CURRENT   TRIGGERED BY
+# mapit   3          1         1         config,image(mapit:latest)
+#+end_example
+
+#+begin_src bash
+oc get replicationcontrollers
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   0         0         0       13m
+# mapit-2   1         1         1       85s
+# mapit-3   1         1         0       46s
+#+end_example
+
+* Application Storage Basics
+
+* MachineSets, Machines, and Nodes
+
+* Infrastructure Nodes and Operators
+
 * Cluster Admin Authentication
 
 #+begin_src bash
@@ -15340,3 +16223,1920 @@ oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
 # Password: 
 # error: username system:serviceaccount:lab-ocp-cns:dashboard-user is invalid for basic auth
 #+end_example
+
+#+begin_src bash
+oc login -u kubeadmin
+#+end_src
+
+#+begin_example
+# Authentication required for https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443 (openshift)
+# Username: kubeadmin
+# Password: 
+# Login successful.
+# 
+# You have access to 59 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+RmEAm-FN5EH-XhpAH-YYbf8
+
+#+begin_src bash
+oc adm new-project app-dev --display-name="Application Development"
+oc adm new-project app-test --display-name="Application Testing"
+oc adm new-project app-prod --display-name="Application Production"
+#+end_src
+
+#+begin_example
+# Created project app-dev
+# Created project app-test
+# Created project app-prod
+#+end_example
+
+*** Map Groups to Projects
+
+#+begin_src bash
+oc adm policy add-role-to-group edit ose-teamed-app -n app-dev
+oc adm policy add-role-to-group edit ose-teamed-app -n app-test
+#+end_src
+
+#+begin_example
+# clusterrole.rbac.authorization.k8s.io/edit added: "ose-teamed-app"
+# clusterrole.rbac.authorization.k8s.io/edit added: "ose-teamed-app"
+#+end_example
+
+#+begin_src bash
+oc adm policy add-role-to-group view ose-teamed-app -n app-prod
+#+end_src
+
+#+begin_example
+# clusterrole.rbac.authorization.k8s.io/view added: "ose-teamed-app"
+#+end_example
+
+#+begin_src bash
+oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
+#+end_src
+
+#+begin_example
+# clusterrole.rbac.authorization.k8s.io/edit added: "ose-fancy-dev"
+#+end_example
+
+*** Examine Group Access
+
+#+begin_src bash
+oc login -u normaluser1 -p openshift
+#+end_src
+
+#+begin_src bash
+oc get projects
+#+end_src
+
+#+begin_example
+# No resources found.
+#+end_example
+
+#+begin_src bash
+oc login -u teamuser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to the following projects and can switch between them with 'oc project <projectname>':
+# 
+#   * app-dev
+#     app-prod
+#     app-test
+# 
+# Using project "app-dev".
+#+end_example
+
+#+begin_src bash
+oc get projects
+#+end_src
+
+#+begin_example
+# NAME       DISPLAY NAME              STATUS
+# app-dev    Application Development   Active
+# app-prod   Application Production    Active
+# app-test   Application Testing       Active
+#+end_example
+
+#+begin_src bash
+oc project app-prod
+#+end_src
+
+#+begin_example
+# Now using project "app-prod" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+#+end_example
+
+#+begin_src bash
+oc new-app docker.io/siamaksade/mapit
+#+end_src
+
+#+begin_example
+# error: can't lookup images: imagestreamimports.image.openshift.io is forbidden: User "teamuser1" cannot create resource "imagestreamimports" in API group "image.openshift.io" in the namespace "app-prod"
+# error:  local file access failed with: stat docker.io/siamaksade/mapit: no such file or directory
+# error: unable to locate any images in image streams, templates loaded in accessible projects, template files, local docker images with name "docker.io/siamaksade/mapit"
+# 
+# Argument 'docker.io/siamaksade/mapit' was classified as an image, image~source, or loaded template reference.
+# 
+# The 'oc new-app' command will match arguments to the following types:
+# 
+#   1. Images tagged into image streams in the current project or the 'openshift' project
+#      - if you don't specify a tag, we'll add ':latest'
+#   2. Images in the Docker Hub, on remote registries, or on the local Docker engine
+#   3. Templates in the current project or the 'openshift' project
+#   4. Git repository URLs or local paths that point to Git repositories
+# 
+# --allow-missing-images can be used to point to an image that does not exist yet.
+# 
+# See 'oc new-app -h' for examples.
+#+end_example
+
+*** Prometheus
+
+#+begin_src bash
+oc login -u fancyuser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 62 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "app-prod".
+#+end_example
+
+#+begin_src bash
+oc get route prometheus-k8s -n openshift-monitoring
+#+end_src
+
+#+begin_example
+# NAME             HOST/PORT                                                                              PATH   SERVICES         PORT   TERMINATION          WILDCARD
+# prometheus-k8s   prometheus-k8s-openshift-monitoring.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          prometheus-k8s   web    reencrypt/Redirect   None
+#+end_example
+
+Before continuing, make sure to go to the OpenShift web console and log out by
+using the dropdown menu at the upper right where it says kube:admin. Otherwise
+Prometheus will try to use your kubeadmin user to pass through
+authentication. While it will work, it doesn’t demonstrate the cluster-reader
+role.
+
+https://prometheus-k8s-openshift-monitoring.apps.cluster-munich-e7ab.sandbox1596.opentlc.com
+
+#+begin_src bash
+oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
+#+end_src
+
+#+begin_src bash
+oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# error: username system:serviceaccount:lab-ocp-cns:dashboard-user is invalid for basic auth
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 62 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "app-prod".
+#+end_example
+
+** OpenShift Monitoring with Prometheus
+
+*** Running Prometheus Queries
+
+sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
+
+cluster:cpu_usage_cores:sum
+
+** Project Template, Quota, and Limits
+
+*** View the Default Project Request Template
+
+#+begin_src bash
+oc adm create-bootstrap-project-template -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: template.openshift.io/v1
+# kind: Template
+# metadata:
+#   creationTimestamp: null
+#   name: project-request
+# objects:
+# - apiVersion: project.openshift.io/v1
+#   kind: Project
+#   metadata:
+#     annotations:
+#       openshift.io/description: ${PROJECT_DESCRIPTION}
+#       openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+#       openshift.io/requester: ${PROJECT_REQUESTING_USER}
+#     creationTimestamp: null
+#     name: ${PROJECT_NAME}
+#   spec: {}
+#   status: {}
+# - apiVersion: rbac.authorization.k8s.io/v1
+#   kind: RoleBinding
+#   metadata:
+#     creationTimestamp: null
+#     name: admin
+#     namespace: ${PROJECT_NAME}
+#   roleRef:
+#     apiGroup: rbac.authorization.k8s.io
+#     kind: ClusterRole
+#     name: admin
+#   subjects:
+#   - apiGroup: rbac.authorization.k8s.io
+#     kind: User
+#     name: ${PROJECT_ADMIN_USER}
+# parameters:
+# - name: PROJECT_NAME
+# - name: PROJECT_DISPLAYNAME
+# - name: PROJECT_DESCRIPTION
+# - name: PROJECT_ADMIN_USER
+# - name: PROJECT_REQUESTING_USER
+#+end_example
+
+#+begin_src bash
+oc new-project -h
+#+end_src
+
+#+begin_example
+# Create a new project for yourself
+# 
+#  If your administrator allows self-service, this command will create a new project for you and assign you as the project
+# admin.
+# 
+#  After your project is created it will become the default project in your config.
+# 
+# Usage:
+#   oc new-project NAME [--display-name=DISPLAYNAME] [--description=DESCRIPTION] [flags]
+# 
+# Examples:
+#   # Create a new project with minimal information
+#   oc new-project web-team-dev
+#   
+#   # Create a new project with a display name and description
+#   oc new-project web-team-dev --display-name="Web Team Development" --description="Development project for the web
+# team."
+# 
+# Options:
+#       --description='': Project description
+#       --display-name='': Project display name
+#       --skip-config-write=false: If true, the project will not be set as a cluster entry in kubeconfig after being
+# created
+# 
+# Use "oc options" for a list of global command-line options (applies to all commands).
+#+end_example
+
+*** Modify the Project Request Template
+
+#+begin_src bash
+cat ~/test/support/project_request_template.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Template
+# metadata:
+#   creationTimestamp: null
+#   name: project-request
+# objects:
+# - apiVersion: v1
+#   kind: Project
+#   metadata:
+#     annotations:
+#       openshift.io/description: ${PROJECT_DESCRIPTION}
+#       openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+#       openshift.io/requester: ${PROJECT_REQUESTING_USER}
+#     creationTimestamp: null
+#     name: ${PROJECT_NAME}
+#   spec: {}
+#   status: {}
+# - apiVersion: v1
+#   kind: ResourceQuota
+#   metadata:
+#     name: ${PROJECT_NAME}-quota
+#   spec:
+#     hard:
+#       pods: 10
+#       requests.cpu: 4000m
+#       requests.memory: 8Gi
+#       resourcequotas: 1
+#       requests.storage: 50Gi
+#       persistentvolumeclaims: 5
+# - apiVersion: v1
+#   kind: LimitRange
+#   metadata:
+#     name: ${PROJECT_NAME}-limits
+#     creationTimestamp: null
+#   spec:
+#     limits:
+#       -
+#         type: Container
+#         max:
+#           cpu: 4000m
+#           memory: 1024Mi
+#         min:
+#           cpu: 10m
+#           memory: 5Mi
+#         default:
+#           cpu: 4000m
+#           memory: 1024Mi
+#         defaultRequest:
+#           cpu: 100m
+#           memory: 512Mi
+# - apiVersion: v1
+#   groupNames:
+#   - system:serviceaccounts:${PROJECT_NAME}
+#   kind: RoleBinding
+#   metadata:
+#     creationTimestamp: null
+#     name: system:image-pullers
+#     namespace: ${PROJECT_NAME}
+#   roleRef:
+#     name: system:image-puller
+#   subjects:
+#   - kind: SystemGroup
+#     name: system:serviceaccounts:${PROJECT_NAME}
+#   userNames: null
+# - apiVersion: v1
+#   groupNames: null
+#   kind: RoleBinding
+#   metadata:
+#     creationTimestamp: null
+#     name: system:image-builders
+#     namespace: ${PROJECT_NAME}
+#   roleRef:
+#     name: system:image-builder
+#   subjects:
+#   - kind: ServiceAccount
+#     name: builder
+#   userNames:
+#   - system:serviceaccount:${PROJECT_NAME}:builder
+# - apiVersion: v1
+#   groupNames: null
+#   kind: RoleBinding
+#   metadata:
+#     creationTimestamp: null
+#     name: system:deployers
+#     namespace: ${PROJECT_NAME}
+#   roleRef:
+#     name: system:deployer
+#   subjects:
+#   - kind: ServiceAccount
+#     name: deployer
+#   userNames:
+#   - system:serviceaccount:${PROJECT_NAME}:deployer
+# - apiVersion: v1
+#   groupNames: null
+#   kind: RoleBinding
+#   metadata:
+#     creationTimestamp: null
+#     name: admin
+#     namespace: ${PROJECT_NAME}
+#   roleRef:
+#     name: admin
+#   subjects:
+#   - kind: User
+#     name: ${PROJECT_ADMIN_USER}
+#   userNames:
+#   - ${PROJECT_ADMIN_USER}
+# parameters:
+# - name: PROJECT_NAME
+# - name: PROJECT_DISPLAYNAME
+# - name: PROJECT_DESCRIPTION
+# - name: PROJECT_ADMIN_USER
+# - name: PROJECT_REQUESTING_USER
+#+end_example
+
+*** Create the Template
+
+#+begin_src bash
+oc create -f ~/test/support/project_request_template.yaml -n openshift-config
+#+end_src
+
+#+begin_example
+# template.template.openshift.io/project-request created
+#+end_example
+
+#+begin_src bash
+oc get template -n openshift-config
+#+end_src
+
+#+begin_example
+# NAME              DESCRIPTION   PARAMETERS    OBJECTS
+# project-request                 5 (5 blank)   7
+#+end_example
+*** Setting the Default ProjectRequestTemplate
+
+#+begin_src bash
+oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
+#+end_src
+
+#+begin_example
+# {
+#   "aggregatorConfig": {
+#     "allowedNames": [
+#       "kube-apiserver-proxy",
+#       "system:kube-apiserver-proxy",
+#       "system:openshift-aggregator"
+#     ],
+#     "clientCA": "/var/run/configmaps/aggregator-client-ca/ca-bundle.crt",
+#     "extraHeaderPrefixes": [
+#       "X-Remote-Extra-"
+#     ],
+#     "groupHeaders": [
+#       "X-Remote-Group"
+#     ],
+#     "usernameHeaders": [
+#       "X-Remote-User"
+#     ]
+#   },
+#   "apiServerArguments": {
+#     "minimal-shutdown-duration": [
+#       "3s"
+#     ]
+#   },
+#   "apiVersion": "openshiftcontrolplane.config.openshift.io/v1",
+#   "auditConfig": {
+#     "auditFilePath": "/var/log/openshift-apiserver/audit.log",
+#     "enabled": true,
+#     "logFormat": "json",
+#     "maximumFileSizeMegabytes": 100,
+#     "maximumRetainedFiles": 10,
+#     "policyConfiguration": {
+#       "apiVersion": "audit.k8s.io/v1beta1",
+#       "kind": "Policy",
+#       "omitStages": [
+#         "RequestReceived"
+#       ],
+#       "rules": [
+#         {
+#           "level": "None",
+#           "resources": [
+#             {
+#               "group": "",
+#               "resources": [
+#                 "events"
+#               ]
+#             }
+#           ]
+#         },
+#         {
+#           "level": "None",
+#           "resources": [
+#             {
+#               "group": "oauth.openshift.io",
+#               "resources": [
+#                 "oauthaccesstokens",
+#                 "oauthauthorizetokens"
+#               ]
+#             }
+#           ]
+#         },
+#         {
+#           "level": "None",
+#           "nonResourceURLs": [
+#             "/api*",
+#             "/version",
+#             "/healthz"
+#           ],
+#           "userGroups": [
+#             "system:authenticated",
+#             "system:unauthenticated"
+#           ]
+#         },
+#         {
+#           "level": "Metadata",
+#           "omitStages": [
+#             "RequestReceived"
+#           ]
+#         }
+#       ]
+#     }
+#   },
+#   "imagePolicyConfig": {
+#     "internalRegistryHostname": "image-registry.openshift-image-registry.svc:5000"
+#   },
+#   "kind": "OpenShiftAPIServerConfig",
+#   "projectConfig": {
+#     "projectRequestMessage": ""
+#   },
+#   "routingConfig": {
+#     "subdomain": "apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
+#   },
+#   "storageConfig": {
+#     "urls": [
+#       "https://etcd.openshift-etcd.svc:2379"
+#     ]
+#   }
+# }
+#+end_example
+
+#+begin_src bash
+cat ~/test/support/cr_project_request.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: "config.openshift.io/v1"
+# kind: "Project"
+# metadata: 
+#   name: "cluster"
+#   namespace: ""
+# spec: 
+#   projectRequestMessage: ""
+#   projectRequestTemplate: 
+#     name: "project-request"
+#+end_example
+
+#+begin_src bash
+oc apply -f ~/test/support/cr_project_request.yaml -n openshift-config
+#+end_src
+
+#+begin_example
+# Warning: oc apply should be used on resource created by either oc create --save-config or oc apply
+# project.config.openshift.io/cluster configured
+#+end_example
+
+#+begin_src bash
+oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
+#+end_src
+
+#+begin_example
+# {
+#   "aggregatorConfig": {
+#     "allowedNames": [
+#       "kube-apiserver-proxy",
+#       "system:kube-apiserver-proxy",
+#       "system:openshift-aggregator"
+#     ],
+#     "clientCA": "/var/run/configmaps/aggregator-client-ca/ca-bundle.crt",
+#     "extraHeaderPrefixes": [
+#       "X-Remote-Extra-"
+#     ],
+#     "groupHeaders": [
+#       "X-Remote-Group"
+#     ],
+#     "usernameHeaders": [
+#       "X-Remote-User"
+#     ]
+#   },
+#   "apiServerArguments": {
+#     "minimal-shutdown-duration": [
+#       "3s"
+#     ]
+#   },
+#   "apiVersion": "openshiftcontrolplane.config.openshift.io/v1",
+#   "auditConfig": {
+#     "auditFilePath": "/var/log/openshift-apiserver/audit.log",
+#     "enabled": true,
+#     "logFormat": "json",
+#     "maximumFileSizeMegabytes": 100,
+#     "maximumRetainedFiles": 10,
+#     "policyConfiguration": {
+#       "apiVersion": "audit.k8s.io/v1beta1",
+#       "kind": "Policy",
+#       "omitStages": [
+#         "RequestReceived"
+#       ],
+#       "rules": [
+#         {
+#           "level": "None",
+#           "resources": [
+#             {
+#               "group": "",
+#               "resources": [
+#                 "events"
+#               ]
+#             }
+#           ]
+#         },
+#         {
+#           "level": "None",
+#           "resources": [
+#             {
+#               "group": "oauth.openshift.io",
+#               "resources": [
+#                 "oauthaccesstokens",
+#                 "oauthauthorizetokens"
+#               ]
+#             }
+#           ]
+#         },
+#         {
+#           "level": "None",
+#           "nonResourceURLs": [
+#             "/api*",
+#             "/version",
+#             "/healthz"
+#           ],
+#           "userGroups": [
+#             "system:authenticated",
+#             "system:unauthenticated"
+#           ]
+#         },
+#         {
+#           "level": "Metadata",
+#           "omitStages": [
+#             "RequestReceived"
+#           ]
+#         }
+#       ]
+#     }
+#   },
+#   "imagePolicyConfig": {
+#     "internalRegistryHostname": "image-registry.openshift-image-registry.svc:5000"
+#   },
+#   "kind": "OpenShiftAPIServerConfig",
+#   "projectConfig": {
+#     "projectRequestMessage": "",
+#     "projectRequestTemplate": "openshift-config/project-request"
+#   },
+#   "routingConfig": {
+#     "subdomain": "apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
+#   },
+#   "storageConfig": {
+#     "urls": [
+#       "https://etcd.openshift-etcd.svc:2379"
+#     ]
+#   }
+# }
+#+end_example
+
+*** Create a New Project
+
+#+begin_src bash
+oc new-project template-test
+#+end_src
+
+#+begin_example
+# Now using project "template-test" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
+
+#+begin_src bash
+oc describe project template-test
+#+end_src
+
+#+begin_example
+# Name:			template-test
+# Created:		22 seconds ago
+# Labels:			<none>
+# Annotations:		openshift.io/description=
+# 			openshift.io/display-name=
+# 			openshift.io/requester=kube:admin
+# 			openshift.io/sa.scc.mcs=s0:c27,c14
+# 			openshift.io/sa.scc.supplemental-groups=1000730000/10000
+# 			openshift.io/sa.scc.uid-range=1000730000/10000
+# Display Name:		<none>
+# Description:		<none>
+# Status:			Active
+# Node Selector:		<none>
+# Quota:			<none>
+# Resource limits:	<none>
+#+end_example
+
+#+begin_src bash
+oc delete project template-test
+#+end_src
+
+#+begin_example
+# project.project.openshift.io "template-test" deleted
+#+end_example
+
+#+begin_src bash
+oc new-project template-test
+#+end_src
+
+#+begin_src bash
+oc describe project template-test
+#+end_src
+
+#+begin_example
+# Name:		template-test
+# Created:	18 seconds ago
+# Labels:		<none>
+# Annotations:	openshift.io/description=
+# 		openshift.io/display-name=
+# 		openshift.io/requester=kube:admin
+# 		openshift.io/sa.scc.mcs=s0:c27,c24
+# 		openshift.io/sa.scc.supplemental-groups=1000750000/10000
+# 		openshift.io/sa.scc.uid-range=1000750000/10000
+# Display Name:	<none>
+# Description:	<none>
+# Status:		Active
+# Node Selector:	<none>
+# Quota:
+# 	Name:			template-test-quota
+# 	Resource		Used	Hard
+# 	--------		----	----
+# 	persistentvolumeclaims	0	5
+# 	pods			0	10
+# 	requests.cpu		0	4
+# 	requests.memory		0	8Gi
+# 	requests.storage	0	50Gi
+# 	resourcequotas		1	1
+# Resource limits:
+# 	Name:		template-test-limits
+# 	Type		Resource	Min	Max	Default Request	Default Limit	Max Limit/Request Ratio
+# 	----		--------	---	---	---------------	-------------	-----------------------
+# 	Container	memory		5Mi	1Gi	512Mi		1Gi		-
+# 	Container	cpu		10m	4	100m		4		-
+#+end_example
+
+#+begin_src bash
+oc get quota -n template-test
+#+end_src
+
+#+begin_example
+# NAME                  CREATED AT
+# template-test-quota   2020-02-21T14:32:32Z
+#+end_example
+
+#+begin_src bash
+oc get limitrange -n template-test
+#+end_src
+
+#+begin_example
+# NAME                   CREATED AT
+# template-test-limits   2020-02-21T14:32:32Z
+#+end_example
+
+*** Clean Up
+
+#+begin_src bash
+oc delete project template-test
+#+end_src
+
+*** Redeploy the "Basics" section
+
+Deploy the application from the Application Management Basics lab again inside
+this template-test project to observe how the Quota and LimitRange are
+applied. If you do, be sure to look at the JSON/YAML output (oc get …​ -o yaml)
+for things like the DeploymentConfig and the Pod.
+
+** OpenShift Networking and NetworkPolicy
+*** Switch Your Project
+
+#+begin_src bash
+oc project default
+#+end_src
+
+#+begin_example
+# Now using project "default" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+#+end_example
+
+** Execute the Creation Script
+
+#+begin_src bash
+cat ~/test/support/create-net-projects.sh
+#+end_src
+
+#+begin_example
+# #!/bin/bash
+# 
+# # We want to bail if an error occurs.
+# set -e
+# 
+# 
+# cd $(dirname $0)
+# 
+# 
+# image=$(oc get deployments -n openshift-image-registry image-registry --template '{{ range $x := .spec.template.spec.containers }} {{- $x.image -}} {{ end }}')
+# 
+# # deploy the DC definition into the projects
+# oc process -f netproj-template.yaml NAMESPACE=netproj-a IMAGE="$image" | oc apply -n netproj-a -f -
+# oc process -f netproj-template.yaml NAMESPACE=netproj-b IMAGE="$image" | oc apply -n netproj-b -f -
+#+end_example
+
+#+begin_src bash
+bash ~/test/support/create-net-projects.sh
+#+end_src
+
+#+begin_example
+# namespace/netproj-a created
+# deploymentconfig.apps.openshift.io/ose created
+# namespace/netproj-b created
+# deploymentconfig.apps.openshift.io/ose created
+#+end_example
+
+*** Examine the created infrastructure
+
+#+begin_src bash
+oc get pods -n netproj-a
+#+end_src
+
+#+begin_example
+# NAME           READY   STATUS      RESTARTS   AGE
+# ose-1-deploy   0/1     Completed   0          33s
+# ose-1-r2rml    1/1     Running     0          24s
+#+end_example
+
+#+begin_src bash
+oc get pods -n netproj-b
+#+end_src
+
+#+begin_example
+# NAME           READY   STATUS      RESTARTS   AGE
+# ose-1-54mtk    1/1     Running     0          57s
+# ose-1-deploy   0/1     Completed   0          67s
+#+end_example
+
+*** Test Connectivity (should work)
+
+#+begin_src bash
+cat ~/test/support/test-connectivity.sh
+#+end_src
+
+#+begin_example
+# #!/bin/bash
+# 
+# normal_color=$(echo -e "\e[0m")
+# red_color=$(echo -e "\e[31m")
+# green_color=$(echo -e "\e[32m")
+# max_tries=3
+# sleep_between_tries=1
+# 
+# 
+# echo -n "Getting Pod B's IP... "
+# pod_b_ip=$(oc get pod -n netproj-b $(oc get pod -n netproj-b | grep -v deploy | awk '/ose-/ {print $1}') -o jsonpath='{.status.podIP}{"\n"}')
+# echo $pod_b_ip
+# 
+# 
+# echo -n "Getting Pod A's Name... "
+# pod_a_name=$(oc get pod -n netproj-a | grep -v deploy | awk '/ose-/ {print $1}')
+# echo $pod_a_name
+# 
+# 
+# echo -n "Checking connectivity between Pod A and Pod B..."
+# 
+# 
+# i=1
+# while [ $i -le ${max_tries} ]; do
+#   if [ $i -gt 1 ]; then
+#     # Don't sleep on first loop
+#     echo -n "."
+#     sleep ${sleep_between_tries}
+#   fi
+# 
+#   if oc exec -n netproj-a $pod_a_name -- timeout 2 bash -c "</dev/tcp/$pod_b_ip/5000" 2>/dev/null ; then
+#     break
+#   fi
+# 
+#   i=$((i + 1))
+# done
+# 
+# if [ $i -ge ${max_tries} ] ; then
+#   # Failed the maximum amount of times.
+#   echo " ${red_color}FAILED!${normal_color}"
+#   exit 1
+# else
+#   echo " ${green_color}worked${normal_color}"
+# fi
+# 
+#+end_example
+
+#+begin_src bash
+bash ~/test/support/test-connectivity.sh
+#+end_src
+
+#+begin_example
+# Getting Pod B's IP... 10.130.6.12
+# Getting Pod A's Name... ose-1-r2rml
+# Checking connectivity between Pod A and Pod B... worked
+#+end_example
+
+*** Restricting Access
+
+#+begin_src bash
+cat ~/test/support/network-policy-block-all.yaml
+#+end_src
+
+#+begin_example
+# # deny everything into the project
+# # even resources in project can't reach each other
+# ---
+# kind: NetworkPolicy
+# apiVersion: networking.k8s.io/v1
+# metadata:
+#   name: deny-by-default
+# spec:
+#   podSelector:
+#   ingress: []
+#+end_example
+
+#+begin_src bash
+oc create -n netproj-b -f ~/test/support/network-policy-block-all.yaml
+#+end_src
+
+#+begin_example
+# networkpolicy.networking.k8s.io/deny-by-default created
+#+end_example
+
+*** Test Connectivity #2 (should fail)
+
+#+begin_src bash
+bash ~/test/support/test-connectivity.sh
+#+end_src
+
+#+begin_example
+# Getting Pod B's IP... 10.130.6.12
+# Getting Pod A's Name... ose-1-r2rml
+# Checking connectivity between Pod A and Pod B..... FAILED!
+#+end_example
+
+*** Allow Access
+
+#+begin_src bash
+cat ~/test/support/network-policy-allow-all-from-netproj-a.yaml
+#+end_src
+
+#+begin_example
+# # allow access to TCP port 5000 for pods with the label "run: ose" specifically
+# # from projects with the label "name: netproj-a".
+# ---
+# kind: NetworkPolicy
+# apiVersion: networking.k8s.io/v1
+# metadata:
+#   name: allow-tcp-5000-from-netproj-a-namespace
+# spec:
+#   podSelector:
+#     matchLabels:
+#       run: ose
+#   ingress:
+#   - ports:
+#     - protocol: TCP
+#       port: 5000
+#     from:
+#     - namespaceSelector:
+#         matchLabels:
+#           name: netproj-a
+#+end_example
+
+#+begin_src bash
+oc create -n netproj-b -f ~/test/support/network-policy-allow-all-from-netproj-a.yaml
+#+end_src
+
+#+begin_example
+# networkpolicy.networking.k8s.io/allow-tcp-5000-from-netproj-a-namespace created
+#+end_example
+
+*** Test Connectivity #3 (should work again)
+
+#+begin_src bash
+bash ~/test/support/test-connectivity.sh
+#+end_src
+
+#+begin_example
+# Getting Pod B's IP... 10.130.6.12
+# Getting Pod A's Name... ose-1-r2rml
+# Checking connectivity between Pod A and Pod B... worked
+#+end_example
+
+** Disabling Project Self-Provisioning
+
+*** Examine the Clusterrolebinding
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+#+begin_src bash
+oc describe clusterrolebinding.rbac self-provisioners
+#+end_src
+
+#+begin_example
+# Name:         self-provisioners
+# Labels:       <none>
+# Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+# Role:
+#   Kind:  ClusterRole
+#   Name:  self-provisioner
+# Subjects:
+#   Kind   Name                        Namespace
+#   ----   ----                        ---------
+#   Group  system:authenticated:oauth  
+#+end_example
+
+#+begin_src bash
+oc get clusterrolebinding.rbac self-provisioners -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   annotations:
+#     rbac.authorization.kubernetes.io/autoupdate: "true"
+#   creationTimestamp: "2020-02-19T18:01:12Z"
+#   name: self-provisioners
+#   resourceVersion: "5664"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/self-provisioners
+#   uid: d08ca25d-5341-11ea-857f-06399a073c9e
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: self-provisioner
+# subjects:
+# - apiGroup: rbac.authorization.k8s.io
+#   kind: Group
+#   name: system:authenticated:oauth
+#+end_example
+
+*** Removing Self Provisioning Projects
+
+#+begin_src bash
+oc patch clusterrolebinding.rbac self-provisioners -p '{"subjects": null}'
+#+end_src
+
+#+begin_example
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+#+end_example
+
+#+begin_src bash
+oc patch clusterrolebinding.rbac self-provisioners -p '{ "metadata": { "annotations": { "rbac.authorization.kubernetes.io/autoupdate": "false" } } }'
+#+end_src
+
+#+begin_example
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+#+end_example
+
+#+begin_src bash
+oc get clusterrolebinding.rbac self-provisioners -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   annotations:
+#     rbac.authorization.kubernetes.io/autoupdate: "false"
+#   creationTimestamp: "2020-02-19T18:01:12Z"
+#   name: self-provisioners
+#   resourceVersion: "889255"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/self-provisioners
+#   uid: d08ca25d-5341-11ea-857f-06399a073c9e
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: self-provisioner
+#+end_example
+
+#+begin_src bash
+oc login -u fancyuser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+#+begin_src bash
+oc new-project fancyuserproject
+#+end_src
+
+#+begin_example
+# Error from server (Forbidden): You may not request a new project via this API.
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+*** Customizing the request message
+
+#+begin_src bash
+oc patch --type=merge project.config.openshift.io cluster -p '{"spec":{"projectRequestMessage":"Please visit https://ticket.example.com to request a project"}}'
+#+end_src
+
+#+begin_example
+# project.config.openshift.io/cluster patched
+#+end_example
+
+#+begin_src bash
+oc login -u fancyuser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+#+begin_src bash
+oc new-project fancyuserproject
+#+end_src
+
+#+begin_example
+# Error from server (Forbidden): Please visit https://ticket.example.com to request a project
+#+end_example
+
+*** Clean Up
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+#+begin_src bash
+oc patch clusterrolebinding.rbac self-provisioners -p '{"subjects":[{"apiGroup":"rbac.authorization.k8s.io","kind":"Group","name":"system:authenticated:oauth"}]}'
+oc patch clusterrolebinding.rbac self-provisioners -p '{"metadata":{"annotations":{"rbac.authorization.kubernetes.io/autoupdate":"true"}}}'
+oc patch --type=json project.config.openshift.io cluster -p '[{"op": "remove", "path": "/spec/projectRequestMessage"}]'
+#+end_src
+
+#+begin_example
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+# clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
+# project.config.openshift.io/cluster patched project.config.openshift.io/cluster patched
+#+end_example
+
+** Cluster Resource Quotas
+*** Setting quota per user
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+#+begin_src bash
+oc create clusterquota for-user-normaluser1 \
+    --project-annotation-selector openshift.io/requester=normaluser1 \
+    --hard pods=10
+#+end_src
+
+#+begin_example
+# clusterresourcequota.quota.openshift.io/for-user-normaluser1 created
+#+end_example
+
+
+#+begin_src bash
+oc get clusterresourcequotas for-user-normaluser1 -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: quota.openshift.io/v1
+# kind: ClusterResourceQuota
+# metadata:
+#   creationTimestamp: "2020-02-21T15:10:35Z"
+#   generation: 1
+#   name: for-user-normaluser1
+#   resourceVersion: "893453"
+#   selfLink: /apis/quota.openshift.io/v1/clusterresourcequotas/for-user-normaluser1
+#   uid: 4f85f5b1-54bc-11ea-99d2-0a84b9320ef6
+# spec:
+#   quota:
+#     hard:
+#       pods: "10"
+#   selector:
+#     annotations:
+#       openshift.io/requester: normaluser1
+#     labels: null
+#+end_example
+
+#+begin_src bash
+oc login -u normaluser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You don't have any projects. You can try to create a new project, by running
+# 
+#     oc new-project <projectname>
+# 
+#+end_example
+
+#+begin_src bash
+oc get projects
+#+end_src
+
+#+begin_example
+# No resources found.
+#+end_example
+
+#+begin_src bash
+oc new-project welcome1
+oc new-project welcome2
+#+end_src
+
+#+begin_example
+# Now using project "welcome1" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+# [lab-user@clientvm 0 ~/test master|✚1…6]$ Now using project "welcome2" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
+
+#+begin_src bash
+oc new-app -n welcome1 --name=php1 quay.io/redhatworkshops/welcome-php:latest
+oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
+#+end_src
+
+#+begin_example
+# --> Found container image a87cda2 (14 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
+# 
+#     temp.builder.openshift.io/test/welcome-php-1:7d1b0ed6 
+#     ----------------------------------------------------- 
+#     PHP 7.1 available as container is a base platform for building and running various PHP 7.1 applications and frameworks. PHP is an HTML-embedded scripting language. PHP attempts to make it easy for developers to write dynamically generated web pages. PHP also offers built-in database integration for several commercial and non-commercial database management systems, so writing a database-enabled webpage with PHP is fairly simple. The most common use of PHP coding is probably as a replacement for CGI scripts.
+# 
+#     Tags: builder, php, php71, rh-php71
+# 
+#     * An image stream tag will be created as "php1:latest" that will track this image
+#     * This image will be deployed in deployment config "php1"
+#     * Ports 8080/tcp, 8443/tcp will be load balanced by service "php1"
+#       * Other containers can access this service through the hostname "php1"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "php1" created
+#     deploymentconfig.apps.openshift.io "php1" created
+#     service "php1" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/php1' 
+#     Run 'oc status' to view your app.
+# [lab-user@clientvm 0 ~/test master|✚1…6]$ --> Found container image a87cda2 (14 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
+# 
+#     temp.builder.openshift.io/test/welcome-php-1:7d1b0ed6 
+#     ----------------------------------------------------- 
+#     PHP 7.1 available as container is a base platform for building and running various PHP 7.1 applications and frameworks. PHP is an HTML-embedded scripting language. PHP attempts to make it easy for developers to write dynamically generated web pages. PHP also offers built-in database integration for several commercial and non-commercial database management systems, so writing a database-enabled webpage with PHP is fairly simple. The most common use of PHP coding is probably as a replacement for CGI scripts.
+# 
+#     Tags: builder, php, php71, rh-php71
+# 
+#     * An image stream tag will be created as "php2:latest" that will track this image
+#     * This image will be deployed in deployment config "php2"
+#     * Ports 8080/tcp, 8443/tcp will be load balanced by service "php2"
+#       * Other containers can access this service through the hostname "php2"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "php2" created
+#     deploymentconfig.apps.openshift.io "php2" created
+#     service "php2" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/php2' 
+#     Run 'oc status' to view your app.
+#+end_example
+
+#+begin_src bash
+oc get pods -n welcome1 -l app=php1
+oc get pods -n welcome2 -l app=php2
+#+end_src
+
+#+begin_example
+# NAME           READY   STATUS              RESTARTS   AGE
+# php1-1-x8s9v   0/1     ContainerCreating   0          5s
+# NAME           READY   STATUS              RESTARTS   AGE
+# php2-1-mf8n7   0/1     ContainerCreating   0          6s
+#+end_example
+
+#+begin_src bash
+oc get pods -n welcome1 -l app=php1
+oc get pods -n welcome2 -l app=php2
+#+end_src
+
+#+begin_example
+# NAME           READY   STATUS    RESTARTS   AGE
+# php1-1-x8s9v   1/1     Running   0          35s
+# NAME           READY   STATUS    RESTARTS   AGE
+# php2-1-mf8n7   1/1     Running   0          37s
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 66 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc describe clusterresourcequotas for-user-normaluser1
+#+end_src
+
+#+begin_example
+# Name:		for-user-normaluser1
+# Created:	3 minutes ago
+# Labels:		<none>
+# Annotations:	<none>
+# Namespace Selector: ["welcome1" "welcome2"]
+# Label Selector: 
+# AnnotationSelector: map[openshift.io/requester:normaluser1]
+# Resource	Used	Hard
+# --------	----	----
+# pods		2	10
+#+end_example
+
+#+begin_src bash
+oc get ns welcome1 -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   annotations:
+#     openshift.io/description: ""
+#     openshift.io/display-name: ""
+#     openshift.io/requester: normaluser1
+#     openshift.io/sa.scc.mcs: s0:c28,c17
+#     openshift.io/sa.scc.supplemental-groups: 1000790000/10000
+#     openshift.io/sa.scc.uid-range: 1000790000/10000
+#   creationTimestamp: "2020-02-21T15:11:53Z"
+#   name: welcome1
+#   resourceVersion: "894151"
+#   selfLink: /api/v1/namespaces/welcome1
+#   uid: 7e259394-54bc-11ea-9d6d-06399a073c9e
+# spec:
+#   finalizers:
+#   - kubernetes
+# status:
+#   phase: Active
+#+end_example
+
+#+begin_src bash
+oc login -u normaluser1 -p openshift
+oc scale dc/php1 -n welcome1 --replicas=5
+oc scale dc/php2 -n welcome2 --replicas=6
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to the following projects and can switch between them with 'oc project <projectname>':
+# 
+#     welcome1
+#   * welcome2
+# 
+# Using project "welcome2".
+# [lab-user@clientvm 0 ~/test master|✚1…6]$ deploymentconfig.apps.openshift.io/php1 scaled
+# [lab-user@clientvm 0 ~/test master|✚1…6]$ deploymentconfig.apps.openshift.io/php2 scaled
+#+end_example
+
+#+begin_src bash
+oc get pods --no-headers -n welcome1 -l app=php1 | wc -l
+oc get pods --no-headers -n welcome2 -l app=php2 | wc -l
+#+end_src
+
+#+begin_example
+# 5
+# 5
+#+end_example
+
+#+begin_src bash
+oc get events -n welcome1 | grep "Error creating" | head -1
+oc get events -n welcome2 | grep "Error creating" | head -1
+#+end_src
+
+#+begin_example
+# 52s         Warning   FailedCreate                  replicationcontroller/php2-1   Error creating: pods "php2-1-wdz6q" is forbidden: exceeded quota: for-user-normaluser1, requested: pods=1, used: pods=10, limited: pods=10
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 66 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc describe clusterresourcequotas for-user-normaluser1
+#+end_src
+
+#+begin_example
+# Name:		for-user-normaluser1
+# Created:	7 minutes ago
+# Labels:		<none>
+# Annotations:	<none>
+# Namespace Selector: ["welcome1" "welcome2"]
+# Label Selector: 
+# AnnotationSelector: map[openshift.io/requester:normaluser1]
+# Resource	Used	Hard
+# --------	----	----
+# pods		10	10
+#+end_example
+
+*** Setting quota by label
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 66 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc create clusterresourcequota for-pricelist \
+    --project-label-selector=appstack=pricelist \
+    --hard=pods=5
+#+end_src
+
+#+begin_example
+# clusterresourcequota.quota.openshift.io/for-pricelist created
+#+end_example
+
+#+begin_src bash
+oc adm new-project pricelist-frontend
+oc adm new-project pricelist-backend
+#+end_src
+
+#+begin_example
+# Created project pricelist-frontend
+# [lab-user@clientvm 0 ~/test master|✚1…5]$ Created project pricelist-backend
+#+end_example
+
+#+begin_src bash
+oc adm policy add-role-to-user edit normaluser1 -n pricelist-frontend
+oc adm policy add-role-to-user edit normaluser1 -n pricelist-backend
+#+end_src
+
+#+begin_example
+# clusterrole.rbac.authorization.k8s.io/edit added: "normaluser1"
+# clusterrole.rbac.authorization.k8s.io/edit added: "normaluser1"
+#+end_example
+
+#+begin_src bash
+oc label ns pricelist-frontend appstack=pricelist
+oc label ns pricelist-backend appstack=pricelist
+#+end_src
+
+#+begin_example
+# namespace/pricelist-frontend labeled
+# namespace/pricelist-backend labeled
+#+end_example
+
+#+begin_src bash
+oc describe clusterresourcequotas for-pricelist
+#+end_src
+
+#+begin_example
+# Name:		for-pricelist
+# Created:	About a minute ago
+# Labels:		<none>
+# Annotations:	<none>
+# Namespace Selector: ["pricelist-frontend" "pricelist-backend"]
+# Label Selector: appstack=pricelist
+# AnnotationSelector: map[]
+# Resource	Used	Hard
+# --------	----	----
+# pods		0	5
+#+end_example
+
+#+begin_src bash
+oc login -u normaluser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to the following projects and can switch between them with 'oc project <projectname>':
+# 
+#     pricelist-backend
+#     pricelist-frontend
+#     welcome1
+#   * welcome2
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc new-app -n pricelist-frontend --name frontend quay.io/redhatworkshops/pricelist:frontend
+oc new-app -n pricelist-backend --name backend quay.io/redhatworkshops/pricelist:backend
+#+end_src
+
+#+begin_example
+# --> Found container image 0bf1412 (11 months old) from quay.io for "quay.io/redhatworkshops/pricelist:frontend"
+# 
+#     temp.builder.openshift.io/myproject/pricelist-allowed-1:2e531170 
+#     ---------------------------------------------------------------- 
+#     PHP 5.6 available as container is a base platform for building and running various PHP 5.6 applications and frameworks. PHP is an HTML-embedded scripting language. PHP attempts to make it easy for developers to write dynamically generated web pages. PHP also offers built-in database integration for several commercial and non-commercial database management systems, so writing a database-enabled webpage with PHP is fairly simple. The most common use of PHP coding is probably as a replacement for CGI scripts.
+# 
+#     Tags: builder, php, php56, rh-php56
+# 
+#     * An image stream tag will be created as "frontend:frontend" that will track this image
+#     * This image will be deployed in deployment config "frontend"
+#     * Ports 8080/tcp, 8443/tcp will be load balanced by service "frontend"
+#       * Other containers can access this service through the hostname "frontend"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "frontend" created
+#     deploymentconfig.apps.openshift.io "frontend" created
+#     service "frontend" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/frontend' 
+#     Run 'oc status' to view your app.
+# [lab-user@clientvm 0 ~/test master|✚1…6]$ --> Found container image 0bf1412 (11 months old) from quay.io for "quay.io/redhatworkshops/pricelist:backend"
+# 
+#     temp.builder.openshift.io/myproject/pricelist-allowed-1:2e531170 
+#     ---------------------------------------------------------------- 
+#     PHP 5.6 available as container is a base platform for building and running various PHP 5.6 applications and frameworks. PHP is an HTML-embedded scripting language. PHP attempts to make it easy for developers to write dynamically generated web pages. PHP also offers built-in database integration for several commercial and non-commercial database management systems, so writing a database-enabled webpage with PHP is fairly simple. The most common use of PHP coding is probably as a replacement for CGI scripts.
+# 
+#     Tags: builder, php, php56, rh-php56
+# 
+#     * An image stream tag will be created as "backend:backend" that will track this image
+#     * This image will be deployed in deployment config "backend"
+#     * Ports 8080/tcp, 8443/tcp will be load balanced by service "backend"
+#       * Other containers can access this service through the hostname "backend"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "backend" created
+#     deploymentconfig.apps.openshift.io "backend" created
+#     service "backend" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/backend' 
+#     Run 'oc status' to view your app.
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 68 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc describe clusterresourcequotas for-pricelist
+#+end_src
+
+#+begin_example
+# Name:		for-pricelist
+# Created:	2 minutes ago
+# Labels:		<none>
+# Annotations:	<none>
+# Namespace Selector: ["pricelist-frontend" "pricelist-backend"]
+# Label Selector: appstack=pricelist
+# AnnotationSelector: map[]
+# Resource	Used	Hard
+# --------	----	----
+# pods		4	5
+#+end_example
+
+!!! I see 4 instead of 2 --> see documentation
+
+#+begin_src bash
+oc login -u normaluser1 -p openshift
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to the following projects and can switch between them with 'oc project <projectname>':
+# 
+#     pricelist-backend
+#     pricelist-frontend
+#     welcome1
+#   * welcome2
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc scale -n pricelist-frontend dc/frontend --replicas=3
+oc scale -n pricelist-backend dc/backend --replicas=3
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/frontend scaled
+#  deploymentconfig.apps.openshift.io/backend scaled
+#+end_example
+
+#+begin_src bash
+oc get events -n pricelist-frontend | grep "Error creating" | head -1
+oc get events -n pricelist-backend | grep "Error creating" | head -1
+#+end_src
+
+#+begin_example
+# 21s         Warning   FailedCreate                  replicationcontroller/backend-1   Error creating: pods "backend-1-88ptp" is forbidden: exceeded quota: for-pricelist, requested: pods=1, used: pods=5, limited: pods=5
+#+end_example
+
+*** Clean Up
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 68 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "welcome2".
+#+end_example
+
+#+begin_src bash
+oc delete clusterresourcequotas for-pricelist for-user-normaluser1
+#+end_src
+
+#+begin_example
+# clusterresourcequota.quota.openshift.io "for-pricelist" deleted
+# clusterresourcequota.quota.openshift.io "for-user-normaluser1" deleted
+#+end_example
+
+#+begin_src bash
+oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
+#+end_src
+
+#+begin_example
+# project.project.openshift.io "pricelist-backend" deleted
+# project.project.openshift.io "pricelist-frontend" deleted
+# project.project.openshift.io "welcome1" deleted
+# project.project.openshift.io "welcome2" deleted
+#+end_example
+
+#+begin_src bash
+oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+#+end_src
+
+#+begin_example
+# Login successful.
+# 
+# You have access to 65 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# 
+# Using project "default".
+#+end_example
+
+** Cluster Metering
+
+https://coreos.com/blog/introducing-operator-framework-metering
+
+#+begin_src bash
+oc projects | grep openshift-metering
+#+end_src
+
+*** Add Metering Operator to cluster
+
+Set the name to openshift-metering. No other namespace is supported. Label the
+namespace with openshift.io/cluster-monitoring=true, and click Create.
+
+*** Install the Metering stack
+
+#+begin_example
+apiVersion: metering.openshift.io/v1
+kind: MeteringConfig
+metadata:
+  name: "operator-metering"
+spec:
+  unsupportedFeatures:
+    enableHDFS: true
+
+  storage:
+    type: "hive"
+    hive:
+      type: "hdfs"
+      hdfs:
+        # Leave this value as-is.
+        namenode: "hdfs-namenode-0.hdfs-namenode:9820"
+#+end_example
+
+*** Verify the installation
+
+#+begin_src bash
+oc -n openshift-metering get pods
+#+end_src
+
+#+begin_example
+# NAME                                READY   STATUS     RESTARTS   AGE
+# hdfs-datanode-0                     0/1     Init:0/2   0          12s
+# hdfs-namenode-0                     0/1     Init:0/1   0          11s
+# metering-operator-b979d6896-c44hq   2/2     Running    0          6m53s
+#+end_example
+
+#+begin_src bash
+oc -n openshift-metering get pods
+#+end_src
+
+#+begin_example
+# NAME                                  READY   STATUS    RESTARTS   AGE
+# hdfs-datanode-0                       1/1     Running   0          2m41s
+# hdfs-namenode-0                       1/1     Running   0          2m40s
+# hive-metastore-0                      1/2     Running   0          2m14s
+# hive-server-0                         2/3     Running   0          2m14s
+# metering-operator-b979d6896-c44hq     2/2     Running   0          9m22s
+# presto-coordinator-0                  2/2     Running   0          108s
+# reporting-operator-5fbb884699-pgxw2   1/2     Running   0          77s
+#+end_example
+
+#+begin_src bash
+oc get reportdatasources -n openshift-metering | grep -v raw
+#+end_src
+
+#+begin_example
+# NAME                                         EARLIEST METRIC   NEWEST METRIC   IMPORT START   IMPORT END   LAST IMPORT TIME   AGE
+# node-allocatable-cpu-cores                                                                                                    63s
+# node-allocatable-memory-bytes                                                                                                 63s
+# node-capacity-cpu-cores                                                                                                       63s
+# node-capacity-memory-bytes                                                                                                    63s
+# persistentvolumeclaim-capacity-bytes                                                                                          63s
+# persistentvolumeclaim-phase                                                                                                   63s
+# persistentvolumeclaim-request-bytes                                                                                           63s
+# persistentvolumeclaim-usage-bytes                                                                                             63s
+# pod-limit-cpu-cores                                                                                                           63s
+# pod-limit-memory-bytes                                                                                                        63s
+# pod-persistentvolumeclaim-request-info                                                                                        63s
+# pod-request-cpu-cores                                                                                                         63s
+# pod-request-memory-bytes                                                                                                      63s
+# pod-usage-cpu-cores                                                                                                           63s
+# pod-usage-memory-bytes                                                                                                        63s
+#+end_example
+
+#+begin_src bash
+oc get reportdatasources -n openshift-metering | grep -v raw
+#+end_src
+
+#+begin_example
+# NAME                                         EARLIEST METRIC        NEWEST METRIC          IMPORT START           IMPORT END             LAST IMPORT TIME       AGE
+# node-allocatable-cpu-cores                   2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T15:43:00Z   2m49s
+# node-allocatable-memory-bytes                2020-02-21T13:42:00Z   2020-02-21T14:17:00Z   2020-02-21T13:42:00Z   2020-02-21T14:17:00Z   2020-02-21T15:43:00Z   2m49s
+# node-capacity-cpu-cores                      2020-02-21T13:42:00Z   2020-02-21T14:23:00Z   2020-02-21T13:42:00Z   2020-02-21T14:23:00Z   2020-02-21T15:43:02Z   2m49s
+# node-capacity-memory-bytes                   2020-02-21T13:42:00Z   2020-02-21T14:17:00Z   2020-02-21T13:42:00Z   2020-02-21T14:17:00Z   2020-02-21T15:42:58Z   2m49s
+# persistentvolumeclaim-capacity-bytes         2020-02-21T13:42:00Z   2020-02-21T14:11:00Z   2020-02-21T13:42:00Z   2020-02-21T14:11:00Z   2020-02-21T15:42:52Z   2m49s
+# persistentvolumeclaim-phase                  2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T15:42:50Z   2m49s
+# persistentvolumeclaim-request-bytes          2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T15:42:54Z   2m49s
+# persistentvolumeclaim-usage-bytes            2020-02-21T13:41:00Z   2020-02-21T14:10:00Z   2020-02-21T13:41:00Z   2020-02-21T14:10:00Z   2020-02-21T15:42:58Z   2m49s
+# pod-limit-cpu-cores                          2020-02-21T13:41:00Z   2020-02-21T14:22:00Z   2020-02-21T13:41:00Z   2020-02-21T14:22:00Z   2020-02-21T15:42:51Z   2m49s
+# pod-limit-memory-bytes                       2020-02-21T13:42:00Z   2020-02-21T14:11:00Z   2020-02-21T13:42:00Z   2020-02-21T14:11:00Z   2020-02-21T15:42:54Z   2m49s
+# pod-persistentvolumeclaim-request-info       2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T13:41:00Z   2020-02-21T14:16:00Z   2020-02-21T15:42:55Z   2m49s
+# pod-request-cpu-cores                        2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T15:42:54Z   2m49s
+# pod-request-memory-bytes                     2020-02-21T13:41:00Z   2020-02-21T14:04:00Z   2020-02-21T13:41:00Z   2020-02-21T14:04:00Z   2020-02-21T15:42:50Z   2m49s
+# pod-usage-cpu-cores                          2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T15:42:53Z   2m49s
+# pod-usage-memory-bytes                       2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T15:42:57Z   2m49s
+#+end_example
+
+*** Writing Reports
+
+#+begin_src bash
+oc get reportqueries -n openshift-metering | grep -v raw
+#+end_src
+
+#+begin_example
+# NAME                                         AGE
+# cluster-cpu-capacity                         4m48s
+# cluster-cpu-usage                            4m48s
+# cluster-cpu-utilization                      4m48s
+# cluster-memory-capacity                      4m48s
+# cluster-memory-usage                         4m48s
+# cluster-memory-utilization                   4m48s
+# cluster-persistentvolumeclaim-request        4m47s
+# namespace-cpu-request                        4m47s
+# namespace-cpu-usage                          4m47s
+# namespace-cpu-utilization                    4m47s
+# namespace-memory-request                     4m47s
+# namespace-memory-usage                       4m47s
+# namespace-memory-utilization                 4m47s
+# namespace-persistentvolumeclaim-request      4m47s
+# namespace-persistentvolumeclaim-usage        4m47s
+# node-cpu-allocatable                         4m47s
+# node-cpu-capacity                            4m48s
+# node-cpu-utilization                         4m47s
+# node-memory-allocatable                      4m47s
+# node-memory-capacity                         4m47s
+# node-memory-utilization                      4m47s
+# persistentvolumeclaim-capacity               4m47s
+# persistentvolumeclaim-request                4m47s
+# persistentvolumeclaim-usage                  4m47s
+# pod-cpu-request                              4m47s
+# pod-cpu-usage                                4m47s
+# pod-memory-request                           4m47s
+# pod-memory-usage                             4m47s
+#+end_example
+
+*** Create Report with a Schedule
+
+#+begin_example
+apiVersion: metering.openshift.io/v1
+kind: Report
+metadata:
+  name: cluster-cpu-usage-hourly
+spec:
+  query: "cluster-cpu-usage"
+  schedule:
+    period: "hourly"
+#+end_example
+
+
+#+begin_src bash
+oc get reports -n openshift-metering
+#+end_src
+
+#+begin_example
+# NAME                       QUERY               SCHEDULE   RUNNING                  FAILED   LAST REPORT TIME   AGE
+# cluster-cpu-usage-hourly   cluster-cpu-usage   hourly     ReportingPeriodWaiting                               12s
+#+end_example
+
+*** Create One-Time Report
+
+#+begin_example
+apiVersion: metering.openshift.io/v1
+kind: Report
+metadata:
+  name: namespace-cpu-request-2020
+  namespace: openshift-metering
+spec:
+  query: namespace-cpu-request
+  reportingEnd: '2020-12-30T23:59:59Z'
+  reportingStart: '2020-01-01T00:00:00Z'
+  runImmediately: true
+#+end_example
+
+#+begin_src bash
+oc get reports -n openshift-metering
+#+end_src
+
+#+begin_example
+# NAME                         QUERY                   SCHEDULE   RUNNING                  FAILED   LAST REPORT TIME   AGE
+# cluster-cpu-usage-hourly     cluster-cpu-usage       hourly     ReportingPeriodWaiting                               109s
+# namespace-cpu-request-2020   namespace-cpu-request              RunImmediately                                       21s
+#+end_example
+#+begin_src bash
+oc get reports -n openshift-metering
+#+end_src
+
