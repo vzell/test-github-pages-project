@@ -465,3 +465,2186 @@ oc -n openshift-storage get pods
 # rook-ceph-operator-7c6c4fd77-k76jl   1/1     Running   0          2m23s
 #+end_example
 
+#+begin_src bash
+oc get nodes --show-labels | grep ocs | cut -d' ' -f1
+#+end_src
+
+#+begin_example
+# ip-10-0-131-190.us-east-2.compute.internal
+# ip-10-0-147-203.us-east-2.compute.internal
+# ip-10-0-174-204.us-east-2.compute.internal
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                 READY   STATUS    RESTARTS   AGE
+# noobaa-operator-7697b7b488-w7fqk     1/1     Running   0          6m22s
+# ocs-operator-55b5dd4d79-j9z75        1/1     Running   0          6m22s
+# rook-ceph-operator-7c6c4fd77-k76jl   1/1     Running   0          6m22s
+#+end_example
+Click create in OpenShift console
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                            READY   STATUS              RESTARTS   AGE
+# csi-cephfsplugin-c9k9s                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-f9hcs                          0/3     ContainerCreating   0          5s
+# csi-cephfsplugin-j4fkc                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-kv2nw                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-lbjj6                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-provisioner-647cd6996c-jdsf4   0/4     ContainerCreating   0          4s
+# csi-cephfsplugin-provisioner-647cd6996c-q45l9   0/4     ContainerCreating   0          4s
+# csi-cephfsplugin-q52sm                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-rkh44                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-xbb8b                          0/3     ContainerCreating   0          4s
+# csi-cephfsplugin-xwmrc                          0/3     ContainerCreating   0          4s
+# csi-rbdplugin-2f7zj                             0/3     ContainerCreating   0          4s
+# csi-rbdplugin-6tr5t                             0/3     ContainerCreating   0          5s
+# csi-rbdplugin-9tgfg                             0/3     ContainerCreating   0          5s
+# csi-rbdplugin-b8sbd                             0/3     ContainerCreating   0          4s
+# csi-rbdplugin-fh6xz                             0/3     ContainerCreating   0          4s
+# csi-rbdplugin-grd57                             0/3     ContainerCreating   0          4s
+# csi-rbdplugin-provisioner-6b8ff67dc4-4xjql      0/4     ContainerCreating   0          5s
+# csi-rbdplugin-provisioner-6b8ff67dc4-5z97f      0/4     ContainerCreating   0          4s
+# csi-rbdplugin-qwx8d                             0/3     ContainerCreating   0          4s
+# csi-rbdplugin-wljmn                             0/3     ContainerCreating   0          5s
+# csi-rbdplugin-xvr92                             0/3     ContainerCreating   0          4s
+# noobaa-operator-7697b7b488-w7fqk                1/1     Running             0          6m55s
+# ocs-operator-55b5dd4d79-j9z75                   1/1     Running             0          6m55s
+# rook-ceph-operator-7c6c4fd77-k76jl              1/1     Running             0          6m55s
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                            READY   STATUS              RESTARTS   AGE
+# csi-cephfsplugin-c9k9s                          0/3     ContainerCreating   0          36s
+# csi-cephfsplugin-f9hcs                          3/3     Running             0          37s
+# csi-cephfsplugin-j4fkc                          0/3     ContainerCreating   0          36s
+# csi-cephfsplugin-kv2nw                          3/3     Running             0          36s
+# csi-cephfsplugin-lbjj6                          0/3     ContainerCreating   0          36s
+# csi-cephfsplugin-provisioner-647cd6996c-jdsf4   0/4     ContainerCreating   0          36s
+# csi-cephfsplugin-provisioner-647cd6996c-q45l9   4/4     Running             0          36s
+# csi-cephfsplugin-q52sm                          0/3     ContainerCreating   0          36s
+# csi-cephfsplugin-rkh44                          3/3     Running             0          36s
+# csi-cephfsplugin-xbb8b                          0/3     ContainerCreating   0          36s
+# csi-cephfsplugin-xwmrc                          3/3     Running             0          36s
+# csi-rbdplugin-2f7zj                             0/3     ContainerCreating   0          36s
+# csi-rbdplugin-6tr5t                             0/3     ContainerCreating   0          37s
+# csi-rbdplugin-9tgfg                             3/3     Running             0          37s
+# csi-rbdplugin-b8sbd                             0/3     ContainerCreating   0          36s
+# csi-rbdplugin-fh6xz                             3/3     Running             0          36s
+# csi-rbdplugin-grd57                             3/3     Running             0          36s
+# csi-rbdplugin-provisioner-6b8ff67dc4-4xjql      4/4     Running             0          37s
+# csi-rbdplugin-provisioner-6b8ff67dc4-5z97f      0/4     ContainerCreating   0          36s
+# csi-rbdplugin-qwx8d                             0/3     ContainerCreating   0          36s
+# csi-rbdplugin-wljmn                             3/3     Running             0          37s
+# csi-rbdplugin-xvr92                             0/3     ContainerCreating   0          36s
+# noobaa-operator-7697b7b488-w7fqk                1/1     Running             0          7m27s
+# ocs-operator-55b5dd4d79-j9z75                   0/1     Running             0          7m27s
+# rook-ceph-detect-version-mlrgr                  0/1     PodInitializing     0          30s
+# rook-ceph-operator-7c6c4fd77-k76jl              1/1     Running             0          7m27s
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                            READY   STATUS     RESTARTS   AGE
+# csi-cephfsplugin-c9k9s                          3/3     Running    0          2m10s
+# csi-cephfsplugin-f9hcs                          3/3     Running    0          2m11s
+# csi-cephfsplugin-j4fkc                          3/3     Running    0          2m10s
+# csi-cephfsplugin-kv2nw                          3/3     Running    0          2m10s
+# csi-cephfsplugin-lbjj6                          3/3     Running    0          2m10s
+# csi-cephfsplugin-provisioner-647cd6996c-jdsf4   4/4     Running    0          2m10s
+# csi-cephfsplugin-provisioner-647cd6996c-q45l9   4/4     Running    0          2m10s
+# csi-cephfsplugin-q52sm                          3/3     Running    0          2m10s
+# csi-cephfsplugin-rkh44                          3/3     Running    0          2m10s
+# csi-cephfsplugin-xbb8b                          3/3     Running    0          2m10s
+# csi-cephfsplugin-xwmrc                          3/3     Running    0          2m10s
+# csi-rbdplugin-2f7zj                             3/3     Running    0          2m10s
+# csi-rbdplugin-6tr5t                             3/3     Running    0          2m11s
+# csi-rbdplugin-9tgfg                             3/3     Running    0          2m11s
+# csi-rbdplugin-b8sbd                             3/3     Running    0          2m10s
+# csi-rbdplugin-fh6xz                             3/3     Running    0          2m10s
+# csi-rbdplugin-grd57                             3/3     Running    0          2m10s
+# csi-rbdplugin-provisioner-6b8ff67dc4-4xjql      4/4     Running    0          2m11s
+# csi-rbdplugin-provisioner-6b8ff67dc4-5z97f      4/4     Running    0          2m10s
+# csi-rbdplugin-qwx8d                             3/3     Running    0          2m10s
+# csi-rbdplugin-wljmn                             3/3     Running    0          2m11s
+# csi-rbdplugin-xvr92                             3/3     Running    0          2m10s
+# noobaa-operator-7697b7b488-w7fqk                1/1     Running    0          9m1s
+# ocs-operator-55b5dd4d79-j9z75                   0/1     Running    0          9m1s
+# rook-ceph-mon-a-6c7d8bbc5b-fv6g5                1/1     Running    0          61s
+# rook-ceph-mon-b-657d966977-ds9pb                1/1     Running    0          38s
+# rook-ceph-mon-c-58c5f47974-bdm2g                0/1     Init:0/2   0          4s
+# rook-ceph-operator-7c6c4fd77-k76jl              1/1     Running    0          9m1s
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                                              READY   STATUS      RESTARTS   AGE
+# csi-cephfsplugin-c9k9s                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-f9hcs                                            3/3     Running     0          5m38s
+# csi-cephfsplugin-j4fkc                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-kv2nw                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-lbjj6                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-provisioner-647cd6996c-jdsf4                     4/4     Running     0          5m37s
+# csi-cephfsplugin-provisioner-647cd6996c-q45l9                     4/4     Running     0          5m37s
+# csi-cephfsplugin-q52sm                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-rkh44                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-xbb8b                                            3/3     Running     0          5m37s
+# csi-cephfsplugin-xwmrc                                            3/3     Running     0          5m37s
+# csi-rbdplugin-2f7zj                                               3/3     Running     0          5m37s
+# csi-rbdplugin-6tr5t                                               3/3     Running     0          5m38s
+# csi-rbdplugin-9tgfg                                               3/3     Running     0          5m38s
+# csi-rbdplugin-b8sbd                                               3/3     Running     0          5m37s
+# csi-rbdplugin-fh6xz                                               3/3     Running     0          5m37s
+# csi-rbdplugin-grd57                                               3/3     Running     0          5m37s
+# csi-rbdplugin-provisioner-6b8ff67dc4-4xjql                        4/4     Running     0          5m38s
+# csi-rbdplugin-provisioner-6b8ff67dc4-5z97f                        4/4     Running     0          5m37s
+# csi-rbdplugin-qwx8d                                               3/3     Running     0          5m37s
+# csi-rbdplugin-wljmn                                               3/3     Running     0          5m38s
+# csi-rbdplugin-xvr92                                               3/3     Running     0          5m37s
+# noobaa-core-0                                                     2/2     Running     0          113s
+# noobaa-operator-7697b7b488-w7fqk                                  1/1     Running     0          12m
+# ocs-operator-55b5dd4d79-j9z75                                     0/1     Running     0          12m
+# rook-ceph-drain-canary-394b22bae7457d3ad4d30d2cc3859f93-84mqgzx   1/1     Running     0          119s
+# rook-ceph-drain-canary-b09e5f36ba368752334f340d47e24fee-96r2wmt   1/1     Running     0          2m
+# rook-ceph-drain-canary-b3da251966d747eebc14ed058dcd1838-59j7bnq   1/1     Running     0          2m8s
+# rook-ceph-mds-ocs-storagecluster-cephfilesystem-a-675c6476m5bhg   1/1     Running     0          108s
+# rook-ceph-mds-ocs-storagecluster-cephfilesystem-b-5cc7fd7fvvvkk   1/1     Running     0          107s
+# rook-ceph-mgr-a-5bcdb86666-gxw5f                                  1/1     Running     0          2m54s
+# rook-ceph-mon-a-6c7d8bbc5b-fv6g5                                  1/1     Running     0          4m28s
+# rook-ceph-mon-b-657d966977-ds9pb                                  1/1     Running     0          4m5s
+# rook-ceph-mon-c-58c5f47974-bdm2g                                  1/1     Running     0          3m31s
+# rook-ceph-operator-7c6c4fd77-k76jl                                1/1     Running     0          12m
+# rook-ceph-osd-0-54d86bc475-kbjdb                                  1/1     Running     0          2m8s
+# rook-ceph-osd-1-5f56fcff97-cnbrg                                  1/1     Running     0          2m
+# rook-ceph-osd-2-5d6b876dd7-hw29d                                  1/1     Running     0          119s
+# rook-ceph-osd-prepare-ocs-deviceset-0-0-qdn6p-t7bn8               0/1     Completed   0          2m33s
+# rook-ceph-osd-prepare-ocs-deviceset-1-0-x7hnz-q7f6g               0/1     Completed   0          2m33s
+# rook-ceph-osd-prepare-ocs-deviceset-2-0-rxlj7-sgrhl               0/1     Completed   0          2m32s
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get sc
+#+end_src
+
+#+begin_example
+# NAME                          PROVISIONER                             AGE
+# gp2 (default)                 kubernetes.io/aws-ebs                   39h
+# ocs-storagecluster-ceph-rbd   openshift-storage.rbd.csi.ceph.com      13m
+# ocs-storagecluster-cephfs     openshift-storage.cephfs.csi.ceph.com   13m
+# openshift-storage.noobaa.io   openshift-storage.noobaa.io/obc         7m55s
+#+end_example
+#+begin_src bash
+cat ~/test/support/ocslab_toolbox.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: rook-ceph-tools
+#   namespace: openshift-storage
+#   labels:
+#     app: rook-ceph-tools
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: rook-ceph-tools
+#   template:
+#     metadata:
+#       labels:
+#         app: rook-ceph-tools
+#     spec:
+#       dnsPolicy: ClusterFirstWithHostNet
+#       containers:
+#       - name: rook-ceph-tools
+#         image: rook/ceph:v1.1.8
+#         command: ["/tini"]
+#         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
+#         imagePullPolicy: IfNotPresent
+#         env:
+#           - name: ROOK_ADMIN_SECRET
+#             valueFrom:
+#               secretKeyRef:
+#                 name: rook-ceph-mon
+#                 key: admin-secret
+#         securityContext:
+#           privileged: true
+#         volumeMounts:
+#           - mountPath: /dev
+#             name: dev
+#           - mountPath: /sys/bus
+#             name: sysbus
+#           - mountPath: /lib/modules
+#             name: libmodules
+#           - name: mon-endpoint-volume
+#             mountPath: /etc/rook
+#       # if hostNetwork: false, the "rbd map" command hangs, see https://github.com/rook/rook/issues/2021
+#       hostNetwork: true
+#       volumes:
+#         - name: dev
+#           hostPath:
+#             path: /dev
+#         - name: sysbus
+#           hostPath:
+#             path: /sys/bus
+#         - name: libmodules
+#           hostPath:
+#             path: /lib/modules
+#         - name: mon-endpoint-volume
+#           configMap:
+#             name: rook-ceph-mon-endpoints
+#             items:
+#             - key: data
+#               path: mon-endpoints
+#+end_example
+
+#+begin_src bash
+oc apply -f ~/test/support/ocslab_toolbox.yaml
+#+end_src
+
+#+begin_example
+# deployment.apps/rook-ceph-tools created
+#+end_example
+
+#+begin_src bash
+TOOLS_POD=$(oc get pods -n openshift-storage -l app=rook-ceph-tools -o name)
+oc rsh -n openshift-storage $TOOLS_POD
+#+end_src
+
+#+begin_example
+# [lab-user@clientvm 0 ~/test master|✚1…2]$ sh-4.2# 
+# 
+#+end_example
+
+#+begin_src bash
+ceph status
+#+end_src
+
+#+begin_example
+# ceph status
+#   cluster:
+#     id:     cede185f-f780-4daa-a4cf-96fe25d736a4
+#     health: HEALTH_OK
+#  
+#   services:
+#     mon: 3 daemons, quorum a,b,c (age 15m)
+#     mgr: a(active, since 15m)
+#     mds: ocs-storagecluster-cephfilesystem:1 {0=ocs-storagecluster-cephfilesystem-a=up:active} 1 up:standby-replay
+#     osd: 3 osds: 3 up (since 14m), 3 in (since 14m)
+#  
+#   data:
+#     pools:   3 pools, 24 pgs
+#     objects: 89 objects, 78 MiB
+#     usage:   3.1 GiB used, 3.0 TiB / 3.0 TiB avail
+#     pgs:     24 active+clean
+#  
+#   io:
+#     client:   853 B/s rd, 8.0 KiB/s wr, 1 op/s rd, 0 op/s wr
+#  
+#+end_example
+
+#+begin_src bash
+ceph osd status
+#+end_src
+
+#+begin_example
+# ceph osd status
+# +----+--------------------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+# | id |                    host                    |  used | avail | wr ops | wr data | rd ops | rd data |   state   |
+# +----+--------------------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+# | 0  | ip-10-0-174-204.us-east-2.compute.internal | 1045M | 1021G |    0   |  4096   |    0   |     0   | exists,up |
+# | 1  | ip-10-0-131-190.us-east-2.compute.internal | 1045M | 1021G |    1   |  4915   |    2   |   106   | exists,up |
+# | 2  | ip-10-0-147-203.us-east-2.compute.internal | 1045M | 1021G |    0   |  2457   |    0   |     0   | exists,up |
+# +----+--------------------------------------------+-------+-------+--------+---------+--------+---------+-----------+
+#+end_example
+
+#+begin_src bash
+ceph osd tree
+#+end_src
+
+#+begin_example
+# ceph osd tree
+# ID  CLASS WEIGHT  TYPE NAME                                STATUS REWEIGHT PRI-AFF 
+#  -1       2.99698 root default                                                     
+#  -5       2.99698     region us-east-2                                             
+# -10       0.99899         zone us-east-2a                                          
+#  -9       0.99899             host ocs-deviceset-1-0-x7hnz                         
+#   1   ssd 0.99899                 osd.1                        up  1.00000 1.00000 
+# -14       0.99899         zone us-east-2b                                          
+# -13       0.99899             host ocs-deviceset-2-0-rxlj7                         
+#   2   ssd 0.99899                 osd.2                        up  1.00000 1.00000 
+#  -4       0.99899         zone us-east-2c                                          
+#  -3       0.99899             host ocs-deviceset-0-0-qdn6p                         
+#   0   ssd 0.99899                 osd.0                        up  1.00000 1.00000 
+#+end_example
+
+#+begin_src bash
+ceph df
+#+end_src
+
+#+begin_example
+# ceph df
+# RAW STORAGE:
+#     CLASS     SIZE        AVAIL       USED       RAW USED     %RAW USED 
+#     ssd       3.0 TiB     3.0 TiB     67 MiB      3.1 GiB          0.10 
+#     TOTAL     3.0 TiB     3.0 TiB     67 MiB      3.1 GiB          0.10 
+#  
+# POOLS:
+#     POOL                                           ID     STORED      OBJECTS     USED        %USED     MAX AVAIL 
+#     ocs-storagecluster-cephblockpool                1      21 MiB          67      64 MiB         0       971 GiB 
+#     ocs-storagecluster-cephfilesystem-metadata      2     2.2 KiB          22     384 KiB         0       971 GiB 
+#     ocs-storagecluster-cephfilesystem-data0         3         0 B           0         0 B         0       971 GiB 
+#+end_example
+
+#+begin_src bash
+rados df
+#+end_src
+
+#+begin_example
+# rados df
+# POOL_NAME                                     USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS      RD WR_OPS     WR USED COMPR UNDER COMPR 
+# ocs-storagecluster-cephblockpool            65 MiB      67      0    201                  0       0        0    118 1.2 MiB   2444 29 MiB        0 B         0 B 
+# ocs-storagecluster-cephfilesystem-data0        0 B       0      0      0                  0       0        0      0     0 B      0    0 B        0 B         0 B 
+# ocs-storagecluster-cephfilesystem-metadata 384 KiB      22      0     66                  0       0        0   1938 973 KiB     45 13 KiB        0 B         0 B 
+# 
+# total_objects    89
+# total_used       3.1 GiB
+# total_avail      3.0 TiB
+# total_space      3.0 TiB
+#+end_example
+
+#+begin_src bash
+ceph versions
+#+end_src
+
+#+begin_example
+# ceph versions
+# {
+#     "mon": {
+#         "ceph version 14.2.4-69.el8cp (8d72f97ca776c758a7ce0009959ca3044cd0b9c2) nautilus (stable)": 3
+#     },
+#     "mgr": {
+#         "ceph version 14.2.4-69.el8cp (8d72f97ca776c758a7ce0009959ca3044cd0b9c2) nautilus (stable)": 1
+#     },
+#     "osd": {
+#         "ceph version 14.2.4-69.el8cp (8d72f97ca776c758a7ce0009959ca3044cd0b9c2) nautilus (stable)": 3
+#     },
+#     "mds": {
+#         "ceph version 14.2.4-69.el8cp (8d72f97ca776c758a7ce0009959ca3044cd0b9c2) nautilus (stable)": 2
+#     },
+#     "overall": {
+#         "ceph version 14.2.4-69.el8cp (8d72f97ca776c758a7ce0009959ca3044cd0b9c2) nautilus (stable)": 9
+#     }
+# }
+#+end_example
+
+#+begin_src bash
+exit
+#+end_src
+
+** Create a new OCP application deployment using Ceph RBD volume
+
+#+begin_src bash
+curl https://raw.githubusercontent.com/red-hat-storage/ocs-training/master/ocp4ocs4/configurable-rails-app.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: template.openshift.io/v1
+# kind: Template
+# labels:
+#   app: rails-pgsql-persistent-storageclass
+#   template: rails-pgsql-persistent-storageclass
+# message: |-
+#   The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
+# 
+#   For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# metadata:
+#   annotations:
+#     description: An example Rails application with a PostgreSQL database. For more
+#       information about using this template, including OpenShift considerations, see
+#       https://github.com/sclorg/rails-ex/blob/master/README.md.
+#     iconClass: icon-ruby
+#     openshift.io/display-name: Rails + PostgreSQL + Congigigurable StorageClass
+#     openshift.io/documentation-url: https://github.com/sclorg/rails-ex
+#     openshift.io/long-description: This template defines resources needed to develop
+#       a Rails application, including a build configuration, application deployment
+#       configuration, and database deployment configuration.
+#     openshift.io/provider-display-name: Red Hat, Inc.
+#     openshift.io/support-url: https://access.redhat.com
+#     samples.operator.openshift.io/version: 4.2.4
+#     tags: quickstart,ruby,rails
+#     template.openshift.io/bindable: "false"
+#   labels:
+#     samples.operator.openshift.io/managed: "true"
+#   name: rails-pgsql-persistent-storageclass
+# objects:
+# - apiVersion: v1
+#   kind: Secret
+#   metadata:
+#     name: ${NAME}
+#   stringData:
+#     application-password: ${APPLICATION_PASSWORD}
+#     application-user: ${APPLICATION_USER}
+#     database-password: ${DATABASE_PASSWORD}
+#     database-user: ${DATABASE_USER}
+#     keybase: ${SECRET_KEY_BASE}
+# - apiVersion: v1
+#   kind: Service
+#   metadata:
+#     annotations:
+#       description: Exposes and load balances the application pods
+#       service.alpha.openshift.io/dependencies: '[{"name": "${DATABASE_SERVICE_NAME}",
+#         "kind": "Service"}]'
+#     name: ${NAME}
+#   spec:
+#     ports:
+#     - name: web
+#       port: 8080
+#       targetPort: 8080
+#     selector:
+#       name: ${NAME}
+# - apiVersion: v1
+#   kind: Route
+#   metadata:
+#     name: ${NAME}
+#   spec:
+#     host: ${APPLICATION_DOMAIN}
+#     to:
+#       kind: Service
+#       name: ${NAME}
+# - apiVersion: v1
+#   kind: ImageStream
+#   metadata:
+#     annotations:
+#       description: Keeps track of changes in the application image
+#     name: ${NAME}
+# - apiVersion: v1
+#   kind: BuildConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to build the application
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${NAME}
+#   spec:
+#     output:
+#       to:
+#         kind: ImageStreamTag
+#         name: ${NAME}:latest
+#     postCommit:
+#       script: bundle exec rake test
+#     source:
+#       contextDir: ${CONTEXT_DIR}
+#       git:
+#         ref: ${SOURCE_REPOSITORY_REF}
+#         uri: ${SOURCE_REPOSITORY_URL}
+#       type: Git
+#     strategy:
+#       sourceStrategy:
+#         env:
+#         - name: RUBYGEM_MIRROR
+#           value: ${RUBYGEM_MIRROR}
+#         from:
+#           kind: ImageStreamTag
+#           name: ruby:2.5
+#           namespace: ${NAMESPACE}
+#       type: Source
+#     triggers:
+#     - type: ImageChange
+#     - type: ConfigChange
+#     - github:
+#         secret: ${GITHUB_WEBHOOK_SECRET}
+#       type: GitHub
+# - apiVersion: v1
+#   kind: DeploymentConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to deploy the application server
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${NAME}
+#   spec:
+#     replicas: 1
+#     selector:
+#       name: ${NAME}
+#     strategy:
+#       recreateParams:
+#         pre:
+#           execNewPod:
+#             command:
+#             - ./migrate-database.sh
+#             containerName: ${NAME}
+#           failurePolicy: Abort
+#       type: Recreate
+#     template:
+#       metadata:
+#         labels:
+#           name: ${NAME}
+#         name: ${NAME}
+#       spec:
+#         containers:
+#         - env:
+#           - name: DATABASE_SERVICE_NAME
+#             value: ${DATABASE_SERVICE_NAME}
+#           - name: POSTGRESQL_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-user
+#                 name: ${NAME}
+#           - name: POSTGRESQL_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-password
+#                 name: ${NAME}
+#           - name: SECRET_KEY_BASE
+#             valueFrom:
+#               secretKeyRef:
+#                 key: keybase
+#                 name: ${NAME}
+#           - name: POSTGRESQL_DATABASE
+#             value: ${DATABASE_NAME}
+#           - name: POSTGRESQL_MAX_CONNECTIONS
+#             value: ${POSTGRESQL_MAX_CONNECTIONS}
+#           - name: POSTGRESQL_SHARED_BUFFERS
+#             value: ${POSTGRESQL_SHARED_BUFFERS}
+#           - name: APPLICATION_DOMAIN
+#             value: ${APPLICATION_DOMAIN}
+#           - name: APPLICATION_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: application-user
+#                 name: ${NAME}
+#           - name: APPLICATION_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: application-password
+#                 name: ${NAME}
+#           - name: RAILS_ENV
+#             value: ${RAILS_ENV}
+#           image: ' '
+#           livenessProbe:
+#             httpGet:
+#               path: /articles
+#               port: 8080
+#             initialDelaySeconds: 10
+#             timeoutSeconds: 3
+#           name: ${NAME}
+#           ports:
+#           - containerPort: 8080
+#           readinessProbe:
+#             httpGet:
+#               path: /articles
+#               port: 8080
+#             initialDelaySeconds: 5
+#             timeoutSeconds: 3
+#           resources:
+#             limits:
+#               memory: ${MEMORY_LIMIT}
+#     triggers:
+#     - imageChangeParams:
+#         automatic: true
+#         containerNames:
+#         - ${NAME}
+#         from:
+#           kind: ImageStreamTag
+#           name: ${NAME}:latest
+#       type: ImageChange
+#     - type: ConfigChange
+# - apiVersion: v1
+#   kind: PersistentVolumeClaim
+#   metadata:
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     storageClassName: ${STORAGE_CLASS}
+#     resources:
+#       requests:
+#         storage: ${VOLUME_CAPACITY}
+# - apiVersion: v1
+#   kind: Service
+#   metadata:
+#     annotations:
+#       description: Exposes the database server
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     ports:
+#     - name: postgresql
+#       port: 5432
+#       targetPort: 5432
+#     selector:
+#       name: ${DATABASE_SERVICE_NAME}
+# - apiVersion: v1
+#   kind: DeploymentConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to deploy the database
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     replicas: 1
+#     selector:
+#       name: ${DATABASE_SERVICE_NAME}
+#     strategy:
+#       type: Recreate
+#     template:
+#       metadata:
+#         labels:
+#           name: ${DATABASE_SERVICE_NAME}
+#         name: ${DATABASE_SERVICE_NAME}
+#       spec:
+#         containers:
+#         - env:
+#           - name: POSTGRESQL_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-user
+#                 name: ${NAME}
+#           - name: POSTGRESQL_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-password
+#                 name: ${NAME}
+#           - name: POSTGRESQL_DATABASE
+#             value: ${DATABASE_NAME}
+#           - name: POSTGRESQL_MAX_CONNECTIONS
+#             value: ${POSTGRESQL_MAX_CONNECTIONS}
+#           - name: POSTGRESQL_SHARED_BUFFERS
+#             value: ${POSTGRESQL_SHARED_BUFFERS}
+#           image: ' '
+#           livenessProbe:
+#             exec:
+#               command:
+#               - /usr/libexec/check-container
+#               - --live
+#             initialDelaySeconds: 120
+#             timeoutSeconds: 10
+#           name: postgresql
+#           ports:
+#           - containerPort: 5432
+#           readinessProbe:
+#             exec:
+#               command:
+#               - /usr/libexec/check-container
+#             initialDelaySeconds: 5
+#             timeoutSeconds: 1
+#           resources:
+#             limits:
+#               memory: ${MEMORY_POSTGRESQL_LIMIT}
+#           volumeMounts:
+#           - mountPath: /var/lib/pgsql/data
+#             name: ${DATABASE_SERVICE_NAME}-data
+#         volumes:
+#         - name: ${DATABASE_SERVICE_NAME}-data
+#           persistentVolumeClaim:
+#             claimName: ${DATABASE_SERVICE_NAME}
+#     triggers:
+#     - imageChangeParams:
+#         automatic: true
+#         containerNames:
+#         - postgresql
+#         from:
+#           kind: ImageStreamTag
+#           name: postgresql:10
+#           namespace: ${NAMESPACE}
+#       type: ImageChange
+#     - type: ConfigChange
+# parameters:
+# - description: The name assigned to all of the frontend objects defined in this template.
+#   displayName: Name
+#   name: NAME
+#   required: true
+#   value: rails-pgsql-persistent
+# - description: The OpenShift Namespace where the ImageStream resides.
+#   displayName: Namespace
+#   name: NAMESPACE
+#   required: true
+#   value: openshift
+# - description: Maximum amount of memory the Rails container can use.
+#   displayName: Memory Limit
+#   name: MEMORY_LIMIT
+#   required: true
+#   value: 512Mi
+# - description: Maximum amount of memory the PostgreSQL container can use.
+#   displayName: Memory Limit (PostgreSQL)
+#   name: MEMORY_POSTGRESQL_LIMIT
+#   required: true
+#   value: 512Mi
+# - description: Volume space available for data, e.g. 512Mi, 2Gi
+#   displayName: Volume Capacity
+#   name: VOLUME_CAPACITY
+#   required: true
+#   value: 1Gi
+# - description: Storage Class used to provision Persistent Volume
+#   displayName: Volume Storage Class
+#   name: STORAGE_CLASS
+#   required: true
+#   value: gp2
+# - description: The URL of the repository with your application source code.
+#   displayName: Git Repository URL
+#   name: SOURCE_REPOSITORY_URL
+#   required: true
+#   value: https://github.com/sclorg/rails-ex.git
+# - description: Set this to a branch name, tag or other ref of your repository if you
+#     are not using the default branch.
+#   displayName: Git Reference
+#   name: SOURCE_REPOSITORY_REF
+# - description: Set this to the relative path to your project if it is not in the root
+#     of your repository.
+#   displayName: Context Directory
+#   name: CONTEXT_DIR
+# - description: The exposed hostname that will route to the Rails service, if left
+#     blank a value will be defaulted.
+#   displayName: Application Hostname
+#   name: APPLICATION_DOMAIN
+# - description: Github trigger secret.  A difficult to guess string encoded as part
+#     of the webhook URL.  Not encrypted.
+#   displayName: GitHub Webhook Secret
+#   from: '[a-zA-Z0-9]{40}'
+#   generate: expression
+#   name: GITHUB_WEBHOOK_SECRET
+# - description: Your secret key for verifying the integrity of signed cookies.
+#   displayName: Secret Key
+#   from: '[a-z0-9]{127}'
+#   generate: expression
+#   name: SECRET_KEY_BASE
+# - description: The application user that is used within the sample application to
+#     authorize access on pages.
+#   displayName: Application Username
+#   name: APPLICATION_USER
+#   required: true
+#   value: openshift
+# - description: The application password that is used within the sample application
+#     to authorize access on pages.
+#   displayName: Application Password
+#   name: APPLICATION_PASSWORD
+#   required: true
+#   value: secret
+# - description: Environment under which the sample application will run. Could be set
+#     to production, development or test.
+#   displayName: Rails Environment
+#   name: RAILS_ENV
+#   required: true
+#   value: production
+# - displayName: Database Service Name
+#   name: DATABASE_SERVICE_NAME
+#   required: true
+#   value: postgresql
+# - displayName: Database Username
+#   from: user[A-Z0-9]{3}
+#   generate: expression
+#   name: DATABASE_USER
+# - displayName: Database Password
+#   from: '[a-zA-Z0-9]{8}'
+#   generate: expression
+#   name: DATABASE_PASSWORD
+# - displayName: Database Name
+#   name: DATABASE_NAME
+#   required: true
+#   value: root
+# - displayName: Maximum Database Connections
+#   name: POSTGRESQL_MAX_CONNECTIONS
+#   value: "100"
+# - displayName: Shared Buffer Amount
+#   name: POSTGRESQL_SHARED_BUFFERS
+#   value: 12MB
+# - description: The custom RubyGems mirror URL
+#   displayName: Custom RubyGems Mirror URL
+#   name: RUBYGEM_MIRROR
+#+end_example
+
+#+begin_src bash
+oc new-project my-database-app
+#+end_src
+
+#+begin_example
+# Now using project "my-database-app" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
+
+#+begin_src bash
+cat ~/test/support/ocslab_rails-app.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: template.openshift.io/v1
+# kind: Template
+# labels:
+#   app: rails-pgsql-persistent-storageclass
+#   template: rails-pgsql-persistent-storageclass
+# message: |-
+#   The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
+# 
+#   For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# metadata:
+#   annotations:
+#     description: An example Rails application with a PostgreSQL database. For more
+#       information about using this template, including OpenShift considerations, see
+#       https://github.com/sclorg/rails-ex/blob/master/README.md.
+#     iconClass: icon-ruby
+#     openshift.io/display-name: Rails + PostgreSQL + Congigigurable StorageClass
+#     openshift.io/documentation-url: https://github.com/sclorg/rails-ex
+#     openshift.io/long-description: This template defines resources needed to develop
+#       a Rails application, including a build configuration, application deployment
+#       configuration, and database deployment configuration.
+#     openshift.io/provider-display-name: Red Hat, Inc.
+#     openshift.io/support-url: https://access.redhat.com
+#     samples.operator.openshift.io/version: 4.2.4
+#     tags: quickstart,ruby,rails
+#     template.openshift.io/bindable: "false"
+#   labels:
+#     samples.operator.openshift.io/managed: "true"
+#   name: rails-pgsql-persistent-storageclass
+# objects:
+# - apiVersion: v1
+#   kind: Secret
+#   metadata:
+#     name: ${NAME}
+#   stringData:
+#     application-password: ${APPLICATION_PASSWORD}
+#     application-user: ${APPLICATION_USER}
+#     database-password: ${DATABASE_PASSWORD}
+#     database-user: ${DATABASE_USER}
+#     keybase: ${SECRET_KEY_BASE}
+# - apiVersion: v1
+#   kind: Service
+#   metadata:
+#     annotations:
+#       description: Exposes and load balances the application pods
+#       service.alpha.openshift.io/dependencies: '[{"name": "${DATABASE_SERVICE_NAME}",
+#         "kind": "Service"}]'
+#     name: ${NAME}
+#   spec:
+#     ports:
+#     - name: web
+#       port: 8080
+#       targetPort: 8080
+#     selector:
+#       name: ${NAME}
+# - apiVersion: v1
+#   kind: Route
+#   metadata:
+#     name: ${NAME}
+#   spec:
+#     host: ${APPLICATION_DOMAIN}
+#     to:
+#       kind: Service
+#       name: ${NAME}
+# - apiVersion: v1
+#   kind: ImageStream
+#   metadata:
+#     annotations:
+#       description: Keeps track of changes in the application image
+#     name: ${NAME}
+# - apiVersion: v1
+#   kind: BuildConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to build the application
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${NAME}
+#   spec:
+#     output:
+#       to:
+#         kind: ImageStreamTag
+#         name: ${NAME}:latest
+#     postCommit:
+#       script: bundle exec rake test
+#     source:
+#       contextDir: ${CONTEXT_DIR}
+#       git:
+#         ref: ${SOURCE_REPOSITORY_REF}
+#         uri: ${SOURCE_REPOSITORY_URL}
+#       type: Git
+#     strategy:
+#       sourceStrategy:
+#         env:
+#         - name: RUBYGEM_MIRROR
+#           value: ${RUBYGEM_MIRROR}
+#         from:
+#           kind: ImageStreamTag
+#           name: ruby:2.5
+#           namespace: ${NAMESPACE}
+#       type: Source
+#     triggers:
+#     - type: ImageChange
+#     - type: ConfigChange
+#     - github:
+#         secret: ${GITHUB_WEBHOOK_SECRET}
+#       type: GitHub
+# - apiVersion: v1
+#   kind: DeploymentConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to deploy the application server
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${NAME}
+#   spec:
+#     replicas: 1
+#     selector:
+#       name: ${NAME}
+#     strategy:
+#       recreateParams:
+#         pre:
+#           execNewPod:
+#             command:
+#             - ./migrate-database.sh
+#             containerName: ${NAME}
+#           failurePolicy: Abort
+#       type: Recreate
+#     template:
+#       metadata:
+#         labels:
+#           name: ${NAME}
+#         name: ${NAME}
+#       spec:
+#         containers:
+#         - env:
+#           - name: DATABASE_SERVICE_NAME
+#             value: ${DATABASE_SERVICE_NAME}
+#           - name: POSTGRESQL_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-user
+#                 name: ${NAME}
+#           - name: POSTGRESQL_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-password
+#                 name: ${NAME}
+#           - name: SECRET_KEY_BASE
+#             valueFrom:
+#               secretKeyRef:
+#                 key: keybase
+#                 name: ${NAME}
+#           - name: POSTGRESQL_DATABASE
+#             value: ${DATABASE_NAME}
+#           - name: POSTGRESQL_MAX_CONNECTIONS
+#             value: ${POSTGRESQL_MAX_CONNECTIONS}
+#           - name: POSTGRESQL_SHARED_BUFFERS
+#             value: ${POSTGRESQL_SHARED_BUFFERS}
+#           - name: APPLICATION_DOMAIN
+#             value: ${APPLICATION_DOMAIN}
+#           - name: APPLICATION_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: application-user
+#                 name: ${NAME}
+#           - name: APPLICATION_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: application-password
+#                 name: ${NAME}
+#           - name: RAILS_ENV
+#             value: ${RAILS_ENV}
+#           image: ' '
+#           livenessProbe:
+#             httpGet:
+#               path: /articles
+#               port: 8080
+#             initialDelaySeconds: 10
+#             timeoutSeconds: 3
+#           name: ${NAME}
+#           ports:
+#           - containerPort: 8080
+#           readinessProbe:
+#             httpGet:
+#               path: /articles
+#               port: 8080
+#             initialDelaySeconds: 5
+#             timeoutSeconds: 3
+#           resources:
+#             limits:
+#               memory: ${MEMORY_LIMIT}
+#     triggers:
+#     - imageChangeParams:
+#         automatic: true
+#         containerNames:
+#         - ${NAME}
+#         from:
+#           kind: ImageStreamTag
+#           name: ${NAME}:latest
+#       type: ImageChange
+#     - type: ConfigChange
+# - apiVersion: v1
+#   kind: PersistentVolumeClaim
+#   metadata:
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     accessModes:
+#     - ReadWriteOnce
+#     storageClassName: ${STORAGE_CLASS}
+#     resources:
+#       requests:
+#         storage: ${VOLUME_CAPACITY}
+# - apiVersion: v1
+#   kind: Service
+#   metadata:
+#     annotations:
+#       description: Exposes the database server
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     ports:
+#     - name: postgresql
+#       port: 5432
+#       targetPort: 5432
+#     selector:
+#       name: ${DATABASE_SERVICE_NAME}
+# - apiVersion: v1
+#   kind: DeploymentConfig
+#   metadata:
+#     annotations:
+#       description: Defines how to deploy the database
+#       template.alpha.openshift.io/wait-for-ready: "true"
+#     name: ${DATABASE_SERVICE_NAME}
+#   spec:
+#     replicas: 1
+#     selector:
+#       name: ${DATABASE_SERVICE_NAME}
+#     strategy:
+#       type: Recreate
+#     template:
+#       metadata:
+#         labels:
+#           name: ${DATABASE_SERVICE_NAME}
+#         name: ${DATABASE_SERVICE_NAME}
+#       spec:
+#         containers:
+#         - env:
+#           - name: POSTGRESQL_USER
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-user
+#                 name: ${NAME}
+#           - name: POSTGRESQL_PASSWORD
+#             valueFrom:
+#               secretKeyRef:
+#                 key: database-password
+#                 name: ${NAME}
+#           - name: POSTGRESQL_DATABASE
+#             value: ${DATABASE_NAME}
+#           - name: POSTGRESQL_MAX_CONNECTIONS
+#             value: ${POSTGRESQL_MAX_CONNECTIONS}
+#           - name: POSTGRESQL_SHARED_BUFFERS
+#             value: ${POSTGRESQL_SHARED_BUFFERS}
+#           image: ' '
+#           livenessProbe:
+#             exec:
+#               command:
+#               - /usr/libexec/check-container
+#               - --live
+#             initialDelaySeconds: 120
+#             timeoutSeconds: 10
+#           name: postgresql
+#           ports:
+#           - containerPort: 5432
+#           readinessProbe:
+#             exec:
+#               command:
+#               - /usr/libexec/check-container
+#             initialDelaySeconds: 5
+#             timeoutSeconds: 1
+#           resources:
+#             limits:
+#               memory: ${MEMORY_POSTGRESQL_LIMIT}
+#           volumeMounts:
+#           - mountPath: /var/lib/pgsql/data
+#             name: ${DATABASE_SERVICE_NAME}-data
+#         volumes:
+#         - name: ${DATABASE_SERVICE_NAME}-data
+#           persistentVolumeClaim:
+#             claimName: ${DATABASE_SERVICE_NAME}
+#     triggers:
+#     - imageChangeParams:
+#         automatic: true
+#         containerNames:
+#         - postgresql
+#         from:
+#           kind: ImageStreamTag
+#           name: postgresql:10
+#           namespace: ${NAMESPACE}
+#       type: ImageChange
+#     - type: ConfigChange
+# parameters:
+# - description: The name assigned to all of the frontend objects defined in this template.
+#   displayName: Name
+#   name: NAME
+#   required: true
+#   value: rails-pgsql-persistent
+# - description: The OpenShift Namespace where the ImageStream resides.
+#   displayName: Namespace
+#   name: NAMESPACE
+#   required: true
+#   value: openshift
+# - description: Maximum amount of memory the Rails container can use.
+#   displayName: Memory Limit
+#   name: MEMORY_LIMIT
+#   required: true
+#   value: 512Mi
+# - description: Maximum amount of memory the PostgreSQL container can use.
+#   displayName: Memory Limit (PostgreSQL)
+#   name: MEMORY_POSTGRESQL_LIMIT
+#   required: true
+#   value: 512Mi
+# - description: Volume space available for data, e.g. 512Mi, 2Gi
+#   displayName: Volume Capacity
+#   name: VOLUME_CAPACITY
+#   required: true
+#   value: 1Gi
+# - description: Storage Class used to provision Persistent Volume
+#   displayName: Volume Storage Class
+#   name: STORAGE_CLASS
+#   required: true
+#   value: gp2
+# - description: The URL of the repository with your application source code.
+#   displayName: Git Repository URL
+#   name: SOURCE_REPOSITORY_URL
+#   required: true
+#   value: https://github.com/sclorg/rails-ex.git
+# - description: Set this to a branch name, tag or other ref of your repository if you
+#     are not using the default branch.
+#   displayName: Git Reference
+#   name: SOURCE_REPOSITORY_REF
+# - description: Set this to the relative path to your project if it is not in the root
+#     of your repository.
+#   displayName: Context Directory
+#   name: CONTEXT_DIR
+# - description: The exposed hostname that will route to the Rails service, if left
+#     blank a value will be defaulted.
+#   displayName: Application Hostname
+#   name: APPLICATION_DOMAIN
+# - description: Github trigger secret.  A difficult to guess string encoded as part
+#     of the webhook URL.  Not encrypted.
+#   displayName: GitHub Webhook Secret
+#   from: '[a-zA-Z0-9]{40}'
+#   generate: expression
+#   name: GITHUB_WEBHOOK_SECRET
+# - description: Your secret key for verifying the integrity of signed cookies.
+#   displayName: Secret Key
+#   from: '[a-z0-9]{127}'
+#   generate: expression
+#   name: SECRET_KEY_BASE
+# - description: The application user that is used within the sample application to
+#     authorize access on pages.
+#   displayName: Application Username
+#   name: APPLICATION_USER
+#   required: true
+#   value: openshift
+# - description: The application password that is used within the sample application
+#     to authorize access on pages.
+#   displayName: Application Password
+#   name: APPLICATION_PASSWORD
+#   required: true
+#   value: secret
+# - description: Environment under which the sample application will run. Could be set
+#     to production, development or test.
+#   displayName: Rails Environment
+#   name: RAILS_ENV
+#   required: true
+#   value: production
+# - displayName: Database Service Name
+#   name: DATABASE_SERVICE_NAME
+#   required: true
+#   value: postgresql
+# - displayName: Database Username
+#   from: user[A-Z0-9]{3}
+#   generate: expression
+#   name: DATABASE_USER
+# - displayName: Database Password
+#   from: '[a-zA-Z0-9]{8}'
+#   generate: expression
+#   name: DATABASE_PASSWORD
+# - displayName: Database Name
+#   name: DATABASE_NAME
+#   required: true
+#   value: root
+# - displayName: Maximum Database Connections
+#   name: POSTGRESQL_MAX_CONNECTIONS
+#   value: "100"
+# - displayName: Shared Buffer Amount
+#   name: POSTGRESQL_SHARED_BUFFERS
+#   value: 12MB
+# - description: The custom RubyGems mirror URL
+#   displayName: Custom RubyGems Mirror URL
+#   name: RUBYGEM_MIRROR
+#+end_example
+
+#+begin_src bash
+oc new-app -f ~/test/support/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
+#+end_src
+
+#+begin_example
+# --> Deploying template "my-database-app/rails-pgsql-persistent-storageclass" for "/home/lab-user/test/support/ocslab_rails-app.yaml" to project my-database-app
+# 
+#      Rails + PostgreSQL + Congigigurable StorageClass
+#      ---------
+#      An example Rails application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# 
+#      The following service(s) have been created in your project: rails-pgsql-persistent, postgresql.
+#      
+#      For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# 
+#      * With parameters:
+#         * Name=rails-pgsql-persistent
+#         * Namespace=openshift
+#         * Memory Limit=512Mi
+#         * Memory Limit (PostgreSQL)=512Mi
+#         * Volume Capacity=5Gi
+#         * Volume Storage Class=ocs-storagecluster-ceph-rbd
+#         * Git Repository URL=https://github.com/sclorg/rails-ex.git
+#         * Git Reference=
+#         * Context Directory=
+#         * Application Hostname=
+#         * GitHub Webhook Secret=WpnPTrahB2GpcFonOGDmKrO6QoPQycBRP2FO8fLw # generated
+#         * Secret Key=rng82tm1a385fbn1moul2sv6v3jp3nrnvynv17odfmu0hywltjx2cgkr1x5ihrohbk83dxjwhfs8cnlqaf5wifpkm8dfoip0p75qmdc3rkhd1a7et21qc8kbebsieca # generated
+#         * Application Username=openshift
+#         * Application Password=secret
+#         * Rails Environment=production
+#         * Database Service Name=postgresql
+#         * Database Username=userX5M # generated
+#         * Database Password=d4U7VTMs # generated
+#         * Database Name=root
+#         * Maximum Database Connections=100
+#         * Shared Buffer Amount=12MB
+#         * Custom RubyGems Mirror URL=
+# 
+# --> Creating resources ...
+#     secret "rails-pgsql-persistent" created
+#     service "rails-pgsql-persistent" created
+#     route.route.openshift.io "rails-pgsql-persistent" created
+#     imagestream.image.openshift.io "rails-pgsql-persistent" created
+#     buildconfig.build.openshift.io "rails-pgsql-persistent" created
+#     deploymentconfig.apps.openshift.io "rails-pgsql-persistent" created
+#     persistentvolumeclaim "postgresql" created
+#     service "postgresql" created
+#     deploymentconfig.apps.openshift.io "postgresql" created
+# --> Success
+#     Access your application via route 'rails-pgsql-persistent-my-database-app.apps.cluster-munich-e7ab.sandbox1596.opentlc.com' 
+#     Build scheduled, use 'oc logs -f bc/rails-pgsql-persistent' to track its progress.
+#     Run 'oc status' to view your app.
+#+end_example
+
+#+begin_src bash
+oc status
+#+end_src
+
+#+begin_example
+# In project my-database-app on server https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443
+# 
+# svc/postgresql - 172.30.70.67:5432
+#   dc/postgresql deploys openshift/postgresql:10 
+#     deployment #1 deployed 56 seconds ago - 1 pod
+# 
+# http://rails-pgsql-persistent-my-database-app.apps.cluster-munich-e7ab.sandbox1596.opentlc.com (svc/rails-pgsql-persistent)
+#   dc/rails-pgsql-persistent deploys istag/rails-pgsql-persistent:latest <-
+#     bc/rails-pgsql-persistent source builds https://github.com/sclorg/rails-ex.git on openshift/ruby:2.5 
+#       build #1 running for 56 seconds - 67d882b: Merge pull request #113 from liangxia/okd (Honza Horak <hhorak@redhat.com>)
+#     deployment #1 waiting on image or update
+# 
+# 
+# 1 info identified, use 'oc status --suggest' to see details.
+#+end_example
+
+#+begin_src bash
+oc get pvc -n my-database-app
+#+end_src
+
+#+begin_example
+# NAME         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+# postgresql   Bound    pvc-2dce951c-5490-11ea-9d6d-06399a073c9e   5Gi        RWO            ocs-storagecluster-ceph-rbd   3m59s
+#+end_example
+
+#+begin_src bash
+oc get pods -n my-database-app
+#+end_src
+
+#+begin_example
+# NAME                                READY   STATUS      RESTARTS   AGE
+# postgresql-1-deploy                 0/1     Completed   0          4m30s
+# postgresql-1-qgbt9                  1/1     Running     0          4m20s
+# rails-pgsql-persistent-1-build      0/1     Completed   0          4m30s
+# rails-pgsql-persistent-1-deploy     0/1     Completed   0          2m16s
+# rails-pgsql-persistent-1-hook-pre   0/1     Completed   0          2m8s
+# rails-pgsql-persistent-1-wjgl4      1/1     Running     0          108s
+#+end_example
+
+#+begin_src bash
+oc get route -n my-database-app
+#+end_src
+
+#+begin_example
+# NAME                     HOST/PORT                                                                                 PATH   SERVICES                 PORT    TERMINATION   WILDCARD
+# rails-pgsql-persistent   rails-pgsql-persistent-my-database-app.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          rails-pgsql-persistent   <all>                 None
+#+end_example
+
+Copy your rails-pgsql-persistent route (different than above) to a browser window to create articles. You will need to append /articles to the end.
+
+http://rails-pgsql-persistent-my-database-app.apps.cluster-munich-e7ab.sandbox1596.opentlc.com/articles
+
+#+begin_src bash
+TOOLS_POD=$(oc get pods -n openshift-storage -l app=rook-ceph-tools -o name)
+oc rsh -n openshift-storage $TOOLS_POD
+#+end_src
+
+#+begin_src bash
+ceph df
+#+end_src
+
+#+begin_example
+# ceph df
+# RAW STORAGE:
+#     CLASS     SIZE        AVAIL       USED        RAW USED     %RAW USED 
+#     ssd       3.0 TiB     3.0 TiB     268 MiB      3.3 GiB          0.11 
+#     TOTAL     3.0 TiB     3.0 TiB     268 MiB      3.3 GiB          0.11 
+#  
+# POOLS:
+#     POOL                                           ID     STORED      OBJECTS     USED        %USED     MAX AVAIL 
+#     ocs-storagecluster-cephblockpool                1      88 MiB         107     266 MiB         0       971 GiB 
+#     ocs-storagecluster-cephfilesystem-metadata      2     2.2 KiB          22     384 KiB         0       971 GiB 
+#     ocs-storagecluster-cephfilesystem-data0         3         0 B           0         0 B         0       971 GiB 
+#+end_example
+
+#+begin_src bash
+rados df
+#+end_src
+
+#+begin_example
+# rados df
+# POOL_NAME                                     USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS      RD WR_OPS      WR USED COMPR UNDER COMPR 
+# ocs-storagecluster-cephblockpool           267 MiB     107      0    321                  0       0        0    233 2.4 MiB   7226 122 MiB        0 B         0 B 
+# ocs-storagecluster-cephfilesystem-data0        0 B       0      0      0                  0       0        0      0     0 B      0     0 B        0 B         0 B 
+# ocs-storagecluster-cephfilesystem-metadata 384 KiB      22      0     66                  0       0        0   6146 3.0 MiB     45  13 KiB        0 B         0 B 
+# 
+# total_objects    129
+# total_used       3.3 GiB
+# total_avail      3.0 TiB
+# total_space      3.0 TiB
+#+end_example
+
+#+begin_src bash
+rbd -p ocs-storagecluster-cephblockpool ls | grep vol
+#+end_src
+
+#+begin_example
+# rbd -p ocs-storagecluster-cephblockpool ls | grep vol
+# csi-vol-2de02001-5490-11ea-8ae4-0a580a800605
+# csi-vol-bebc77ce-548a-11ea-8ae4-0a580a800605
+#+end_example
+
+#+begin_src bash
+exit
+#+end_src
+
+** Matching PVs to RBDs
+
+#+begin_src bash
+oc get pv -o 'custom-columns=NAME:.spec.claimRef.name,PVNAME:.metadata.name,STORAGECLASS:.spec.storageClassName,VOLUMEHANDLE:.spec.csi.volumeHandle'
+#+end_src
+
+#+begin_example
+# NAME                      PVNAME                                     STORAGECLASS                  VOLUMEHANDLE
+# postgresql                pvc-2dce951c-5490-11ea-9d6d-06399a073c9e   ocs-storagecluster-ceph-rbd   0001-0011-openshift-storage-0000000000000001-2de02001-5490-11ea-8ae4-0a580a800605
+# rook-ceph-mon-a           pvc-4415623d-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# rook-ceph-mon-b           pvc-474f8248-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# rook-ceph-mon-c           pvc-4a50b91a-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# ocs-deviceset-0-0-qdn6p   pvc-9aafc6f5-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# ocs-deviceset-1-0-x7hnz   pvc-9ab17f51-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# ocs-deviceset-2-0-rxlj7   pvc-9ab3d741-548a-11ea-9d6d-06399a073c9e   gp2                           <none>
+# db-noobaa-core-0          pvc-b2bd981b-548a-11ea-9d6d-06399a073c9e   ocs-storagecluster-ceph-rbd   0001-0011-openshift-storage-0000000000000001-bebc77ce-548a-11ea-8ae4-0a580a800605
+# mapit-storage             pvc-c17d1521-53ca-11ea-afeb-029a3b7b53fa   gp2                           <none>
+#+end_example
+
+#+begin_src bash
+CSIVOL=$(oc get pv $(oc get pv | grep my-database-app | awk '{ print $1 }') -o jsonpath='{.spec.csi.volumeHandle}' | cut -d '-' -f 6- | awk '{print "csi-vol-"$1}')
+echo $CSIVOL
+#+end_src
+
+#+begin_example
+csi-vol-2de02001-5490-11ea-8ae4-0a580a800605
+#+end_example
+
+#+begin_src bash
+TOOLS_POD=$(oc get pods -n openshift-storage -l app=rook-ceph-tools -o name)
+oc rsh -n openshift-storage $TOOLS_POD rbd -p ocs-storagecluster-cephblockpool info $CSIVOL
+#+end_src
+
+#+begin_example
+# rbd image 'csi-vol-2de02001-5490-11ea-8ae4-0a580a800605':
+# 	size 5 GiB in 1280 objects
+# 	order 22 (4 MiB objects)
+# 	snapshot_count: 0
+# 	id: 4177f3094512
+# 	block_name_prefix: rbd_data.4177f3094512
+# 	format: 2
+# 	features: layering
+# 	op_features: 
+# 	flags: 
+# 	create_timestamp: Fri Feb 21 09:54:41 2020
+# 	access_timestamp: Fri Feb 21 09:54:41 2020
+# 	modify_timestamp: Fri Feb 21 09:54:41 2020
+#+end_example
+
+** Create a new OCP application deployment using CephFS volume
+
+#+begin_src bash
+oc new-project my-shared-storage
+#+end_src
+
+#+begin_example
+# Now using project "my-shared-storage" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
+
+#+begin_src bash
+oc new-app openshift/php:7.1~https://github.com/christianh814/openshift-php-upload-demo --name=file-uploader
+#+end_src
+
+#+begin_example
+# --> Found image 8e01e80 (2 months old) in image stream "openshift/php" under tag "7.1" for "openshift/php:7.1"
+# 
+#     Apache 2.4 with PHP 7.1 
+#     ----------------------- 
+#     PHP 7.1 available as container is a base platform for building and running various PHP 7.1 applications and frameworks. PHP is an HTML-embedded scripting language. PHP attempts to make it easy for developers to write dynamically generated web pages. PHP also offers built-in database integration for several commercial and non-commercial database management systems, so writing a database-enabled webpage with PHP is fairly simple. The most common use of PHP coding is probably as a replacement for CGI scripts.
+# 
+#     Tags: builder, php, php71, rh-php71
+# 
+#     * A source build using source code from https://github.com/christianh814/openshift-php-upload-demo will be created
+#       * The resulting image will be pushed to image stream tag "file-uploader:latest"
+#       * Use 'oc start-build' to trigger a new build
+#     * This image will be deployed in deployment config "file-uploader"
+#     * Ports 8080/tcp, 8443/tcp will be load balanced by service "file-uploader"
+#       * Other containers can access this service through the hostname "file-uploader"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "file-uploader" created
+#     buildconfig.build.openshift.io "file-uploader" created
+#     deploymentconfig.apps.openshift.io "file-uploader" created
+#     service "file-uploader" created
+# --> Success
+#     Build scheduled, use 'oc logs -f bc/file-uploader' to track its progress.
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/file-uploader' 
+#     Run 'oc status' to view your app.
+#+end_example
+
+#+begin_src bash
+oc logs -f bc/file-uploader -n my-shared-storage
+#+end_src
+
+#+begin_example
+# Cloning "https://github.com/christianh814/openshift-php-upload-demo" ...
+# 	Commit:	288eda3dff43b02f7f7b6b6b6f93396ffdf34cb2 (trying to modularize)
+# 	Author:	Christian Hernandez <christian.hernandez@yahoo.com>
+# 	Date:	Sun Oct 1 17:15:09 2017 -0700
+# Caching blobs under "/var/cache/blobs".
+# Getting image source signatures
+# Copying blob sha256:48ed3bfd822646e50676cd7606af43e984db141bb1755904362f1eb64684c68a
+# Copying blob sha256:ad46648f2433aa416763060fb4baaefe64baeda603d4e572f883c21c5482fea1
+# Copying blob sha256:9c9d2ac50b32c2bb48d07fb4e80e81552acc76ade952777f5deb05fdac8f88c6
+# Copying blob sha256:16df3eb2f02e0560f09ae997a937d135f747b970d5c2c9bf30b6de874827f3ba
+# Copying blob sha256:d327c1598329494579ba3d62999df41f11bff9a2bfad57fb49b30324404ac42a
+# Copying config sha256:8e01e80b24124ddc69686179b836d01cb818bad93be2e59e13c3ab7b0ff16196
+# Writing manifest to image destination
+# Storing signatures
+# Generating dockerfile with builder image image-registry.openshift-image-registry.svc:5000/openshift/php@sha256:289ef5852151a1a3ea4fdf2581a86a60ada0719e54a5ddd78f5252742e6d2b8d
+# STEP 1: FROM image-registry.openshift-image-registry.svc:5000/openshift/php@sha256:289ef5852151a1a3ea4fdf2581a86a60ada0719e54a5ddd78f5252742e6d2b8d
+# STEP 2: LABEL "io.openshift.build.commit.date"="Sun Oct 1 17:15:09 2017 -0700" "io.openshift.build.commit.id"="288eda3dff43b02f7f7b6b6b6f93396ffdf34cb2" "io.openshift.build.commit.ref"="master" "io.openshift.build.commit.message"="trying to modularize" "io.openshift.build.source-location"="https://github.com/christianh814/openshift-php-upload-demo" "io.openshift.build.image"="image-registry.openshift-image-registry.svc:5000/openshift/php@sha256:289ef5852151a1a3ea4fdf2581a86a60ada0719e54a5ddd78f5252742e6d2b8d" "io.openshift.build.commit.author"="Christian Hernandez <christian.hernandez@yahoo.com>"
+# STEP 3: ENV OPENSHIFT_BUILD_NAME="file-uploader-1" OPENSHIFT_BUILD_NAMESPACE="my-shared-storage" OPENSHIFT_BUILD_SOURCE="https://github.com/christianh814/openshift-php-upload-demo" OPENSHIFT_BUILD_COMMIT="288eda3dff43b02f7f7b6b6b6f93396ffdf34cb2"
+# STEP 4: USER root
+# STEP 5: COPY upload/src /tmp/src
+# STEP 6: RUN chown -R 1001:0 /tmp/src
+# time="2020-02-21T10:17:07Z" level=warning msg="pkg/chroot: error unmounting \"/tmp/buildah162176086/mnt/rootfs\": error checking if \"/tmp/buildah162176086/mnt/rootfs/sys/fs/cgroup/rdma\" is mounted: no such file or directory"
+# time="2020-02-21T10:17:07Z" level=warning msg="pkg/bind: error unmounting \"/tmp/buildah162176086/mnt/rootfs\": error checking if \"/tmp/buildah162176086/mnt/rootfs/sys/fs/cgroup/rdma\" is mounted: no such file or directory"
+# STEP 7: USER 1001
+# STEP 8: RUN /usr/libexec/s2i/assemble
+# ---> Installing application source...
+# => sourcing 20-copy-config.sh ...
+# ---> 10:17:08     Processing additional arbitrary httpd configuration provided by s2i ...
+# => sourcing 00-documentroot.conf ...
+# => sourcing 50-mpm-tuning.conf ...
+# => sourcing 40-ssl-certs.sh ...
+# time="2020-02-21T10:17:08Z" level=warning msg="pkg/chroot: error unmounting \"/tmp/buildah075961883/mnt/rootfs\": error checking if \"/tmp/buildah075961883/mnt/rootfs/sys/fs/cgroup/rdma\" is mounted: no such file or directory"
+# time="2020-02-21T10:17:08Z" level=warning msg="pkg/bind: error unmounting \"/tmp/buildah075961883/mnt/rootfs\": error checking if \"/tmp/buildah075961883/mnt/rootfs/sys/fs/cgroup/rdma\" is mounted: no such file or directory"
+# STEP 9: CMD /usr/libexec/s2i/run
+# STEP 10: COMMIT temp.builder.openshift.io/my-shared-storage/file-uploader-1:1a68497e
+# Getting image source signatures
+# Copying blob sha256:a551fb857b61df88ae64cded378611456294ee7143bc068eb3a9ee1a29934658
+# Copying blob sha256:08c4aa164cbaadfb32414e39d9b252a5382b9db1dd8e028fb11805074edbe608
+# Copying blob sha256:7c6c57a17fb3de2b83515a0e33782d6d769fa90725da4eb75311e5ffbf601e49
+# Copying blob sha256:c3b514cae9b11a6aadc78fdbb3d7b71226759927a8149f97ea400628744ad2c9
+# Copying blob sha256:67ce50f5984a7a2ae8efd16c0dd2780e95982256be555d4e9a272357783ec338
+# Copying blob sha256:317528d934869bca844c16a7e38e58dec3a5f56904f9c8ff187024c13e3ca6f4
+# Copying config sha256:6e45a05242cee47e34d805f6e20c7cb907e8416549a77f27da598ece91b83b6c
+# Writing manifest to image destination
+# Storing signatures
+# 6e45a05242cee47e34d805f6e20c7cb907e8416549a77f27da598ece91b83b6c
+# 
+# Pushing image image-registry.openshift-image-registry.svc:5000/my-shared-storage/file-uploader:latest ...
+# Getting image source signatures
+# Copying blob sha256:317528d934869bca844c16a7e38e58dec3a5f56904f9c8ff187024c13e3ca6f4
+# Copying blob sha256:d327c1598329494579ba3d62999df41f11bff9a2bfad57fb49b30324404ac42a
+# Copying blob sha256:16df3eb2f02e0560f09ae997a937d135f747b970d5c2c9bf30b6de874827f3ba
+# Copying blob sha256:48ed3bfd822646e50676cd7606af43e984db141bb1755904362f1eb64684c68a
+# Copying blob sha256:9c9d2ac50b32c2bb48d07fb4e80e81552acc76ade952777f5deb05fdac8f88c6
+# Copying blob sha256:ad46648f2433aa416763060fb4baaefe64baeda603d4e572f883c21c5482fea1
+# Copying config sha256:6e45a05242cee47e34d805f6e20c7cb907e8416549a77f27da598ece91b83b6c
+# Writing manifest to image destination
+# Storing signatures
+# Successfully pushed image-registry.openshift-image-registry.svc:5000/my-shared-storage/file-uploader@sha256:379998b05491523b55ccbb219d9347a9c0626a775e1a344dfb6a0d7c71bd913a
+# Push successful
+#+end_example
+
+#+begin_src bash
+oc expose svc/file-uploader -n my-shared-storage
+#+end_src
+
+#+begin_example
+# route.route.openshift.io/file-uploader exposed
+#+end_example
+
+#+begin_src bash
+oc scale --replicas=3 dc/file-uploader -n my-shared-storage
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/file-uploader scaled
+#+end_example
+
+#+begin_src bash
+oc get pods -n my-shared-storage
+#+end_src
+
+#+begin_example
+# NAME                     READY   STATUS              RESTARTS   AGE
+# file-uploader-1-bdqs8    0/1     ContainerCreating   0          8s
+# file-uploader-1-build    0/1     Completed           0          2m36s
+# file-uploader-1-deploy   0/1     Completed           0          105s
+# file-uploader-1-fqdrx    0/1     ContainerCreating   0          8s
+# file-uploader-1-q7ngq    1/1     Running             0          97s
+#+end_example
+#+begin_src bash
+oc get pods -n my-shared-storage
+#+end_src
+
+#+begin_example
+# NAME                     READY   STATUS      RESTARTS   AGE
+# file-uploader-1-bdqs8    1/1     Running     0          29s
+# file-uploader-1-build    0/1     Completed   0          2m57s
+# file-uploader-1-deploy   0/1     Completed   0          2m6s
+# file-uploader-1-fqdrx    1/1     Running     0          29s
+# file-uploader-1-q7ngq    1/1     Running     0          118s
+#+end_example
+
+#+begin_src bash
+oc set volume dc/file-uploader --add --name=my-shared-storage \
+-t pvc --claim-mode=ReadWriteMany --claim-size=1Gi \
+--claim-name=my-shared-storage --claim-class=ocs-storagecluster-cephfs \
+--mount-path=/opt/app-root/src/uploaded \
+-n my-shared-storage
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/file-uploader volume updated
+#+end_example
+
+#+begin_src bash
+oc set volume -h
+#+end_src
+
+#+begin_example
+# Update volumes on a pod template
+# 
+#  This command can add, update or remove volumes from containers for any object that has a pod template (deployment
+# configs, replication controllers, or pods). You can list volumes in pod or any object that has a pod template. You can
+# specify a single object or multiple, and alter volumes on all containers or just those that match a given name.
+# 
+#  If you alter a volume setting on a deployment config, a deployment will be triggered. Changing a replication controller
+# will not affect running pods, and you cannot change a pod's volumes once it has been created.
+# 
+#  Volume types include:
+# 
+#   *  emptydir (empty directory) default : A directory allocated when the pod is created on a local host, is removed when
+# the pod is deleted and is not copied across servers
+#   *  hostdir (host directory): A directory with specific path on any host (requires elevated privileges)
+#   *  persistentvolumeclaim or pvc (persistent volume claim): Link the volume directory in the container to a persistent
+# volume claim you have allocated by name - a persistent volume claim is a request to allocate storage. Note that if your
+# claim hasn't been bound, your pods will not start.
+#   *  secret (mounted secret): Secret volumes mount a named secret to the provided directory.
+# 
+#  For descriptions on other volume types, see https://docs.openshift.com
+# 
+# Aliases:
+# volumes, volume
+# 
+# Usage:
+#   oc set volumes RESOURCE/NAME --add|--remove|--list [flags]
+# 
+# Examples:
+#   # List volumes defined on all deployment configs in the current project
+#   oc set volume dc --all
+#   
+#   # Add a new empty dir volume to deployment config (dc) 'myapp' mounted under
+#   # /var/lib/myapp
+#   oc set volume dc/myapp --add --mount-path=/var/lib/myapp
+#   
+#   # Use an existing persistent volume claim (pvc) to overwrite an existing volume 'v1'
+#   oc set volume dc/myapp --add --name=v1 -t pvc --claim-name=pvc1 --overwrite
+#   
+#   # Remove volume 'v1' from deployment config 'myapp'
+#   oc set volume dc/myapp --remove --name=v1
+#   
+#   # Create a new persistent volume claim that overwrites an existing volume 'v1'
+#   oc set volume dc/myapp --add --name=v1 -t pvc --claim-size=1G --overwrite
+#   
+#   # Change the mount point for volume 'v1' to /data
+#   oc set volume dc/myapp --add --name=v1 -m /data --overwrite
+#   
+#   # Modify the deployment config by removing volume mount "v1" from container "c1"
+#   # (and by removing the volume "v1" if no other containers have volume mounts that reference it)
+#   oc set volume dc/myapp --remove --name=v1 --containers=c1
+#   
+#   # Add new volume based on a more complex volume source (AWS EBS, GCE PD,
+#   # Ceph, Gluster, NFS, ISCSI, ...)
+#   oc set volume dc/myapp --add -m /data --source=<json-string>
+# 
+# Options:
+#       --add=false: If true, add volume and/or volume mounts for containers
+#       --all=false: If true, select all resources in the namespace of the specified resource types
+#       --allow-missing-template-keys=true: If true, ignore any errors in templates when a field or map key is missing in
+# the template. Only applies to golang and jsonpath output formats.
+#       --claim-class='': StorageClass to use for the persistent volume claim
+#       --claim-mode='ReadWriteOnce': Set the access mode of the claim to be created. Valid values are ReadWriteOnce
+# (rwo), ReadWriteMany (rwm), or ReadOnlyMany (rom)
+#       --claim-name='': Persistent volume claim name. Must be provided for persistentVolumeClaim volume type
+#       --claim-size='': If specified along with a persistent volume type, create a new claim with the given size in
+# bytes. Accepts SI notation: 10, 10G, 10Gi
+#       --configmap-name='': Name of the persisted config map. Must be provided for configmap volume type
+#       --confirm=false: If true, confirm that you really want to remove multiple volumes
+#   -c, --containers='*': The names of containers in the selected pod templates to change - may use wildcards
+#       --default-mode='': The default mode bits to create files with. Can be between 0000 and 0777. Defaults to 0644.
+#       --dry-run=false: If true, only print the object that would be sent, without sending it.
+#   -f, --filename=[]: Filename, directory, or URL to files to use to edit the resource
+#   -k, --kustomize='': Process the kustomization directory. This flag can't be used together with -f or -R.
+#       --local=false: If true, set image will NOT contact api-server but run locally.
+#   -m, --mount-path='': Mount path inside the container. Optional param for --add or --remove
+#       --name='': Name of the volume. If empty, auto generated for add operation
+#   -o, --output='': Output format. One of:
+# json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.
+#       --overwrite=false: If true, replace existing volume source with the provided name and/or volume mount for the
+# given resource
+#       --path='': Host path. Must be provided for hostPath volume type
+#       --read-only=false: Mount volume as ReadOnly. Optional param for --add or --remove
+#   -R, --recursive=false: Process the directory used in -f, --filename recursively. Useful when you want to manage
+# related manifests organized within the same directory.
+#       --remove=false: If true, remove volume and/or volume mounts for containers
+#       --secret-name='': Name of the persisted secret. Must be provided for secret volume type
+#   -l, --selector='': Selector (label query) to filter on
+#       --source='': Details of volume source as json string. This can be used if the required volume type is not
+# supported by --type option. (e.g.: '{"nfs": {"path": "/tmp","server":"172.17.0.2"}}')
+#       --sub-path='': Path within the local volume from which the container's volume should be mounted. Optional param
+# for --add or --remove
+#       --template='': Template string or path to template file to use when -o=go-template, -o=go-template-file. The
+# template format is golang templates [http://golang.org/pkg/text/template/#pkg-overview].
+#   -t, --type='': Type of the volume source for add operation. Supported options: emptyDir, hostPath, secret, configmap,
+# persistentVolumeClaim
+# 
+# Use "oc options" for a list of global command-line options (applies to all commands).
+#+end_example
+
+#+begin_src bash
+oc get pvc -n my-shared-storage
+#+end_src
+
+#+begin_example
+# NAME                STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                AGE
+# my-shared-storage   Bound    pvc-c2f1fecd-5493-11ea-99d2-0a84b9320ef6   1Gi        RWX            ocs-storagecluster-cephfs   86s
+#+end_example
+
+Try it out in your file uploader web application using your browser. Upload new files.
+
+#+begin_src bash
+oc get route file-uploader -n my-shared-storage
+#+end_src
+
+#+begin_example
+# NAME            HOST/PORT                                                                          PATH   SERVICES        PORT       TERMINATION   WILDCARD
+# file-uploader   file-uploader-my-shared-storage.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          file-uploader   8080-tcp                 None
+#+end_example
+
+The following does NOT work...
+
+#+begin_src bash
+oc get route file-uploader -n my-shared-storage -o jsonpath --template="{.spec.host}"
+#+end_src
+
+http://file-uploader-my-shared-storage.apps.cluster-munich-e7ab.sandbox1596.opentlc.com/
+
+** Using OCS for Prometheus Metrics
+
+#+begin_src bash
+oc get pods,pvc -n openshift-monitoring
+#+end_src
+
+#+begin_example
+# NAME                                               READY   STATUS    RESTARTS   AGE
+# pod/alertmanager-main-0                            3/3     Running   0          18h
+# pod/alertmanager-main-1                            3/3     Running   0          18h
+# pod/alertmanager-main-2                            3/3     Running   0          18h
+# pod/cluster-monitoring-operator-585c8c44d9-hzmnw   1/1     Running   0          40h
+# pod/grafana-69685f986d-rl757                       2/2     Running   0          18h
+# pod/kube-state-metrics-7c884764fd-jdf57            3/3     Running   0          18h
+# pod/node-exporter-d49v5                            2/2     Running   0          19h
+# pod/node-exporter-fk267                            2/2     Running   0          40h
+# pod/node-exporter-gqgjk                            2/2     Running   0          40h
+# pod/node-exporter-hgtjd                            2/2     Running   0          19h
+# pod/node-exporter-lkxvx                            2/2     Running   0          127m
+# pod/node-exporter-nbkxw                            2/2     Running   0          19h
+# pod/node-exporter-p7vrw                            2/2     Running   0          40h
+# pod/node-exporter-prbc5                            2/2     Running   0          127m
+# pod/node-exporter-r9ckd                            2/2     Running   0          127m
+# pod/node-exporter-vm4np                            2/2     Running   0          40h
+# pod/node-exporter-xddfk                            2/2     Running   0          23h
+# pod/node-exporter-xhwb8                            2/2     Running   0          40h
+# pod/openshift-state-metrics-7c76b98c77-kxdjp       3/3     Running   0          40h
+# pod/prometheus-adapter-986777885-d7rjf             1/1     Running   0          16h
+# pod/prometheus-adapter-986777885-vdcmj             1/1     Running   0          16h
+# pod/prometheus-k8s-0                               6/6     Running   1          18h
+# pod/prometheus-k8s-1                               6/6     Running   1          18h
+# pod/prometheus-operator-7c8568cc64-x5vtt           1/1     Running   0          96m
+# pod/telemeter-client-944599596-c5jzs               3/3     Running   0          18h
+#+end_example
+
+** Modifying your Prometheus environment
+
+#+begin_src bash
+oc -n openshift-monitoring get configmap cluster-monitoring-config
+#+end_src
+
+#+begin_example
+# NAME                        DATA   AGE
+# cluster-monitoring-config   1      18h
+#+end_example
+
+If you are missing the ConfigMap, create it using this command
+
+#+begin_src bash
+oc apply -f /opt/app-root/src/support/ocslab_cluster-monitoring-noinfra.yaml
+#+end_src
+
+If the ConfigMap already exists because of completing prior module OpenShift Infrastructure Nodes, you will apply changes to the existing ConfigMap.
+
+#+begin_src bash
+cat ~/test/support/ocslab_cluster-monitoring-withinfra.yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: cluster-monitoring-config
+#   namespace: openshift-monitoring
+# data:
+#   config.yaml: |+
+#     alertmanagerMain:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#       volumeClaimTemplate:
+#         metadata:
+#           name: alertmanager
+#         spec:
+#           storageClassName: ocs-storagecluster-ceph-rbd
+#           resources:
+#             requests:
+#               storage: 40Gi
+#     prometheusK8s:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#       volumeClaimTemplate:
+#         metadata:
+#           name: prometheusdb
+#         spec:
+#           storageClassName: ocs-storagecluster-ceph-rbd
+#           resources:
+#             requests:
+#               storage: 40Gi
+#     prometheusOperator:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     grafana:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     k8sPrometheusAdapter:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     kubeStateMetrics:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     telemeterClient:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#+end_example
+
+#+begin_src bash
+oc apply -f ~/test/support/ocslab_cluster-monitoring-withinfra.yaml
+#+end_src
+
+#+begin_example
+# Warning: oc apply should be used on resource created by either oc create --save-config or oc apply
+# configmap/cluster-monitoring-config configured
+#+end_example
+
+#+begin_src bash
+oc -n openshift-monitoring get configmap cluster-monitoring-config -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# data:
+#   config.yaml: |
+#     alertmanagerMain:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#       volumeClaimTemplate:
+#         metadata:
+#           name: alertmanager
+#         spec:
+#           storageClassName: ocs-storagecluster-ceph-rbd
+#           resources:
+#             requests:
+#               storage: 40Gi
+#     prometheusK8s:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#       volumeClaimTemplate:
+#         metadata:
+#           name: prometheusdb
+#         spec:
+#           storageClassName: ocs-storagecluster-ceph-rbd
+#           resources:
+#             requests:
+#               storage: 40Gi
+#     prometheusOperator:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     grafana:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     k8sPrometheusAdapter:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     kubeStateMetrics:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+#     telemeterClient:
+#       nodeSelector:
+#         node-role.kubernetes.io/infra: ""
+# kind: ConfigMap
+# metadata:
+#   annotations:
+#     kubectl.kubernetes.io/last-applied-configuration: |
+#       {"apiVersion":"v1","data":{"config.yaml":"alertmanagerMain:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\n  volumeClaimTemplate:\n    metadata:\n      name: alertmanager\n    spec:\n      storageClassName: ocs-storagecluster-ceph-rbd\n      resources:\n        requests:\n          storage: 40Gi\nprometheusK8s:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\n  volumeClaimTemplate:\n    metadata:\n      name: prometheusdb\n    spec:\n      storageClassName: ocs-storagecluster-ceph-rbd\n      resources:\n        requests:\n          storage: 40Gi\nprometheusOperator:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\ngrafana:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\nk8sPrometheusAdapter:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\nkubeStateMetrics:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\ntelemeterClient:\n  nodeSelector:\n    node-role.kubernetes.io/infra: \"\"\n"},"kind":"ConfigMap","metadata":{"annotations":{},"name":"cluster-monitoring-config","namespace":"openshift-monitoring"}}
+#   creationTimestamp: "2020-02-20T15:48:00Z"
+#   name: cluster-monitoring-config
+#   namespace: openshift-monitoring
+#   resourceVersion: "756412"
+#   selfLink: /api/v1/namespaces/openshift-monitoring/configmaps/cluster-monitoring-config
+#   uid: 5f234086-53f8-11ea-bc7a-06399a073c9e
+#+end_example
+
+#+begin_src bash
+oc get pods,pvc -n openshift-monitoring
+#+end_src
+
+#+begin_example
+# NAME                                               READY   STATUS    RESTARTS   AGE
+# pod/alertmanager-main-0                            3/3     Running   0          48s
+# pod/alertmanager-main-1                            3/3     Running   0          48s
+# pod/alertmanager-main-2                            3/3     Running   0          48s
+# pod/cluster-monitoring-operator-585c8c44d9-hzmnw   1/1     Running   0          40h
+# pod/grafana-69685f986d-rl757                       2/2     Running   0          18h
+# pod/kube-state-metrics-7c884764fd-jdf57            3/3     Running   0          18h
+# pod/node-exporter-d49v5                            2/2     Running   0          19h
+# pod/node-exporter-fk267                            2/2     Running   0          40h
+# pod/node-exporter-gqgjk                            2/2     Running   0          40h
+# pod/node-exporter-hgtjd                            2/2     Running   0          19h
+# pod/node-exporter-lkxvx                            2/2     Running   0          131m
+# pod/node-exporter-nbkxw                            2/2     Running   0          19h
+# pod/node-exporter-p7vrw                            2/2     Running   0          40h
+# pod/node-exporter-prbc5                            2/2     Running   0          132m
+# pod/node-exporter-r9ckd                            2/2     Running   0          131m
+# pod/node-exporter-vm4np                            2/2     Running   0          40h
+# pod/node-exporter-xddfk                            2/2     Running   0          23h
+# pod/node-exporter-xhwb8                            2/2     Running   0          40h
+# pod/openshift-state-metrics-7c76b98c77-kxdjp       3/3     Running   0          40h
+# pod/prometheus-adapter-986777885-d7rjf             1/1     Running   0          16h
+# pod/prometheus-adapter-986777885-vdcmj             1/1     Running   0          16h
+# pod/prometheus-k8s-0                               6/6     Running   1          37s
+# pod/prometheus-k8s-1                               6/6     Running   1          37s
+# pod/prometheus-operator-7c8568cc64-x5vtt           1/1     Running   0          101m
+# pod/telemeter-client-944599596-c5jzs               3/3     Running   0          18h
+# 
+# NAME                                                     STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+# persistentvolumeclaim/alertmanager-alertmanager-main-0   Bound    pvc-39b2a3f2-5496-11ea-9d6d-06399a073c9e   40Gi       RWO            ocs-storagecluster-ceph-rbd   48s
+# persistentvolumeclaim/alertmanager-alertmanager-main-1   Bound    pvc-39b9f86a-5496-11ea-9d6d-06399a073c9e   40Gi       RWO            ocs-storagecluster-ceph-rbd   48s
+# persistentvolumeclaim/alertmanager-alertmanager-main-2   Bound    pvc-39c1d058-5496-11ea-9d6d-06399a073c9e   40Gi       RWO            ocs-storagecluster-ceph-rbd   48s
+# persistentvolumeclaim/prometheusdb-prometheus-k8s-0      Bound    pvc-3fc8be99-5496-11ea-9d6d-06399a073c9e   40Gi       RWO            ocs-storagecluster-ceph-rbd   37s
+# persistentvolumeclaim/prometheusdb-prometheus-k8s-1      Bound    pvc-3fe4181c-5496-11ea-9d6d-06399a073c9e   40Gi       RWO            ocs-storagecluster-ceph-rbd   37s
+#+end_example
+
+** Using the Multi-Cloud-Gateway
+*** Checking on the MCG status
+
+#+begin_src bash
+oc project openshift-storage
+#+end_src
+
+#+begin_example
+# Now using project "openshift-storage" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+#+end_example
+
+#+begin_src bash
+noobaa status -n openshift-storage
+#+end_src
+
+#+begin_example
+# bash: noobaa: command not found
+#+end_example
+
+https://github.com/noobaa/noobaa-operator
+
+#+begin_src bash
+wget https://github.com/noobaa/noobaa-operator/releases/download/v2.0.9/noobaa-linux-v2.0.9; mv noobaa-linux-* noobaa; chmod +x noobaa
+#+end_src
+
+#+begin_example
+# --2020-02-21 10:47:41--  https://github.com/noobaa/noobaa-operator/releases/download/v2.0.9/noobaa-linux-v2.0.9
+# Resolving github.com (github.com)... 140.82.113.3
+# Connecting to github.com (github.com)|140.82.113.3|:443... connected.
+# HTTP request sent, awaiting response... 302 Found
+# Location: https://github-production-release-asset-2e65be.s3.amazonaws.com/194805859/ab289280-11e4-11ea-9078-ea2a84a4db6b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200221%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200221T104741Z&X-Amz-Expires=300&X-Amz-Signature=a7546d695fc2ade214345ee1f9781582ce3fcf532cf5205e673463fdf431a1ca&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dnoobaa-linux-v2.0.9&response-content-type=application%2Foctet-stream [following]
+# --2020-02-21 10:47:41--  https://github-production-release-asset-2e65be.s3.amazonaws.com/194805859/ab289280-11e4-11ea-9078-ea2a84a4db6b?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200221%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200221T104741Z&X-Amz-Expires=300&X-Amz-Signature=a7546d695fc2ade214345ee1f9781582ce3fcf532cf5205e673463fdf431a1ca&X-Amz-SignedHeaders=host&actor_id=0&response-content-disposition=attachment%3B%20filename%3Dnoobaa-linux-v2.0.9&response-content-type=application%2Foctet-stream
+# Resolving github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)... 52.217.46.148
+# Connecting to github-production-release-asset-2e65be.s3.amazonaws.com (github-production-release-asset-2e65be.s3.amazonaws.com)|52.217.46.148|:443... connected.
+# HTTP request sent, awaiting response... 200 OK
+# Length: 52197598 (50M) [application/octet-stream]
+# Saving to: ‘noobaa-linux-v2.0.9’
+# 
+# 100%[====================================================================================>] 52,197,598  19.6MB/s   in 2.5s   
+# 
+# 2020-02-21 10:47:44 (19.6 MB/s) - ‘noobaa-linux-v2.0.9’ saved [52197598/52197598]
+# 
+#+end_example
+
+#+begin_src bash
+ls -lt
+#+end_src
+
+#+begin_example
+# total 51140
+# -rw-r--r--. 1 lab-user users   101545 Feb 21 10:42 ops-road-show.org
+# drwxrwxr-x. 7 lab-user users      137 Feb 20 16:01 docs/
+# drwxrwxr-x. 2 lab-user users       40 Feb 20 16:01 dns_update/
+# drwxrwxr-x. 2 lab-user users       36 Feb 20 16:01 cloudformation/
+# -rw-r--r--. 1 lab-user users     4101 Feb 20 16:01 infra.yaml
+# drwxrwxr-x. 2 lab-user users      115 Feb 20 14:41 packer-host/
+# drwxrwxr-x. 3 lab-user users       76 Feb 20 14:41 packer/
+# drwxrwxr-x. 2 lab-user users     4096 Feb 20 14:39 support/
+# -rw-r--r--. 1 lab-user users     1105 Feb 20 13:56 ops-road-show.org~
+# -rw-r--r--. 1 lab-user users    32653 Feb 20 13:55 index.html
+# drwxr-xr-x. 2 lab-user users       23 Feb 20 13:55 testdir/
+# -rw-r--r--. 1 lab-user users       18 Feb 20 13:55 test.html
+# -rw-r--r--. 1 lab-user users       63 Feb 20 13:55 404.html
+# -rw-r--r--. 1 lab-user users     1062 Feb 20 13:55 LICENSE
+# -rw-r--r--. 1 lab-user users       68 Feb 20 13:55 README.md
+# -rwxr-xr-x. 1 lab-user users 52197598 Nov 28 11:41 noobaa*
+#+end_example
+
+#+begin_src bash
+./noobaa
+#+end_src
+
+#+begin_example
+# #                       # 
+# #    /~~\___~___/~~\    # 
+# #   |               |   # 
+# #    \~~|\     /|~~/    # 
+# #        \|   |/        # 
+# #         |   |         # 
+# #         \~~~/         # 
+# #                       # 
+# #      N O O B A A      #
+# 
+# Install:
+#   install      Install the operator and create the noobaa system
+#   uninstall    Uninstall the operator and delete the system
+#   status       Status of the operator and the system
+# 
+# Manage:
+#   backingstore Manage backing stores
+#   bucketclass  Manage bucket classes
+#   obc          Manage object bucket claims
+#   diagnose     Collect diagnostics
+#   ui           Open the NooBaa UI
+# 
+# Advanced:
+#   operator     Deployment using operator
+#   system       Manage noobaa systems
+#   api          Make api call
+#   bucket       Manage noobaa buckets
+#   pvstore      Manage noobaa pv store
+#   crd          Deployment of CRDs
+#   olm          OLM related commands
+# 
+# Other Commands:
+#   completion   Generates bash completion scripts
+#   options      Print the list of global flags
+#   version      Show version
+# 
+# Use "noobaa <command> --help" for more information about a given command.
+#+end_example
+
+#+begin_src bash
+./noobaa version
+#+end_src
+
+#+begin_example
+# INFO[0000] CLI version: 2.0.9                           
+# INFO[0000] noobaa-image: noobaa/noobaa-core:5.2.11      
+# INFO[0000] operator-image: noobaa/noobaa-operator:2.0.9 
+#+end_example
+
+#+begin_src bash
+./noobaa status -n openshift-storage
+#+end_src
+
+#+begin_example
+# INFO[0000] CLI version: 2.0.9                           
+# INFO[0000] noobaa-image: noobaa/noobaa-core:5.2.11      
+# INFO[0000] operator-image: noobaa/noobaa-operator:2.0.9 
+# INFO[0000] Namespace: openshift-storage                 
+# INFO[0000]                                              
+# INFO[0000] CRD Status:                                  
+# INFO[0000] ✅ Exists: CustomResourceDefinition "noobaas.noobaa.io" 
+# INFO[0000] ✅ Exists: CustomResourceDefinition "backingstores.noobaa.io" 
+# INFO[0000] ✅ Exists: CustomResourceDefinition "bucketclasses.noobaa.io" 
+# INFO[0000] ✅ Exists: CustomResourceDefinition "objectbucketclaims.objectbucket.io" 
+# INFO[0000] ✅ Exists: CustomResourceDefinition "objectbuckets.objectbucket.io" 
+# INFO[0000]                                              
+# INFO[0000] Operator Status:                             
+# INFO[0000] ✅ Exists: Namespace "openshift-storage"      
+# INFO[0000] ✅ Exists: ServiceAccount "noobaa"            
+# INFO[0000] ✅ Exists: Role "ocs-operator.v4.2.1-tsmzq"   
+# INFO[0000] ✅ Exists: RoleBinding "ocs-operator.v4.2.1-tsmzq-noobaa-kc42r" 
+# INFO[0000] ✅ Exists: ClusterRole "ocs-operator.v4.2.1-7z597" 
+# INFO[0000] ✅ Exists: ClusterRoleBinding "ocs-operator.v4.2.1-7z597-noobaa-6ql9t" 
+# INFO[0000] ✅ Exists: Deployment "noobaa-operator"       
+# INFO[0000]                                              
+# INFO[0000] System Status:                               
+# INFO[0000] ✅ Exists: NooBaa "noobaa"                    
+# INFO[0000] ✅ Exists: StatefulSet "noobaa-core"          
+# INFO[0000] ✅ Exists: Service "noobaa-mgmt"              
+# INFO[0000] ✅ Exists: Service "s3"                       
+# INFO[0000] ✅ Exists: Secret "noobaa-server"             
+# INFO[0000] ✅ Exists: Secret "noobaa-operator"           
+# INFO[0000] ✅ Exists: Secret "noobaa-admin"              
+# INFO[0000] ✅ Exists: StorageClass "openshift-storage.noobaa.io" 
+# INFO[0000] ✅ Exists: BucketClass "noobaa-default-bucket-class" 
+# INFO[0000] ✅ (Optional) Exists: BackingStore "noobaa-default-backing-store" 
+# INFO[0000] ✅ (Optional) Exists: CredentialsRequest "noobaa-cloud-creds" 
+# INFO[0000] ✅ (Optional) Exists: PrometheusRule "noobaa-prometheus-rules" 
+# INFO[0000] ✅ (Optional) Exists: ServiceMonitor "noobaa-service-monitor" 
+# INFO[0000] ✅ (Optional) Exists: Route "noobaa-mgmt"     
+# INFO[0000] ✅ (Optional) Exists: Route "s3"              
+# INFO[0000] ✅ Exists: PersistentVolumeClaim "db-noobaa-core-0" 
+# INFO[0000] ✅ System Phase is "Ready"                    
+# INFO[0000] ✅ Exists:  "noobaa-admin"                    
+# 
+# #------------------#
+# #- Mgmt Addresses -#
+# #------------------#
+# 
+# ExternalDNS : [https://noobaa-mgmt-openshift-storage.apps.cluster-munich-e7ab.sandbox1596.opentlc.com https://ab2c15a6f548a11ea9d6d06399a073c9-1074882543.us-east-2.elb.amazonaws.com:443]
+# ExternalIP  : []
+# NodePorts   : [https://10.0.147.203:30848]
+# InternalDNS : [https://noobaa-mgmt.openshift-storage.svc:443]
+# InternalIP  : [https://172.30.160.54:443]
+# PodPorts    : [https://10.128.6.11:8443]
+# 
+# #--------------------#
+# #- Mgmt Credentials -#
+# #--------------------#
+# 
+# email    : admin@noobaa.io
+# password : UQiMQoHQzKyow+WpAXfUfg==
+# 
+# #----------------#
+# #- S3 Addresses -#
+# #----------------#
+# 
+# ExternalDNS : [https://s3-openshift-storage.apps.cluster-munich-e7ab.sandbox1596.opentlc.com https://ab2c5acc9548a11ea9d6d06399a073c9-2093889708.us-east-2.elb.amazonaws.com:443]
+# ExternalIP  : []
+# NodePorts   : [https://10.0.147.203:31216]
+# InternalDNS : [https://s3.openshift-storage.svc:443]
+# InternalIP  : [https://172.30.22.181:443]
+# PodPorts    : [https://10.128.6.11:6443]
+# 
+# #------------------#
+# #- S3 Credentials -#
+# #------------------#
+# 
+# AWS_ACCESS_KEY_ID     : jiAP5RESdV5GkrBKo0Va
+# AWS_SECRET_ACCESS_KEY : P4Z584DFatacTZM/1peJmnlhfZY+aIDDK6Q1OQ6h
+# 
+# #------------------#
+# #- Backing Stores -#
+# #------------------#
+# 
+# NAME                           TYPE     TARGET-BUCKET                                               PHASE   AGE       
+# noobaa-default-backing-store   aws-s3   noobaa-backing-store-cf458652-82d6-4c6f-93e8-9fbcfc3151e2   Ready   1h32m3s   
+# 
+# #------------------#
+# #- Bucket Classes -#
+# #------------------#
+# 
+# NAME                          PLACEMENT                                                             PHASE   AGE       
+# noobaa-default-bucket-class   {Tiers:[{Placement: BackingStores:[noobaa-default-backing-store]}]}   Ready   1h32m3s   
+# 
+# #-----------------#
+# #- Bucket Claims -#
+# #-----------------#
+# 
+# No OBC's found.
+# 
+#+end_example
