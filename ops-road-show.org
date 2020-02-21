@@ -1,3 +1,247 @@
+* Environment Overview
+** Cluster Admin Authentication
+
+#+begin_src bash
+oc explain Role
+#+end_src
+
+#+begin_example
+# KIND:     Role
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      Role is a namespaced, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this Role
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRole
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRole
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRole is a cluster level, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding or ClusterRoleBinding.
+# 
+# FIELDS:
+#    aggregationRule	<Object>
+#      AggregationRule is an optional field that describes how to build the Rules
+#      for this ClusterRole. If AggregationRule is set, then the Rules are
+#      controller managed and direct changes to Rules will be stomped by the
+#      controller.
+# 
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this ClusterRole
+# 
+#+end_example
+
+#+begin_src bash
+oc explain RoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     RoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      RoleBinding references a role, but does not contain it. It can reference a
+#      Role in the same namespace or a ClusterRole in the global namespace. It
+#      adds who information via Subjects and namespace information by which
+#      namespace it exists in. RoleBindings in a given namespace only have effect
+#      in that namespace.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can reference a Role in the current namespace or a ClusterRole in
+#      the global namespace. If the RoleRef cannot be resolved, the Authorizer
+#      must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+# 
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRoleBinding references a ClusterRole, but not contain it. It can
+#      reference a ClusterRole in the global namespace, and adds who information
+#      via Subject.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can only reference a ClusterRole in the global namespace. If the
+#      RoleRef cannot be resolved, the Authorizer must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+# 
+#+end_example
+
+
+#+begin_src bash
+oc get clusterrole cluster-admin -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   annotations:
+#     rbac.authorization.kubernetes.io/autoupdate: "true"
+#   creationTimestamp: "2020-02-19T17:55:47Z"
+#   labels:
+#     kubernetes.io/bootstrapping: rbac-defaults
+#   name: cluster-admin
+#   resourceVersion: "59"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterroles/cluster-admin
+#   uid: 0ee5fe3a-5341-11ea-8707-027cbd288fd4
+# rules:
+# - apiGroups:
+#   - '*'
+#   resources:
+#   - '*'
+#   verbs:
+#   - '*'
+# - nonResourceURLs:
+#   - '*'
+#   verbs:
+#   - '*'
+#+end_example
+
+#+begin_src bash
+oc whoami --help
+#+end_src
+
+#+begin_example
+# Show information about the current session
+# 
+#  The default options for this command will return the currently authenticated user name or an empty string.  Other flags
+# support returning the currently used token or the user context.
+# 
+# Usage:
+#   oc whoami [flags]
+# 
+# Options:
+#       --show-console=false: If true, print the current server's web console URL
+#   -c, --show-context=false: Print the current user context name
+#       --show-server=false: If true, print the current server's REST API URL
+#   -t, --show-token=false: Print the token the current session is using. This will return an error if you are using a
+# different form of authentication.
+# 
+# Use "oc options" for a list of global command-line options (applies to all commands).
+#+end_example
+
+
+#+begin_src bash
+oc whoami
+#+end_src
+
+#+begin_example
+# kube:admin
+#+end_example
+
+#+begin_src bash
+oc get clusterrolebinding dashboard-cluster-admin -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   annotations:
+#     openshift.io/generated-by: OpenShiftNewApp
+#   creationTimestamp: "2020-02-19T18:12:53Z"
+#   labels:
+#     app: dashboard
+#   name: dashboard-cluster-admin
+#   resourceVersion: "16662"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/dashboard-cluster-admin
+#   uid: 72810517-5343-11ea-8ece-06399a073c9e
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: cluster-admin
+# subjects:
+# - kind: ServiceAccount
+#   name: dashboard-user
+#   namespace: lab-ocp-cns
+#+end_example
+
+
 * Installation and Verification
 ** Logging in
 
@@ -171,6 +415,7 @@ https://console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.c
 #+begin_src bash
 exit
 #+end_src
+
 
 * Application Management Basics
 ** Projects
@@ -875,130 +1120,16 @@ oc get replicationcontrollers
 # mapit-3   1         1         0       46s
 #+end_example
 
+
 * Application Storage Basics
 
 * MachineSets, Machines, and Nodes
 
 * Infrastructure Nodes and Operators
 
-* Cluster Admin Authentication
-
-#+begin_src bash
-oc explain Role
-#+end_src
-
-#+begin_example
-# KIND:     Role
-# VERSION:  rbac.authorization.k8s.io/v1
-# 
-# DESCRIPTION:
-#      Role is a namespaced, logical grouping of PolicyRules that can be
-#      referenced as a unit by a RoleBinding.
-# 
-# FIELDS:
-#    apiVersion	<string>
-#      APIVersion defines the versioned schema of this representation of an
-#      object. Servers should convert recognized schemas to the latest internal
-#      value, and may reject unrecognized values. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
-# 
-#    kind	<string>
-#      Kind is a string value representing the REST resource this object
-#      represents. Servers may infer this from the endpoint the client submits
-#      requests to. Cannot be updated. In CamelCase. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
-# 
-#    metadata	<Object>
-#      Standard object's metadata.
-# 
-#    rules	<[]Object>
-#      Rules holds all the PolicyRules for this Role
-#+end_example
-#+begin_src bash
-oc explain ClusterRole
-#+end_src
-
-#+begin_example
-# KIND:     ClusterRole
-# VERSION:  rbac.authorization.k8s.io/v1
-# 
-# DESCRIPTION:
-#      ClusterRole is a cluster level, logical grouping of PolicyRules that can be
-#      referenced as a unit by a RoleBinding or ClusterRoleBinding.
-# 
-# FIELDS:
-#    aggregationRule	<Object>
-#      AggregationRule is an optional field that describes how to build the Rules
-#      for this ClusterRole. If AggregationRule is set, then the Rules are
-#      controller managed and direct changes to Rules will be stomped by the
-#      controller.
-# 
-#    apiVersion	<string>
-#      APIVersion defines the versioned schema of this representation of an
-#      object. Servers should convert recognized schemas to the latest internal
-#      value, and may reject unrecognized values. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
-# 
-#    kind	<string>
-#      Kind is a string value representing the REST resource this object
-#      represents. Servers may infer this from the endpoint the client submits
-#      requests to. Cannot be updated. In CamelCase. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
-# 
-#    metadata	<Object>
-#      Standard object's metadata.
-# 
-#    rules	<[]Object>
-#      Rules holds all the PolicyRules for this ClusterRole
-# 
-#+end_example
-#+begin_src bash
-oc explain RoleBinding
-
-#+begin_example
-# KIND:     RoleBinding
-# VERSION:  rbac.authorization.k8s.io/v1
-# 
-# DESCRIPTION:
-#      RoleBinding references a role, but does not contain it. It can reference a
-#      Role in the same namespace or a ClusterRole in the global namespace. It
-#      adds who information via Subjects and namespace information by which
-#      namespace it exists in. RoleBindings in a given namespace only have effect
-#      in that namespace.
-# 
-# FIELDS:
-#    apiVersion	<string>
-#      APIVersion defines the versioned schema of this representation of an
-#      object. Servers should convert recognized schemas to the latest internal
-#      value, and may reject unrecognized values. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
-# 
-#    kind	<string>
-#      Kind is a string value representing the REST resource this object
-#      represents. Servers may infer this from the endpoint the client submits
-#      requests to. Cannot be updated. In CamelCase. More info:
-#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
-# 
-#    metadata	<Object>
-#      Standard object's metadata.
-# 
-#    roleRef	<Object> -required-
-#      RoleRef can reference a Role in the current namespace or a ClusterRole in
-#      the global namespace. If the RoleRef cannot be resolved, the Authorizer
-#      must return an error.
-# 
-#    subjects	<[]Object>
-#      Subjects holds references to the objects the role applies to.
-# 
-#+end_example
 
 * Machineset
-
-#+begin_src bash
-cat /opt/app-root/src/support/infra-nodes.sh
-#+end_src
-
-* Deploying and Managing OpenShift Container Storage
+** Deploy your storage backend using the OCS operator - Scale OCP cluster and add 3 new nodes
 
 #+begin_src bash
 oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
@@ -1268,8 +1399,14 @@ oc get machines -n openshift-machine-api | egrep 'NAME|workerocs'
 oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
 #+end_src
 
+** Deploy your storage backend using the OCS operator - Scale OCP cluster and add 3 new nodes
+
+#+begin_src bash
+oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
+#+end_src
+
 #+begin_example
-# [lab-user@clientvm 0 ~/test master|✚1…2]$ NAME                                         STATUS   ROLES    AGE   VERSION
+# NAME                                         STATUS   ROLES    AGE   VERSION
 # ip-10-0-131-190.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
 # ip-10-0-133-255.us-east-2.compute.internal   Ready    worker   38h   v1.14.6+9fb2d5cf9
 # ip-10-0-147-203.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
@@ -1277,6 +1414,10 @@ oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infr
 # ip-10-0-172-64.us-east-2.compute.internal    Ready    worker   21h   v1.14.6+9fb2d5cf9
 # ip-10-0-174-204.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
 #+end_example
+
+#+begin_src bash
+oc get machinesets -n openshift-machine-api | grep -v infra
+#+end_src
 
 #+begin_src bash
 oc get nodes -l role=storage-node -o name
@@ -1533,6 +1674,9 @@ oc -n openshift-storage get sc
 # ocs-storagecluster-cephfs     openshift-storage.cephfs.csi.ceph.com   13m
 # openshift-storage.noobaa.io   openshift-storage.noobaa.io/obc         7m55s
 #+end_example
+
+** Using the Rook-Ceph toolbox to check on the Ceph backing storage
+
 #+begin_src bash
 cat ~/test/support/ocslab_toolbox.yaml
 #+end_src
@@ -1613,7 +1757,7 @@ oc rsh -n openshift-storage $TOOLS_POD
 #+end_src
 
 #+begin_example
-# [lab-user@clientvm 0 ~/test master|✚1…2]$ sh-4.2# 
+# sh-4.2# 
 # 
 #+end_example
 
