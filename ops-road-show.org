@@ -1122,13 +1122,211 @@ oc get replicationcontrollers
 
 
 * Application Storage Basics
+** Adding Persistent Volume Claims
+
+#+begin_src bash
+oc set volume dc/mapit --add --name=mapit-storage -t pvc --claim-mode=ReadWriteOnce --claim-size=1Gi --claim-name=mapit-storage --mount-path=/app-storage
+#+end_src
+
+#+begin_src bash
+oc get dc mapit
+#+end_src
+
+#+begin_src bash
+oc get pod
+#+end_src
+
+#+begin_src bash
+oc describe dc mapit
+#+end_src
+
+** Storage Classes
+
+#+begin_src bash
+oc get storageclass
+#+end_src
+
+** Persistent Volume (Claims)
+
+#+begin_src bash
+oc get persistentvolume
+#+end_src
+
+#+begin_src bash
+oc get persistentvolumeclaim -n app-management
+#+end_src
+
+** Testing Persistent Storage
+
+#+begin_src bash
+oc rsh mapit-4-d872b
+#+end_src
+
+#+begin_src bash
+ls -ahl /
+#+end_src
+
+#+begin_src bash
+echo "Hello World from OpenShift" > /app-storage/hello.txt
+exit
+#+end_src
+
+#+begin_src bash
+oc rsh mapit-4-t4mnv cat /app-storage/hello.txt
+#+end_src
+
+#+begin_src bash
+oc delete pod mapit-4-t4mnv
+#+end_src
+
+#+begin_src bash
+oc get pod
+#+end_src
+
+#+begin_src bash
+oc rsh mapit-4-lpqd5 cat /app-storage/hello.txt
+#+end_src
+
 
 * MachineSets, Machines, and Nodes
+** MachineSets and Machines
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api
+#+end_src
+
+#+begin_src bash
+oc get machine -n openshift-machine-api
+#+end_src
+
+#+begin_src bash
+oc get nodes
+#+end_src
+
+** Cluster Scaling
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api
+#+end_src
+
+Within that list, find the MachineSet that ends in -2c. It should have a scale
+of one. Now, let’s scale it to have two instances:
+
+#+begin_src bash
+oc scale machineset cluster-5fa6-hx2ml-worker-us-east-2c -n openshift-machine-api --replicas=2
+#+end_src
+
+#+begin_src bash
+oc get machines -n openshift-machine-api
+#+end_src
+
+#+begin_src bash
+oc get nodes
+#+end_src
+
+#+begin_src bash
+oc scale machineset cluster-5fa6-hx2ml-worker-us-east-2c -n openshift-machine-api --replicas=1
+#+end_src
+
 
 * Infrastructure Nodes and Operators
+** More MachineSet Details
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-east-2c
+#+end_src
+
+#+begin_src bash
+cat ~/test/support/infra-nodes.sh
+#+end_src
+
+#+begin_src bash
+bash ~/test/support/infra-nodes.sh
+#+end_src
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api
+#+end_src
+
+#+begin_src bash
+oc get nodes
+#+end_src
+
+** Check the Labels
+
+#+begin_src bash
+oc get node ip-10-0-128-138.us-east-1.compute.internal --show-labels
+#+end_src
+
+** Moving Infrastructure Components
+*** Router
+
+#+begin_src bash
+oc get pod -n openshift-ingress-operator
+#+end_src
+
+#+begin_src bash
+oc get pods -n openshift-ingress -o wide
+#+end_src
+
+#+begin_src bash
+oc get node ip-10-0-144-70.us-east-2.compute.internal
+#+end_src
+
+#+begin_src bash
+oc get ingresses.config.openshift.io cluster -o yaml
+#+end_src
+
+#+begin_src bash
+oc get ingresscontrollers.operator.openshift.io default -n openshift-ingress-operator -o yaml
+#+end_src
+
+#+begin_src bash
+oc apply -f ~/test/support/ingresscontroller.yaml
+#+end_src
+
+#+begin_src bash
+oc get pod -n openshift-ingress -o wide
+#+end_src
+
+*** Registry
+
+#+begin_src bash
+oc get configs.imageregistry.operator.openshift.io/cluster -o yaml
+#+end_src
+
+#+begin_src bash
+oc patch configs.imageregistry.operator.openshift.io/cluster -p '{"spec":{"nodeSelector":{"node-role.kubernetes.io/infra": ""}}}' --type=merge
+#+end_src
+
+#+begin_src bash
+oc get pod -n openshift-image-registry
+#+end_src
+
+*** Monitoring
+
+#+begin_src bash
+oc get configmap cluster-monitoring-config -n openshift-monitoring
+#+end_src
+
+#+begin_src bash
+oc get configmap -n openshift-monitoring
+#+end_src
+
+#+begin_src bash
+oc create -f ~/test/support/cluster-monitoring-configmap.yaml
+#+end_src
+
+#+begin_src bash
+watch 'oc get pod -n openshift-monitoring'
+#+end_src
+
+#+begin_src bash
+oc get pod -w -n openshift-monitoring
+#+end_src
 
 
-* Machineset
+* Deploying and Managing OpenShift Container Storage
 ** Deploy your storage backend using the OCS operator - Scale OCP cluster and add 3 new nodes
 
 #+begin_src bash
@@ -1396,7 +1594,19 @@ oc get machines -n openshift-machine-api | egrep 'NAME|workerocs'
 #+end_example
 
 #+begin_src bash
+watch "oc get machinesets -n openshift-machine-api | egrep 'NAME|workerocs'"
+#+end_src
+
+#+begin_src bash
 oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
+#+end_src
+
+#+begin_src bash
+oc get nodes -l role=storage-node -o name | xargs -n1 -t -I {} oc label {} cluster.ocs.openshift.io/openshift-storage=""
+#+end_src
+
+#+begin_src bash
+oc get nodes -l cluster.ocs.openshift.io/openshift-storage=
 #+end_src
 
 ** Deploy your storage backend using the OCS operator - Scale OCP cluster and add 3 new nodes
@@ -1452,6 +1662,8 @@ oc get nodes -l cluster.ocs.openshift.io/openshift-storage=
 # ip-10-0-147-203.us-east-2.compute.internal   Ready    worker   26m   v1.14.6+9fb2d5cf9
 # ip-10-0-174-204.us-east-2.compute.internal   Ready    worker   26m   v1.14.6+9fb2d5cf9
 #+end_example
+
+** Installing the OCS operator
 
 #+begin_src bash
 oc create namespace openshift-storage
@@ -1509,6 +1721,7 @@ oc -n openshift-storage get pods
 # ocs-operator-55b5dd4d79-j9z75        1/1     Running   0          6m22s
 # rook-ceph-operator-7c6c4fd77-k76jl   1/1     Running   0          6m22s
 #+end_example
+
 Click create in OpenShift console
 
 #+begin_src bash
@@ -1662,6 +1875,8 @@ oc -n openshift-storage get pods
 # rook-ceph-osd-prepare-ocs-deviceset-1-0-x7hnz-q7f6g               0/1     Completed   0          2m33s
 # rook-ceph-osd-prepare-ocs-deviceset-2-0-rxlj7-sgrhl               0/1     Completed   0          2m32s
 #+end_example
+
+** Getting to know the Storage Dashboards
 
 #+begin_src bash
 oc -n openshift-storage get sc
@@ -15828,6 +16043,7 @@ oc adm must-gather -h
 # Use "oc adm options" for a list of global command-line options (applies to all commands).
 #+end_example
 
+
 ** OpenShift Log Aggregation
 *** OpenShift Log Aggregation
 
@@ -15989,6 +16205,7 @@ oc get route -n openshift-logging
 # NAME     HOST/PORT                                                                   PATH   SERVICES   PORT    TERMINATION          WILDCARD
 # kibana   kibana-openshift-logging.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          kibana     <all>   reencrypt/Redirect   None
 #+end_example
+
 
 ** External (LDAP) Authentication Providers, Users, and Groups
 *** Examine the OAuth configuration
@@ -16553,6 +16770,7 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 # Using project "app-prod".
 #+end_example
 
+
 ** OpenShift Monitoring with Prometheus
 
 *** Running Prometheus Queries
@@ -16560,6 +16778,7 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 
 cluster:cpu_usage_cores:sum
+
 
 ** Project Template, Quota, and Limits
 
@@ -17136,6 +17355,7 @@ this template-test project to observe how the Quota and LimitRange are
 applied. If you do, be sure to look at the JSON/YAML output (oc get …​ -o yaml)
 for things like the DeploymentConfig and the Pod.
 
+
 ** OpenShift Networking and NetworkPolicy
 *** Switch Your Project
 
@@ -17354,6 +17574,7 @@ bash ~/test/support/test-connectivity.sh
 # Checking connectivity between Pod A and Pod B... worked
 #+end_example
 
+
 ** Disabling Project Self-Provisioning
 
 *** Examine the Clusterrolebinding
@@ -17540,6 +17761,7 @@ oc patch --type=json project.config.openshift.io cluster -p '[{"op": "remove", "
 # clusterrolebinding.rbac.authorization.k8s.io/self-provisioners patched
 # project.config.openshift.io/cluster patched project.config.openshift.io/cluster patched
 #+end_example
+
 
 ** Cluster Resource Quotas
 *** Setting quota per user
@@ -18087,6 +18309,7 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 # 
 # Using project "default".
 #+end_example
+
 
 ** Cluster Metering
 
