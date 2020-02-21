@@ -16044,14 +16044,14 @@ oc adm must-gather -h
 #+end_example
 
 
+* OpenShift Log Aggregation
 ** OpenShift Log Aggregation
-*** OpenShift Log Aggregation
 
 https://docs.openshift.com/container-platform/4.1/logging/efk-logging.html
 
-*** Deploying OpenShift Logging
+** Deploying OpenShift Logging
 
-*** Create the openshift-logging namespace
+** Create the openshift-logging namespace
 
 #+begin_src bash
 cat ~/test/support/openshift_logging_namespace.yaml
@@ -16076,7 +16076,7 @@ oc create -f ~/test/support/openshift_logging_namespace.yaml
 # namespace/openshift-logging created
 #+end_example
 
-*** Install the Elasticsearch and Cluster Logging Operators in the cluster
+** Install the Elasticsearch and Cluster Logging Operators in the cluster
 
 #+begin_example
 apiVersion: "logging.openshift.io/v1"
@@ -16195,7 +16195,7 @@ oc get pvc -n openshift-logging
 # elasticsearch-elasticsearch-cdm-cfsd60sz-3   Bound    pvc-80b47559-54a4-11ea-99d2-0a84b9320ef6   100Gi      RWO            ocs-storagecluster-ceph-rbd   3m12s
 #+end_example
 
-*** Accessing Kibana
+** Accessing Kibana
 
 #+begin_src bash
 oc get route -n openshift-logging
@@ -16207,8 +16207,8 @@ oc get route -n openshift-logging
 #+end_example
 
 
-** External (LDAP) Authentication Providers, Users, and Groups
-*** Examine the OAuth configuration
+* External (LDAP) Authentication Providers, Users, and Groups
+** Examine the OAuth configuration
 
 #+begin_src bash
 oc get oauth cluster -o yaml
@@ -16327,7 +16327,7 @@ oc apply -f ~/test/support/oauth-cluster.yaml
 # oauth.config.openshift.io/cluster configured
 #+end_example
 
-*** Syncing LDAP Groups to OpenShift Groups
+** Syncing LDAP Groups to OpenShift Groups
 
 Change ca: to point to the downloaded ca.crt file
 
@@ -16460,7 +16460,7 @@ oc get user
 # No resources found.
 #+end_example
 
-*** Change Group Policy
+** Change Group Policy
 
 #+begin_src bash
 oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev
@@ -16470,7 +16470,7 @@ oc adm policy add-cluster-role-to-group cluster-reader ose-fancy-dev
 # clusterrole.rbac.authorization.k8s.io/cluster-reader added: "ose-fancy-dev"
 #+end_example
 
-*** Examine cluster-reader policy
+** Examine cluster-reader policy
 
 #+begin_src bash
 oc login -u normaluser1 -p openshift
@@ -16572,7 +16572,7 @@ oc get projects
 # openshift-storage                                                      Active
 #+end_example
 
-*** Create Projects for Collaboration
+** Create Projects for Collaboration
 
 #+begin_src bash
 oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
@@ -16614,7 +16614,7 @@ oc adm new-project app-prod --display-name="Application Production"
 # Created project app-prod
 #+end_example
 
-*** Map Groups to Projects
+** Map Groups to Projects
 
 #+begin_src bash
 oc adm policy add-role-to-group edit ose-teamed-app -n app-dev
@@ -16642,7 +16642,7 @@ oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
 # clusterrole.rbac.authorization.k8s.io/edit added: "ose-fancy-dev"
 #+end_example
 
-*** Examine Group Access
+** Examine Group Access
 
 #+begin_src bash
 oc login -u normaluser1 -p openshift
@@ -16715,7 +16715,7 @@ oc new-app docker.io/siamaksade/mapit
 # See 'oc new-app -h' for examples.
 #+end_example
 
-*** Prometheus
+** Prometheus
 
 #+begin_src bash
 oc login -u fancyuser1 -p openshift
@@ -16771,18 +16771,16 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 #+end_example
 
 
-** OpenShift Monitoring with Prometheus
-
-*** Running Prometheus Queries
+* OpenShift Monitoring with Prometheus
+** Running Prometheus Queries
 
 sum(kube_pod_container_resource_limits_memory_bytes)/(1024^3)
 
 cluster:cpu_usage_cores:sum
 
 
-** Project Template, Quota, and Limits
-
-*** View the Default Project Request Template
+* Project Template, Quota, and Limits
+** View the Default Project Request Template
 
 #+begin_src bash
 oc adm create-bootstrap-project-template -o yaml
@@ -16860,7 +16858,7 @@ oc new-project -h
 # Use "oc options" for a list of global command-line options (applies to all commands).
 #+end_example
 
-*** Modify the Project Request Template
+** Modify the Project Request Template
 
 #+begin_src bash
 cat ~/test/support/project_request_template.yaml
@@ -16981,7 +16979,7 @@ cat ~/test/support/project_request_template.yaml
 # - name: PROJECT_REQUESTING_USER
 #+end_example
 
-*** Create the Template
+** Create the Template
 
 #+begin_src bash
 oc create -f ~/test/support/project_request_template.yaml -n openshift-config
@@ -16999,7 +16997,7 @@ oc get template -n openshift-config
 # NAME              DESCRIPTION   PARAMETERS    OBJECTS
 # project-request                 5 (5 blank)   7
 #+end_example
-*** Setting the Default ProjectRequestTemplate
+** Setting the Default ProjectRequestTemplate
 
 #+begin_src bash
 oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.yaml}" | jq
@@ -17235,7 +17233,7 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 # }
 #+end_example
 
-*** Create a New Project
+** Create a New Project
 
 #+begin_src bash
 oc new-project template-test
@@ -17342,13 +17340,13 @@ oc get limitrange -n template-test
 # template-test-limits   2020-02-21T14:32:32Z
 #+end_example
 
-*** Clean Up
+** Clean Up
 
 #+begin_src bash
 oc delete project template-test
 #+end_src
 
-*** Redeploy the "Basics" section
+** Redeploy the "Basics" section
 
 Deploy the application from the Application Management Basics lab again inside
 this template-test project to observe how the Quota and LimitRange are
@@ -17356,8 +17354,8 @@ applied. If you do, be sure to look at the JSON/YAML output (oc get …​ -o ya
 for things like the DeploymentConfig and the Pod.
 
 
-** OpenShift Networking and NetworkPolicy
-*** Switch Your Project
+* OpenShift Networking and NetworkPolicy
+** Switch Your Project
 
 #+begin_src bash
 oc project default
@@ -17401,7 +17399,7 @@ bash ~/test/support/create-net-projects.sh
 # deploymentconfig.apps.openshift.io/ose created
 #+end_example
 
-*** Examine the created infrastructure
+** Examine the created infrastructure
 
 #+begin_src bash
 oc get pods -n netproj-a
@@ -17423,7 +17421,7 @@ oc get pods -n netproj-b
 # ose-1-deploy   0/1     Completed   0          67s
 #+end_example
 
-*** Test Connectivity (should work)
+** Test Connectivity (should work)
 
 #+begin_src bash
 cat ~/test/support/test-connectivity.sh
@@ -17487,7 +17485,7 @@ bash ~/test/support/test-connectivity.sh
 # Checking connectivity between Pod A and Pod B... worked
 #+end_example
 
-*** Restricting Access
+** Restricting Access
 
 #+begin_src bash
 cat ~/test/support/network-policy-block-all.yaml
@@ -17514,7 +17512,7 @@ oc create -n netproj-b -f ~/test/support/network-policy-block-all.yaml
 # networkpolicy.networking.k8s.io/deny-by-default created
 #+end_example
 
-*** Test Connectivity #2 (should fail)
+** Test Connectivity #2 (should fail)
 
 #+begin_src bash
 bash ~/test/support/test-connectivity.sh
@@ -17526,7 +17524,7 @@ bash ~/test/support/test-connectivity.sh
 # Checking connectivity between Pod A and Pod B..... FAILED!
 #+end_example
 
-*** Allow Access
+** Allow Access
 
 #+begin_src bash
 cat ~/test/support/network-policy-allow-all-from-netproj-a.yaml
@@ -17562,7 +17560,7 @@ oc create -n netproj-b -f ~/test/support/network-policy-allow-all-from-netproj-a
 # networkpolicy.networking.k8s.io/allow-tcp-5000-from-netproj-a-namespace created
 #+end_example
 
-*** Test Connectivity #3 (should work again)
+** Test Connectivity #3 (should work again)
 
 #+begin_src bash
 bash ~/test/support/test-connectivity.sh
@@ -17575,9 +17573,8 @@ bash ~/test/support/test-connectivity.sh
 #+end_example
 
 
-** Disabling Project Self-Provisioning
-
-*** Examine the Clusterrolebinding
+* Disabling Project Self-Provisioning
+** Examine the Clusterrolebinding
 
 #+begin_src bash
 oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -17633,7 +17630,7 @@ oc get clusterrolebinding.rbac self-provisioners -o yaml
 #   name: system:authenticated:oauth
 #+end_example
 
-*** Removing Self Provisioning Projects
+** Removing Self Provisioning Projects
 
 #+begin_src bash
 oc patch clusterrolebinding.rbac self-provisioners -p '{"subjects": null}'
@@ -17704,7 +17701,7 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 # Using project "default".
 #+end_example
 
-*** Customizing the request message
+** Customizing the request message
 
 #+begin_src bash
 oc patch --type=merge project.config.openshift.io cluster -p '{"spec":{"projectRequestMessage":"Please visit https://ticket.example.com to request a project"}}'
@@ -17734,7 +17731,7 @@ oc new-project fancyuserproject
 # Error from server (Forbidden): Please visit https://ticket.example.com to request a project
 #+end_example
 
-*** Clean Up
+** Clean Up
 
 #+begin_src bash
 oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -17763,8 +17760,8 @@ oc patch --type=json project.config.openshift.io cluster -p '[{"op": "remove", "
 #+end_example
 
 
-** Cluster Resource Quotas
-*** Setting quota per user
+* Cluster Resource Quotas
+** Setting quota per user
 
 #+begin_src bash
 oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -18059,7 +18056,7 @@ oc describe clusterresourcequotas for-user-normaluser1
 # pods		10	10
 #+end_example
 
-*** Setting quota by label
+** Setting quota by label
 
 #+begin_src bash
 oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -18264,7 +18261,7 @@ oc get events -n pricelist-backend | grep "Error creating" | head -1
 # 21s         Warning   FailedCreate                  replicationcontroller/backend-1   Error creating: pods "backend-1-88ptp" is forbidden: exceeded quota: for-pricelist, requested: pods=1, used: pods=5, limited: pods=5
 #+end_example
 
-*** Clean Up
+** Clean Up
 
 #+begin_src bash
 oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -18311,20 +18308,22 @@ oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
 #+end_example
 
 
-** Cluster Metering
+* Cluster Metering
 
 https://coreos.com/blog/introducing-operator-framework-metering
+
+** Examine cluster projects
 
 #+begin_src bash
 oc projects | grep openshift-metering
 #+end_src
 
-*** Add Metering Operator to cluster
+** Add Metering Operator to cluster
 
 Set the name to openshift-metering. No other namespace is supported. Label the
 namespace with openshift.io/cluster-monitoring=true, and click Create.
 
-*** Install the Metering stack
+** Install the Metering stack
 
 #+begin_example
 apiVersion: metering.openshift.io/v1
@@ -18344,7 +18343,7 @@ spec:
         namenode: "hdfs-namenode-0.hdfs-namenode:9820"
 #+end_example
 
-*** Verify the installation
+** Verify the installation
 
 #+begin_src bash
 oc -n openshift-metering get pods
@@ -18418,7 +18417,7 @@ oc get reportdatasources -n openshift-metering | grep -v raw
 # pod-usage-memory-bytes                       2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T13:42:00Z   2020-02-21T14:05:00Z   2020-02-21T15:42:57Z   2m49s
 #+end_example
 
-*** Writing Reports
+** Writing Reports
 
 #+begin_src bash
 oc get reportqueries -n openshift-metering | grep -v raw
@@ -18456,7 +18455,7 @@ oc get reportqueries -n openshift-metering | grep -v raw
 # pod-memory-usage                             4m47s
 #+end_example
 
-*** Create Report with a Schedule
+** Create Report with a Schedule
 
 #+begin_example
 apiVersion: metering.openshift.io/v1
@@ -18479,7 +18478,7 @@ oc get reports -n openshift-metering
 # cluster-cpu-usage-hourly   cluster-cpu-usage   hourly     ReportingPeriodWaiting                               12s
 #+end_example
 
-*** Create One-Time Report
+** Create One-Time Report
 
 #+begin_example
 apiVersion: metering.openshift.io/v1
