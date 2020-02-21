@@ -1,4 +1,4 @@
-B* Cluster Admin Authentication
+* Cluster Admin Authentication
 
 #+begin_src bash
 oc explain Role
@@ -146,5 +146,322 @@ echo $CLUSTERID
 
 #+begin_example
 cluster-munich-e7ab-lqhqg
+#+end_example
+
+#+begin_src bash
+cat ~/test/support/ocslab_cluster-workerocs.yaml
+#+end_src
+
+#+begin_example
+# ---
+# apiVersion: machine.openshift.io/v1beta1
+# kind: MachineSet
+# metadata:
+#   labels:
+#     machine.openshift.io/cluster-api-cluster: CLUSTERID
+#     machine.openshift.io/cluster-api-machine-role: workerocs
+#     machine.openshift.io/cluster-api-machine-type: workerocs
+#   name: CLUSTERID-workerocs-us-east-2a
+#   namespace: openshift-machine-api
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       machine.openshift.io/cluster-api-cluster: CLUSTERID
+#       machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2a
+#   template:
+#     metadata:
+#       creationTimestamp: null
+#       labels:
+#         machine.openshift.io/cluster-api-cluster: CLUSTERID
+#         machine.openshift.io/cluster-api-machine-role: workerocs
+#         machine.openshift.io/cluster-api-machine-type: workerocs
+#         machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2a
+#     spec:
+#       metadata:
+#         creationTimestamp: null
+#         labels:
+#           role: storage-node
+#           node-role.kubernetes.io/worker: ""
+#       providerSpec:
+#         value:
+#           ami:
+#             id: ami-0bc59aaa7363b805d
+#           apiVersion: awsproviderconfig.openshift.io/v1beta1
+#           blockDevices:
+#           - ebs:
+#               iops: 0
+#               volumeSize: 120
+#               volumeType: gp2
+#           credentialsSecret:
+#             name: aws-cloud-credentials
+#           deviceIndex: 0
+#           iamInstanceProfile:
+#             id: CLUSTERID-worker-profile
+#           instanceType: m5.4xlarge
+#           kind: AWSMachineProviderConfig
+#           metadata:
+#             creationTimestamp: null
+#           placement:
+#             availabilityZone: us-east-2a
+#             region: us-east-2
+#           publicIp: null
+#           securityGroups:
+#           - filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-worker-sg
+#           subnet:
+#             filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-private-us-east-2a
+#           tags:
+#           - name: kubernetes.io/cluster/CLUSTERID
+#             value: owned
+#           userDataSecret:
+#             name: worker-user-data
+#       versions:
+#         kubelet: ""
+# ---
+# apiVersion: machine.openshift.io/v1beta1
+# kind: MachineSet
+# metadata:
+#   labels:
+#     machine.openshift.io/cluster-api-cluster: CLUSTERID
+#     machine.openshift.io/cluster-api-machine-role: workerocs
+#     machine.openshift.io/cluster-api-machine-type: workerocs
+#   name: CLUSTERID-workerocs-us-east-2b
+#   namespace: openshift-machine-api
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       machine.openshift.io/cluster-api-cluster: CLUSTERID
+#       machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2b
+#   template:
+#     metadata:
+#       creationTimestamp: null
+#       labels:
+#         machine.openshift.io/cluster-api-cluster: CLUSTERID
+#         machine.openshift.io/cluster-api-machine-role: workerocs
+#         machine.openshift.io/cluster-api-machine-type: workerocs
+#         machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2b
+#     spec:
+#       metadata:
+#         creationTimestamp: null
+#         labels:
+#           role: storage-node
+#           node-role.kubernetes.io/worker: ""
+#       providerSpec:
+#         value:
+#           ami:
+#             id: ami-0bc59aaa7363b805d
+#           apiVersion: awsproviderconfig.openshift.io/v1beta1
+#           blockDevices:
+#           - ebs:
+#               iops: 0
+#               volumeSize: 120
+#               volumeType: gp2
+#           credentialsSecret:
+#             name: aws-cloud-credentials
+#           deviceIndex: 0
+#           iamInstanceProfile:
+#             id: CLUSTERID-worker-profile
+#           instanceType: m5.4xlarge
+#           kind: AWSMachineProviderConfig
+#           metadata:
+#             creationTimestamp: null
+#           placement:
+#             availabilityZone: us-east-2b
+#             region: us-east-2
+#           publicIp: null
+#           securityGroups:
+#           - filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-worker-sg
+#           subnet:
+#             filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-private-us-east-2b
+#           tags:
+#           - name: kubernetes.io/cluster/CLUSTERID
+#             value: owned
+#           userDataSecret:
+#             name: worker-user-data
+#       versions:
+#         kubelet: ""
+# ---
+# apiVersion: machine.openshift.io/v1beta1
+# kind: MachineSet
+# metadata:
+#   labels:
+#     machine.openshift.io/cluster-api-cluster: CLUSTERID
+#     machine.openshift.io/cluster-api-machine-role: workerocs
+#     machine.openshift.io/cluster-api-machine-type: workerocs
+#   name: CLUSTERID-workerocs-us-east-2c
+#   namespace: openshift-machine-api
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       machine.openshift.io/cluster-api-cluster: CLUSTERID
+#       machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2c
+#   template:
+#     metadata:
+#       creationTimestamp: null
+#       labels:
+#         machine.openshift.io/cluster-api-cluster: CLUSTERID
+#         machine.openshift.io/cluster-api-machine-role: workerocs
+#         machine.openshift.io/cluster-api-machine-type: workerocs
+#         machine.openshift.io/cluster-api-machineset: CLUSTERID-workerocs-us-east-2c
+#     spec:
+#       metadata:
+#         creationTimestamp: null
+#         labels:
+#           role: storage-node
+#           node-role.kubernetes.io/worker: ""
+#       providerSpec:
+#         value:
+#           ami:
+#             id: ami-0bc59aaa7363b805d
+#           apiVersion: awsproviderconfig.openshift.io/v1beta1
+#           blockDevices:
+#           - ebs:
+#               iops: 0
+#               volumeSize: 120
+#               volumeType: gp2
+#           credentialsSecret:
+#             name: aws-cloud-credentials
+#           deviceIndex: 0
+#           iamInstanceProfile:
+#             id: CLUSTERID-worker-profile
+#           instanceType: m5.4xlarge
+#           kind: AWSMachineProviderConfig
+#           metadata:
+#             creationTimestamp: null
+#           placement:
+#             availabilityZone: us-east-2c
+#             region: us-east-2
+#           publicIp: null
+#           securityGroups:
+#           - filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-worker-sg
+#           subnet:
+#             filters:
+#             - name: tag:Name
+#               values:
+#               - CLUSTERID-private-us-east-2c
+#           tags:
+#           - name: kubernetes.io/cluster/CLUSTERID
+#             value: owned
+#           userDataSecret:
+#             name: worker-user-data
+#       versions:
+#         kubelet: ""
+# ---
+#+end_example
+
+#+begin_src bash
+cat ~/test/support/ocslab_cluster-workerocs.yaml | sed "s/CLUSTERID/$CLUSTERID/g" | oc apply -f -
+#+end_src
+
+#+begin_src bash
+oc get machines -n openshift-machine-api | egrep 'NAME|workerocs'
+#+end_src
+
+#+begin_example
+# NAME                                                   STATE     TYPE         REGION      ZONE         AGE
+# cluster-munich-e7ab-lqhqg-workerocs-us-east-2a-ncm2v   running   m5.4xlarge   us-east-2   us-east-2a   79s
+# cluster-munich-e7ab-lqhqg-workerocs-us-east-2b-zf88g   running   m5.4xlarge   us-east-2   us-east-2b   78s
+# cluster-munich-e7ab-lqhqg-workerocs-us-east-2c-75plw   running   m5.4xlarge   us-east-2   us-east-2c   78s
+#+end_example
+
+#+begin_src bash
+oc get nodes -l node-role.kubernetes.io/worker -l '!node-role.kubernetes.io/infra','!node-role.kubernetes.io/master'
+#+end_src
+
+#+begin_example
+# [lab-user@clientvm 0 ~/test master|✚1…2]$ NAME                                         STATUS   ROLES    AGE   VERSION
+# ip-10-0-131-190.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
+# ip-10-0-133-255.us-east-2.compute.internal   Ready    worker   38h   v1.14.6+9fb2d5cf9
+# ip-10-0-147-203.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
+# ip-10-0-156-47.us-east-2.compute.internal    Ready    worker   38h   v1.14.6+9fb2d5cf9
+# ip-10-0-172-64.us-east-2.compute.internal    Ready    worker   21h   v1.14.6+9fb2d5cf9
+# ip-10-0-174-204.us-east-2.compute.internal   Ready    worker   22m   v1.14.6+9fb2d5cf9
+#+end_example
+
+#+begin_src bash
+oc get nodes -l role=storage-node -o name
+#+end_src
+
+#+begin_example
+# node/ip-10-0-131-190.us-east-2.compute.internal
+# node/ip-10-0-147-203.us-east-2.compute.internal
+# node/ip-10-0-174-204.us-east-2.compute.internal
+#+end_example
+
+#+begin_src bash
+oc get nodes -l role=storage-node -o name | xargs -n1 -t -I {} oc label {} cluster.ocs.openshift.io/openshift-storage=""
+#+end_src
+
+#+begin_example
+# oc label node/ip-10-0-131-190.us-east-2.compute.internal cluster.ocs.openshift.io/openshift-storage= 
+# node/ip-10-0-131-190.us-east-2.compute.internal labeled
+# oc label node/ip-10-0-147-203.us-east-2.compute.internal cluster.ocs.openshift.io/openshift-storage= 
+# node/ip-10-0-147-203.us-east-2.compute.internal labeled
+# oc label node/ip-10-0-174-204.us-east-2.compute.internal cluster.ocs.openshift.io/openshift-storage= 
+# node/ip-10-0-174-204.us-east-2.compute.internal labeled
+#+end_example
+
+#+begin_src bash
+oc get nodes -l cluster.ocs.openshift.io/openshift-storage=
+#+end_src
+
+#+begin_example
+# NAME                                         STATUS   ROLES    AGE   VERSION
+# ip-10-0-131-190.us-east-2.compute.internal   Ready    worker   26m   v1.14.6+9fb2d5cf9
+# ip-10-0-147-203.us-east-2.compute.internal   Ready    worker   26m   v1.14.6+9fb2d5cf9
+# ip-10-0-174-204.us-east-2.compute.internal   Ready    worker   26m   v1.14.6+9fb2d5cf9
+#+end_example
+
+#+begin_src bash
+oc create namespace openshift-storage
+#+end_src
+
+#+begin_example
+# namespace/openshift-storage created
+#+end_example
+
+#+begin_src bash
+oc label namespace openshift-storage "openshift.io/cluster-monitoring=true"
+#+end_src
+
+#+begin_example
+# namespace/openshift-storage labeled
+#+end_example
+
+#+begin_src bash
+oc get -n openshift-console route console
+#+end_src
+
+#+begin_example
+# NAME      HOST/PORT                                                                    PATH   SERVICES   PORT    TERMINATION          WILDCARD
+# console   console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          console    https   reencrypt/Redirect   None
+#+end_example
+
+#+begin_src bash
+oc -n openshift-storage get pods
+#+end_src
+
+#+begin_example
+# NAME                                 READY   STATUS    RESTARTS   AGE
+# noobaa-operator-7697b7b488-w7fqk     1/1     Running   0          2m23s
+# ocs-operator-55b5dd4d79-j9z75        1/1     Running   0          2m23s
+# rook-ceph-operator-7c6c4fd77-k76jl   1/1     Running   0          2m23s
 #+end_example
 
