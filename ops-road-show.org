@@ -3734,7 +3734,27 @@ ls -lt
 #+end_example
 
 #+begin_src bash
-./noobaa
+echo $PATH
+#+end_src
+
+#+begin_example
+# /usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/var/lib/snapd/snap/bin:/home/lab-user/bin:/usr/local/bin:/usr/local/maven/bin
+#+end_example
+
+#+begin_src bash
+sudo mv -v noobaa /usr/local/bin
+#+end_src
+
+#+begin_src bash
+type noobaa
+#+end_src
+
+#+begin_example
+# noobaa is hashed (/usr/local/bin/noobaa)
+#+end_example
+
+#+begin_src bash
+noobaa
 #+end_src
 
 #+begin_example
@@ -3778,7 +3798,7 @@ ls -lt
 #+end_example
 
 #+begin_src bash
-./noobaa version
+noobaa version
 #+end_src
 
 #+begin_example
@@ -3788,7 +3808,7 @@ ls -lt
 #+end_example
 
 #+begin_src bash
-./noobaa status -n openshift-storage
+noobaa status -n openshift-storage
 #+end_src
 
 #+begin_example
