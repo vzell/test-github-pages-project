@@ -1241,7 +1241,7 @@ cat ~/src/support/infra-nodes.sh
 #+end_src
 
 #+begin_src bash
-bash ~/test/support/infra-nodes.sh
+bash ~/src/support/infra-nodes.sh
 #+end_src
 
 #+begin_src bash
@@ -1282,7 +1282,7 @@ oc get ingresscontrollers.operator.openshift.io default -n openshift-ingress-ope
 #+end_src
 
 #+begin_src bash
-oc apply -f ~/test/support/ingresscontroller.yaml
+oc apply -f ~/src/support/ingresscontroller.yaml
 #+end_src
 
 #+begin_src bash
@@ -1314,7 +1314,7 @@ oc get configmap -n openshift-monitoring
 #+end_src
 
 #+begin_src bash
-oc create -f ~/test/support/cluster-monitoring-configmap.yaml
+oc create -f ~/src/support/cluster-monitoring-configmap.yaml
 #+end_src
 
 #+begin_src bash
@@ -1361,7 +1361,7 @@ cluster-munich-e7ab-lqhqg
 #+end_example
 
 #+begin_src bash
-cat ~/test/support/ocslab_cluster-workerocs.yaml
+cat ~/src/support/ocslab_cluster-workerocs.yaml
 #+end_src
 
 #+begin_example
@@ -1579,7 +1579,7 @@ cat ~/test/support/ocslab_cluster-workerocs.yaml
 #+end_example
 
 #+begin_src bash
-cat ~/test/support/ocslab_cluster-workerocs.yaml | sed "s/CLUSTERID/$CLUSTERID/g" | oc apply -f -
+cat ~/src/support/ocslab_cluster-workerocs.yaml | sed "s/CLUSTERID/$CLUSTERID/g" | oc apply -f -
 #+end_src
 
 #+begin_src bash
@@ -1893,7 +1893,7 @@ oc -n openshift-storage get sc
 ** Using the Rook-Ceph toolbox to check on the Ceph backing storage
 
 #+begin_src bash
-cat ~/test/support/ocslab_toolbox.yaml
+cat ~/src/support/ocslab_toolbox.yaml
 #+end_src
 
 #+begin_example
@@ -1959,7 +1959,7 @@ cat ~/test/support/ocslab_toolbox.yaml
 #+end_example
 
 #+begin_src bash
-oc apply -f ~/test/support/ocslab_toolbox.yaml
+oc apply -f ~/src/support/ocslab_toolbox.yaml
 #+end_src
 
 #+begin_example
@@ -2529,7 +2529,7 @@ oc new-project my-database-app
 #+end_example
 
 #+begin_src bash
-cat ~/test/support/ocslab_rails-app.yaml
+cat ~/src/support/ocslab_rails-app.yaml
 #+end_src
 
 #+begin_example
@@ -2936,7 +2936,7 @@ cat ~/test/support/ocslab_rails-app.yaml
 #+end_example
 
 #+begin_src bash
-oc new-app -f ~/test/support/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
+oc new-app -f ~/src/support/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
 #+end_src
 
 #+begin_example
@@ -3508,7 +3508,7 @@ oc apply -f /opt/app-root/src/support/ocslab_cluster-monitoring-noinfra.yaml
 If the ConfigMap already exists because of completing prior module OpenShift Infrastructure Nodes, you will apply changes to the existing ConfigMap.
 
 #+begin_src bash
-cat ~/test/support/ocslab_cluster-monitoring-withinfra.yaml
+cat ~/src/support/ocslab_cluster-monitoring-withinfra.yaml
 #+end_src
 
 #+begin_example
@@ -3559,7 +3559,7 @@ cat ~/test/support/ocslab_cluster-monitoring-withinfra.yaml
 #+end_example
 
 #+begin_src bash
-oc apply -f ~/test/support/ocslab_cluster-monitoring-withinfra.yaml
+oc apply -f ~/src/support/ocslab_cluster-monitoring-withinfra.yaml
 #+end_src
 
 #+begin_example
@@ -4086,7 +4086,7 @@ https://noobaa-mgmt-openshift-storage.apps.cluster-munich-e7ab.sandbox1596.opent
 *** Using an OBC inside a container
 
 #+begin_src bash
-cat ~/test/support/ocslab_obc-app-example.yaml
+cat ~/src/support/ocslab_obc-app-example.yaml
 #+end_src
 
 #+begin_example
@@ -4158,7 +4158,7 @@ cat ~/test/support/ocslab_obc-app-example.yaml
 #+end_example
 
 #+begin_src bash
-oc apply -f ~/test/support/ocslab_obc-app-example.yaml
+oc apply -f ~/src/support/ocslab_obc-app-example.yaml
 #+end_src
 
 #+begin_example
@@ -16074,7 +16074,7 @@ https://docs.openshift.com/container-platform/4.1/logging/efk-logging.html
 ** Create the openshift-logging namespace
 
 #+begin_src bash
-cat ~/test/support/openshift_logging_namespace.yaml
+cat ~/src/support/openshift_logging_namespace.yaml
 #+end_src
 
 #+begin_example
@@ -16089,7 +16089,7 @@ cat ~/test/support/openshift_logging_namespace.yaml
 #+end_example
 
 #+begin_src bash
-oc create -f ~/test/support/openshift_logging_namespace.yaml
+oc create -f ~/src/support/openshift_logging_namespace.yaml
 #+end_src
 
 #+begin_example
@@ -16277,25 +16277,25 @@ oc create secret generic ldap-secret --from-literal=bindPassword=bindingpassword
 #+end_example
 
 #+begin_src bash
-wget http://idm.openshiftworkshop.com/pub/ca.crt -O ~/test/ca.crt
+curl http://idm.openshiftworkshop.com/pub/ca.crt -o ~/ca.crt
 #+end_src
 
 #+begin_example
-# --2020-02-21 13:01:52--  http://idm.openshiftworkshop.com/pub/ca.crt
-# Resolving idm.openshiftworkshop.com (idm.openshiftworkshop.com)... 54.172.16.6
-# Connecting to idm.openshiftworkshop.com (idm.openshiftworkshop.com)|54.172.16.6|:80... connected.
-# HTTP request sent, awaiting response... 200 OK
-# Length: 1350 (1.3K) [application/x-x509-ca-cert]
-# Saving to: ‘/home/lab-user/test/ca.crt’
-# 
-# 100%[====================================================================================>] 1,350       --.-K/s   in 0s      
-# 
-# 2020-02-21 13:01:53 (186 MB/s) - ‘/home/lab-user/test/ca.crt’ saved [1350/1350]
-# 
+#   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+#                                  Dload  Upload   Total   Spent    Left  Speed
+# 100  1350  100  1350    0     0  16015      0 --:--:-- --:--:-- --:--:-- 16071
 #+end_example
 
 #+begin_src bash
-oc create configmap ca-config-map --from-file=/home/lab-user/test/ca.crt -n openshift-config
+ls -lt ~/ca.crt
+#+end_src
+
+#+begin_example
+# -rw-r--r--. 1 lab-user users 1350 Feb 22 09:28 /home/lab-user/ca.crt
+#+end_example
+
+#+begin_src bash
+oc create configmap ca-config-map --from-file=/home/lab-user/ca.crt -n openshift-config
 #+end_src
 
 #+begin_example
@@ -16303,7 +16303,7 @@ oc create configmap ca-config-map --from-file=/home/lab-user/test/ca.crt -n open
 #+end_example
 
 #+begin_src bash
-cat ~/test/support/oauth-cluster.yaml
+cat ~/src/support/oauth-cluster.yaml
 #+end_src
 
 #+begin_example
@@ -16339,7 +16339,7 @@ cat ~/test/support/oauth-cluster.yaml
 #+end_example
 
 #+begin_src bash
-oc apply -f ~/test/support/oauth-cluster.yaml
+oc apply -f ~/src/support/oauth-cluster.yaml
 #+end_src
 
 #+begin_example
@@ -16352,14 +16352,14 @@ oc apply -f ~/test/support/oauth-cluster.yaml
 Change ca: to point to the downloaded ca.crt file
 
 #+begin_src bash
-cat ~/test/support/groupsync.yaml
+cat ~/src/support/groupsync.yaml
 #+end_src
 
 #+begin_example
 # kind: LDAPSyncConfig
 # apiVersion: v1
 # url: ldap://idm.openshiftworkshop.com
-# ca: /home/lab-user/test/ca.crt
+# ca: /home/lab-user/ca.crt
 # bindDN: uid=system,cn=sysaccounts,cn=etc,dc=auth,dc=openshiftworkshop,dc=com
 # bindPassword: bindingpassword
 # rfc2307:
@@ -16382,7 +16382,7 @@ cat ~/test/support/groupsync.yaml
 #+end_example
 
 #+begin_src bash
-oc adm groups sync --sync-config=/home/lab-user/test/support/groupsync.yaml --confirm
+oc adm groups sync --sync-config=/home/lab-user/src/support/groupsync.yaml --confirm
 #+end_src
 
 #+begin_example
@@ -16881,7 +16881,7 @@ oc new-project -h
 ** Modify the Project Request Template
 
 #+begin_src bash
-cat ~/test/support/project_request_template.yaml
+cat ~/src/support/project_request_template.yaml
 #+end_src
 
 #+begin_example
@@ -17002,7 +17002,7 @@ cat ~/test/support/project_request_template.yaml
 ** Create the Template
 
 #+begin_src bash
-oc create -f ~/test/support/project_request_template.yaml -n openshift-config
+oc create -f ~/src/support/project_request_template.yaml -n openshift-config
 #+end_src
 
 #+begin_example
@@ -17124,7 +17124,7 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #+end_example
 
 #+begin_src bash
-cat ~/test/support/cr_project_request.yaml
+cat ~/src/support/cr_project_request.yaml
 #+end_src
 
 #+begin_example
@@ -17140,7 +17140,7 @@ cat ~/test/support/cr_project_request.yaml
 #+end_example
 
 #+begin_src bash
-oc apply -f ~/test/support/cr_project_request.yaml -n openshift-config
+oc apply -f ~/src/support/cr_project_request.yaml -n openshift-config
 #+end_src
 
 #+begin_example
@@ -17388,7 +17388,7 @@ oc project default
 ** Execute the Creation Script
 
 #+begin_src bash
-cat ~/test/support/create-net-projects.sh
+cat ~/src/support/create-net-projects.sh
 #+end_src
 
 #+begin_example
@@ -17409,7 +17409,7 @@ cat ~/test/support/create-net-projects.sh
 #+end_example
 
 #+begin_src bash
-bash ~/test/support/create-net-projects.sh
+bash ~/src/support/create-net-projects.sh
 #+end_src
 
 #+begin_example
@@ -17444,7 +17444,7 @@ oc get pods -n netproj-b
 ** Test Connectivity (should work)
 
 #+begin_src bash
-cat ~/test/support/test-connectivity.sh
+cat ~/src/support/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -17496,7 +17496,7 @@ cat ~/test/support/test-connectivity.sh
 #+end_example
 
 #+begin_src bash
-bash ~/test/support/test-connectivity.sh
+bash ~/src/support/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -17508,7 +17508,7 @@ bash ~/test/support/test-connectivity.sh
 ** Restricting Access
 
 #+begin_src bash
-cat ~/test/support/network-policy-block-all.yaml
+cat ~/src/support/network-policy-block-all.yaml
 #+end_src
 
 #+begin_example
@@ -17525,7 +17525,7 @@ cat ~/test/support/network-policy-block-all.yaml
 #+end_example
 
 #+begin_src bash
-oc create -n netproj-b -f ~/test/support/network-policy-block-all.yaml
+oc create -n netproj-b -f ~/src/support/network-policy-block-all.yaml
 #+end_src
 
 #+begin_example
@@ -17535,7 +17535,7 @@ oc create -n netproj-b -f ~/test/support/network-policy-block-all.yaml
 ** Test Connectivity #2 (should fail)
 
 #+begin_src bash
-bash ~/test/support/test-connectivity.sh
+bash ~/src/support/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -17547,7 +17547,7 @@ bash ~/test/support/test-connectivity.sh
 ** Allow Access
 
 #+begin_src bash
-cat ~/test/support/network-policy-allow-all-from-netproj-a.yaml
+cat ~/src/support/network-policy-allow-all-from-netproj-a.yaml
 #+end_src
 
 #+begin_example
@@ -17573,7 +17573,7 @@ cat ~/test/support/network-policy-allow-all-from-netproj-a.yaml
 #+end_example
 
 #+begin_src bash
-oc create -n netproj-b -f ~/test/support/network-policy-allow-all-from-netproj-a.yaml
+oc create -n netproj-b -f ~/src/support/network-policy-allow-all-from-netproj-a.yaml
 #+end_src
 
 #+begin_example
@@ -17583,7 +17583,7 @@ oc create -n netproj-b -f ~/test/support/network-policy-allow-all-from-netproj-a
 ** Test Connectivity #3 (should work again)
 
 #+begin_src bash
-bash ~/test/support/test-connectivity.sh
+bash ~/src/support/test-connectivity.sh
 #+end_src
 
 #+begin_example
