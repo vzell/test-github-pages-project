@@ -104,4 +104,4 @@ venv.bak/
 .mypy_cache/
 
 must-gather*
-ca.cert
+ca.crt
