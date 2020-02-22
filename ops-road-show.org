@@ -1237,7 +1237,7 @@ oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-
 #+end_src
 
 #+begin_src bash
-cat ~/test/support/infra-nodes.sh
+cat ~/src/support/infra-nodes.sh
 #+end_src
 
 #+begin_src bash
