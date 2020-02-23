@@ -1,4 +1,310 @@
-* Environment Overview
+* Environment Overview - dashboard node
+** Misc
+
+#+begin_src bash
+hostname
+#+end_src
+
+#+begin_example
+# dashboard-1-jddq8
+#+end_example
+
+#+begin_src bash
+id
+#+end_src
+
+#+begin_example
+# uid=1001(default) gid=0(root) groups=0(root)
+#+end_example
+
+#+begin_src bash
+ip a
+#+end_src
+
+#+begin_example
+# 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+#     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+#     inet 127.0.0.1/8 scope host lo
+#        valid_lft forever preferred_lft forever
+#     inet6 ::1/128 scope host
+#        valid_lft forever preferred_lft forever
+# 3: eth0@if11: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 8951 qdisc noqueue state UP group default
+#     link/ether 0a:58:0a:82:02:06 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+#     inet 10.130.2.6/23 brd 10.130.3.255 scope global eth0
+#        valid_lft forever preferred_lft forever
+#     inet6 fe80::5855:daff:feaf:1592/64 scope link
+#        valid_lft forever preferred_lft forever
+#+end_example
+
+#+begin_src bash
+cat /etc/hosts
+#+end_src
+
+#+begin_example
+# # Kubernetes-managed hosts file.
+# 127.0.0.1       localhost
+# ::1     localhost ip6-localhost ip6-loopback
+# fe00::0 ip6-localnet
+# fe00::0 ip6-mcastprefix
+# fe00::1 ip6-allnodes
+# fe00::2 ip6-allrouters
+# 10.130.2.6      dashboard-1-jddq8
+#+end_example
+
+#+begin_src bash
+cat /etc/resolv.conf
+#+end_src
+
+#+begin_example
+# search lab-ocp-cns.svc.cluster.local svc.cluster.local cluster.local us-east-2.compute.internal
+# nameserver 172.30.0.10
+# options ndots:5
+#+end_example
+
+** Cluster Admin Authentication
+
+#+begin_src bash
+oc explain Role
+#+end_src
+
+#+begin_example
+# KIND:     Role
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      Role is a namespaced, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this Role
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRole
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRole
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRole is a cluster level, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding or ClusterRoleBinding.
+# 
+# FIELDS:
+#    aggregationRule	<Object>
+#      AggregationRule is an optional field that describes how to build the Rules
+#      for this ClusterRole. If AggregationRule is set, then the Rules are
+#      controller managed and direct changes to Rules will be stomped by the
+#      controller.
+# 
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this ClusterRole
+# 
+#+end_example
+
+#+begin_src bash
+oc explain RoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     RoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      RoleBinding references a role, but does not contain it. It can reference a
+#      Role in the same namespace or a ClusterRole in the global namespace. It
+#      adds who information via Subjects and namespace information by which
+#      namespace it exists in. RoleBindings in a given namespace only have effect
+#      in that namespace.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can reference a Role in the current namespace or a ClusterRole in
+#      the global namespace. If the RoleRef cannot be resolved, the Authorizer
+#      must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+# 
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRoleBinding references a ClusterRole, but not contain it. It can
+#      reference a ClusterRole in the global namespace, and adds who information
+#      via Subject.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can only reference a ClusterRole in the global namespace. If the
+#      RoleRef cannot be resolved, the Authorizer must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+# 
+#+end_example
+
+
+#+begin_src bash
+oc get clusterrole cluster-admin -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   annotations:
+#     rbac.authorization.kubernetes.io/autoupdate: "true"
+#   creationTimestamp: "2020-02-19T17:55:47Z"
+#   labels:
+#     kubernetes.io/bootstrapping: rbac-defaults
+#   name: cluster-admin
+#   resourceVersion: "59"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterroles/cluster-admin
+#   uid: 0ee5fe3a-5341-11ea-8707-027cbd288fd4
+# rules:
+# - apiGroups:
+#   - '*'
+#   resources:
+#   - '*'
+#   verbs:
+#   - '*'
+# - nonResourceURLs:
+#   - '*'
+#   verbs:
+#   - '*'
+#+end_example
+
+#+begin_src bash
+oc whoami --help
+#+end_src
+
+#+begin_example
+# Show information about the current session
+# 
+#  The default options for this command will return the currently authenticated user name or an empty string.  Other flags
+# support returning the currently used token or the user context.
+# 
+# Usage:
+#   oc whoami [flags]
+# 
+# Options:
+#       --show-console=false: If true, print the current server's web console URL
+#   -c, --show-context=false: Print the current user context name
+#       --show-server=false: If true, print the current server's REST API URL
+#   -t, --show-token=false: Print the token the current session is using. This will return an error if you are using a
+# different form of authentication.
+# 
+# Use "oc options" for a list of global command-line options (applies to all commands).
+#+end_example
+
+
+#+begin_src bash
+oc whoami
+#+end_src
+
+#+begin_example
+# system:serviceaccount:lab-ocp-cns:dashboard-user
+#+end_example
+
+#+begin_src bash
+oc get clusterrolebinding dashboard-cluster-admin -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   annotations:
+#     openshift.io/generated-by: OpenShiftNewApp
+#   creationTimestamp: "2020-02-19T18:12:53Z"
+#   labels:
+#     app: dashboard
+#   name: dashboard-cluster-admin
+#   resourceVersion: "16662"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/dashboard-cluster-admin
+#   uid: 72810517-5343-11ea-8ece-06399a073c9e
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: cluster-admin
+# subjects:
+# - kind: ServiceAccount
+#   name: dashboard-user
+#   namespace: lab-ocp-cns
+#+end_example
+
+
+* Environment Overview - bastion node
 ** Cluster Admin Authentication
 
 #+begin_src bash
@@ -243,7 +549,7 @@ oc get clusterrolebinding dashboard-cluster-admin -o yaml
 
 
 * Installation and Verification
-** Logging in
+** Logging in to bastion node
 
 #+begin_src bash
 ssh -l lab-user bastion.munich-e7ab.sandbox1596.opentlc.com -o ServerAliveInterval=120
@@ -254,6 +560,79 @@ r3dh4t1!
 #+begin_src bash
 export GUID=`hostname | cut -d. -f2`
 #+end_src
+
+** Misc
+
+#+begin_src bash
+hostname
+#+end_src
+
+#+begin_example
+# clientvm.munich-e7ab.internal
+#+end_example
+
+#+begin_src bash
+id
+#+end_src
+
+#+begin_example
+# uid=1001(lab-user) gid=100(users) groups=100(users),10(wheel) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
+#+end_example
+
+#+begin_src bash
+ip a
+#+end_src
+
+#+begin_example
+# 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+#     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+#     inet 127.0.0.1/8 scope host lo
+#        valid_lft forever preferred_lft forever
+#     inet6 ::1/128 scope host 
+#        valid_lft forever preferred_lft forever
+# 2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc mq state UP group default qlen 1000
+#     link/ether 06:d3:c4:4d:8b:e6 brd ff:ff:ff:ff:ff:ff
+#     inet 192.168.0.173/24 brd 192.168.0.255 scope global noprefixroute dynamic eth0
+#        valid_lft 2822sec preferred_lft 2822sec
+#     inet6 fe80::4d3:c4ff:fe4d:8be6/64 scope link 
+#        valid_lft forever preferred_lft forever
+#+end_example
+
+#+begin_src bash
+cat /etc/hosts
+#+end_src
+
+#+begin_example
+# 127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+# ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+# 
+#+end_example
+
+#+begin_src bash
+cat /etc/resolv.conf
+#+end_src
+
+#+begin_example
+# # Generated by NetworkManager
+# search us-east-2.compute.internal munich-e7ab.internal
+# nameserver 192.168.0.2
+#+end_example
+
+Checking bind mount
+
+#+begin_src bash
+cat /etc/fstab
+#+end_src
+
+#+begin_example
+# # Created by anaconda on Mon Aug 13 15:54:56 2018
+# #
+# # Accessible filesystems, by reference, are maintained under '/dev/disk'
+# # See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+# #
+# UUID=66e5e079-770e-4359-a9da-5205c3d8d5af /                       xfs     defaults        0 0
+# /home/ec2-user/cluster-munich-e7ab /home/lab-user/cluster-munich-e7ab none defaults,bind,ro 0 0
+#+end_example
 
 ** Login to OpenShift
 
@@ -16766,9 +17145,32 @@ role.
 
 https://prometheus-k8s-openshift-monitoring.apps.cluster-munich-e7ab.sandbox1596.opentlc.com
 
+In the original dashboard shell:
+
 #+begin_src bash
 oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
 #+end_src
+
+#+begin_example
+Logged into "https://172.30.0.1:443" as "system:serviceaccount:lab-ocp-cns:dashboard-user" using existing credentials.
+
+You have access to 65 projects, the list has been suppressed. You can list all projects with 'oc projects'
+
+Using project "lab-ocp-cns".
+#+end_example
+
+On the bastion node:
+
+#+begin_src bash
+oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
+#+end_src
+
+#+begin_example
+# Authentication required for https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443 (openshift)
+# Username: system:serviceaccount:lab-ocp-cns:dashboard-user
+# Password: 
+# error: username system:serviceaccount:lab-ocp-cns:dashboard-user is invalid for basic auth
+#+end_example
 
 #+begin_src bash
 oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p RmEAm-FN5EH-XhpAH-YYbf8
@@ -18526,3 +18928,562 @@ oc get reports -n openshift-metering
 oc get reports -n openshift-metering
 #+end_src
 
+
+* oc tool
+
+#+begin_src bash
+oc api-resources
+#+end_src
+
+#+begin_example
+# NAME                                  SHORTNAMES               APIGROUP                              NAMESPACED   KIND
+# bindings                                                                                             true         Binding
+# componentstatuses                     cs                                                             false        ComponentStatus
+# configmaps                            cm                                                             true         ConfigMap
+# endpoints                             ep                                                             true         Endpoints
+# events                                ev                                                             true         Event
+# limitranges                           limits                                                         true         LimitRange
+# namespaces                            ns                                                             false        Namespace
+# nodes                                 no                                                             false        Node
+# persistentvolumeclaims                pvc                                                            true         PersistentVolumeClaim
+# persistentvolumes                     pv                                                             false        PersistentVolume
+# pods                                  po                                                             true         Pod
+# podtemplates                                                                                         true         PodTemplate
+# replicationcontrollers                rc                                                             true         ReplicationController
+# resourcequotas                        quota                                                          true         ResourceQuota
+# secrets                                                                                              true         Secret
+# serviceaccounts                       sa                                                             true         ServiceAccount
+# services                              svc                                                            true         Service
+# mutatingwebhookconfigurations                                  admissionregistration.k8s.io          false        MutatingWebhookConfiguration
+# validatingwebhookconfigurations                                admissionregistration.k8s.io          false        ValidatingWebhookConfiguration
+# customresourcedefinitions             crd,crds                 apiextensions.k8s.io                  false        CustomResourceDefinition
+# apiservices                                                    apiregistration.k8s.io                false        APIService
+# controllerrevisions                                            apps                                  true         ControllerRevision
+# daemonsets                            ds                       apps                                  true         DaemonSet
+# deployments                           deploy                   apps                                  true         Deployment
+# replicasets                           rs                       apps                                  true         ReplicaSet
+# statefulsets                          sts                      apps                                  true         StatefulSet
+# deploymentconfigs                     dc                       apps.openshift.io                     true         DeploymentConfig
+# tokenreviews                                                   authentication.k8s.io                 false        TokenReview
+# localsubjectaccessreviews                                      authorization.k8s.io                  true         LocalSubjectAccessReview
+# selfsubjectaccessreviews                                       authorization.k8s.io                  false        SelfSubjectAccessReview
+# selfsubjectrulesreviews                                        authorization.k8s.io                  false        SelfSubjectRulesReview
+# subjectaccessreviews                                           authorization.k8s.io                  false        SubjectAccessReview
+# clusterrolebindings                                            authorization.openshift.io            false        ClusterRoleBinding
+# clusterroles                                                   authorization.openshift.io            false        ClusterRole
+# localresourceaccessreviews                                     authorization.openshift.io            true         LocalResourceAccessReview
+# localsubjectaccessreviews                                      authorization.openshift.io            true         LocalSubjectAccessReview
+# resourceaccessreviews                                          authorization.openshift.io            false        ResourceAccessReview
+# rolebindingrestrictions                                        authorization.openshift.io            true         RoleBindingRestriction
+# rolebindings                                                   authorization.openshift.io            true         RoleBinding
+# roles                                                          authorization.openshift.io            true         Role
+# selfsubjectrulesreviews                                        authorization.openshift.io            true         SelfSubjectRulesReview
+# subjectaccessreviews                                           authorization.openshift.io            false        SubjectAccessReview
+# subjectrulesreviews                                            authorization.openshift.io            true         SubjectRulesReview
+# horizontalpodautoscalers              hpa                      autoscaling                           true         HorizontalPodAutoscaler
+# clusterautoscalers                                             autoscaling.openshift.io              false        ClusterAutoscaler
+# machineautoscalers                                             autoscaling.openshift.io              true         MachineAutoscaler
+# cronjobs                              cj                       batch                                 true         CronJob
+# jobs                                                           batch                                 true         Job
+# buildconfigs                          bc                       build.openshift.io                    true         BuildConfig
+# builds                                                         build.openshift.io                    true         Build
+# cephblockpools                                                 ceph.rook.io                          true         CephBlockPool
+# cephclusters                                                   ceph.rook.io                          true         CephCluster
+# cephfilesystems                                                ceph.rook.io                          true         CephFilesystem
+# cephnfses                             nfs                      ceph.rook.io                          true         CephNFS
+# cephobjectstores                                               ceph.rook.io                          true         CephObjectStore
+# cephobjectstoreusers                                           ceph.rook.io                          true         CephObjectStoreUser
+# certificatesigningrequests            csr                      certificates.k8s.io                   false        CertificateSigningRequest
+# credentialsrequests                                            cloudcredential.openshift.io          true         CredentialsRequest
+# apiservers                                                     config.openshift.io                   false        APIServer
+# authentications                                                config.openshift.io                   false        Authentication
+# builds                                                         config.openshift.io                   false        Build
+# clusteroperators                      co                       config.openshift.io                   false        ClusterOperator
+# clusterversions                                                config.openshift.io                   false        ClusterVersion
+# consoles                                                       config.openshift.io                   false        Console
+# dnses                                                          config.openshift.io                   false        DNS
+# featuregates                                                   config.openshift.io                   false        FeatureGate
+# images                                                         config.openshift.io                   false        Image
+# infrastructures                                                config.openshift.io                   false        Infrastructure
+# ingresses                                                      config.openshift.io                   false        Ingress
+# networks                                                       config.openshift.io                   false        Network
+# oauths                                                         config.openshift.io                   false        OAuth
+# operatorhubs                                                   config.openshift.io                   false        OperatorHub
+# projects                                                       config.openshift.io                   false        Project
+# proxies                                                        config.openshift.io                   false        Proxy
+# schedulers                                                     config.openshift.io                   false        Scheduler
+# consoleclidownloads                                            console.openshift.io                  false        ConsoleCLIDownload
+# consoleexternalloglinks                                        console.openshift.io                  false        ConsoleExternalLogLink
+# consolelinks                                                   console.openshift.io                  false        ConsoleLink
+# consolenotifications                                           console.openshift.io                  false        ConsoleNotification
+# leases                                                         coordination.k8s.io                   true         Lease
+# events                                ev                       events.k8s.io                         true         Event
+# daemonsets                            ds                       extensions                            true         DaemonSet
+# deployments                           deploy                   extensions                            true         Deployment
+# ingresses                             ing                      extensions                            true         Ingress
+# networkpolicies                       netpol                   extensions                            true         NetworkPolicy
+# podsecuritypolicies                   psp                      extensions                            false        PodSecurityPolicy
+# replicasets                           rs                       extensions                            true         ReplicaSet
+# machinedisruptionbudgets              mdb,mdbs                 healthchecking.openshift.io           true         MachineDisruptionBudget
+# machinehealthchecks                   mhc,mhcs                 healthchecking.openshift.io           true         MachineHealthCheck
+# images                                                         image.openshift.io                    false        Image
+# imagesignatures                                                image.openshift.io                    false        ImageSignature
+# imagestreamimages                     isimage                  image.openshift.io                    true         ImageStreamImage
+# imagestreamimports                                             image.openshift.io                    true         ImageStreamImport
+# imagestreammappings                                            image.openshift.io                    true         ImageStreamMapping
+# imagestreams                          is                       image.openshift.io                    true         ImageStream
+# imagestreamtags                       istag                    image.openshift.io                    true         ImageStreamTag
+# configs                                                        imageregistry.operator.openshift.io   false        Config
+# dnsrecords                                                     ingress.operator.openshift.io         true         DNSRecord
+# network-attachment-definitions        net-attach-def           k8s.cni.cncf.io                       true         NetworkAttachmentDefinition
+# clusterloggings                                                logging.openshift.io                  true         ClusterLogging
+# elasticsearches                                                logging.openshift.io                  true         Elasticsearch
+# machines                                                       machine.openshift.io                  true         Machine
+# machinesets                                                    machine.openshift.io                  true         MachineSet
+# containerruntimeconfigs               ctrcfg                   machineconfiguration.openshift.io     false        ContainerRuntimeConfig
+# controllerconfigs                                              machineconfiguration.openshift.io     false        ControllerConfig
+# kubeletconfigs                                                 machineconfiguration.openshift.io     false        KubeletConfig
+# machineconfigpools                    mcp                      machineconfiguration.openshift.io     false        MachineConfigPool
+# machineconfigs                        mc                       machineconfiguration.openshift.io     false        MachineConfig
+# mcoconfigs                                                     machineconfiguration.openshift.io     true         MCOConfig
+# baremetalhosts                        bmh,bmhost               metal3.io                             true         BareMetalHost
+# hivetables                                                     metering.openshift.io                 true         HiveTable
+# meteringconfigs                                                metering.openshift.io                 true         MeteringConfig
+# prestotables                                                   metering.openshift.io                 true         PrestoTable
+# reportdatasources                     datasource,datasources   metering.openshift.io                 true         ReportDataSource
+# reportqueries                         rq                       metering.openshift.io                 true         ReportQuery
+# reports                                                        metering.openshift.io                 true         Report
+# storagelocations                                               metering.openshift.io                 true         StorageLocation
+# nodes                                                          metrics.k8s.io                        false        NodeMetrics
+# pods                                                           metrics.k8s.io                        true         PodMetrics
+# alertmanagers                                                  monitoring.coreos.com                 true         Alertmanager
+# podmonitors                                                    monitoring.coreos.com                 true         PodMonitor
+# prometheuses                                                   monitoring.coreos.com                 true         Prometheus
+# prometheusrules                                                monitoring.coreos.com                 true         PrometheusRule
+# servicemonitors                                                monitoring.coreos.com                 true         ServiceMonitor
+# clusternetworks                                                network.openshift.io                  false        ClusterNetwork
+# egressnetworkpolicies                                          network.openshift.io                  true         EgressNetworkPolicy
+# hostsubnets                                                    network.openshift.io                  false        HostSubnet
+# netnamespaces                                                  network.openshift.io                  false        NetNamespace
+# ingresses                             ing                      networking.k8s.io                     true         Ingress
+# networkpolicies                       netpol                   networking.k8s.io                     true         NetworkPolicy
+# runtimeclasses                                                 node.k8s.io                           false        RuntimeClass
+# backingstores                                                  noobaa.io                             true         BackingStore
+# bucketclasses                                                  noobaa.io                             true         BucketClass
+# noobaas                               nb                       noobaa.io                             true         NooBaa
+# oauthaccesstokens                                              oauth.openshift.io                    false        OAuthAccessToken
+# oauthauthorizetokens                                           oauth.openshift.io                    false        OAuthAuthorizeToken
+# oauthclientauthorizations                                      oauth.openshift.io                    false        OAuthClientAuthorization
+# oauthclients                                                   oauth.openshift.io                    false        OAuthClient
+# objectbucketclaims                    obc,obcs                 objectbucket.io                       true         ObjectBucketClaim
+# objectbuckets                         ob,obs                   objectbucket.io                       false        ObjectBucket
+# ocsinitializations                                             ocs.openshift.io                      true         OCSInitialization
+# storageclusterinitializations                                  ocs.openshift.io                      true         StorageClusterInitialization
+# storageclusters                                                ocs.openshift.io                      true         StorageCluster
+# authentications                                                operator.openshift.io                 false        Authentication
+# consoles                                                       operator.openshift.io                 false        Console
+# dnses                                                          operator.openshift.io                 false        DNS
+# imagecontentsourcepolicies                                     operator.openshift.io                 false        ImageContentSourcePolicy
+# ingresscontrollers                                             operator.openshift.io                 true         IngressController
+# kubeapiservers                                                 operator.openshift.io                 false        KubeAPIServer
+# kubecontrollermanagers                                         operator.openshift.io                 false        KubeControllerManager
+# kubeschedulers                                                 operator.openshift.io                 false        KubeScheduler
+# networks                                                       operator.openshift.io                 false        Network
+# openshiftapiservers                                            operator.openshift.io                 false        OpenShiftAPIServer
+# openshiftcontrollermanagers                                    operator.openshift.io                 false        OpenShiftControllerManager
+# servicecas                                                     operator.openshift.io                 false        ServiceCA
+# servicecatalogapiservers                                       operator.openshift.io                 false        ServiceCatalogAPIServer
+# servicecatalogcontrollermanagers                               operator.openshift.io                 false        ServiceCatalogControllerManager
+# catalogsourceconfigs                  csc                      operators.coreos.com                  true         CatalogSourceConfig
+# catalogsources                        catsrc                   operators.coreos.com                  true         CatalogSource
+# clusterserviceversions                csv,csvs                 operators.coreos.com                  true         ClusterServiceVersion
+# installplans                          ip                       operators.coreos.com                  true         InstallPlan
+# operatorgroups                        og                       operators.coreos.com                  true         OperatorGroup
+# operatorsources                       opsrc                    operators.coreos.com                  true         OperatorSource
+# subscriptions                         sub,subs                 operators.coreos.com                  true         Subscription
+# packagemanifests                                               packages.operators.coreos.com         true         PackageManifest
+# poddisruptionbudgets                  pdb                      policy                                true         PodDisruptionBudget
+# podsecuritypolicies                   psp                      policy                                false        PodSecurityPolicy
+# projectrequests                                                project.openshift.io                  false        ProjectRequest
+# projects                                                       project.openshift.io                  false        Project
+# appliedclusterresourcequotas                                   quota.openshift.io                    true         AppliedClusterResourceQuota
+# clusterresourcequotas                 clusterquota             quota.openshift.io                    false        ClusterResourceQuota
+# clusterrolebindings                                            rbac.authorization.k8s.io             false        ClusterRoleBinding
+# clusterroles                                                   rbac.authorization.k8s.io             false        ClusterRole
+# rolebindings                                                   rbac.authorization.k8s.io             true         RoleBinding
+# roles                                                          rbac.authorization.k8s.io             true         Role
+# routes                                                         route.openshift.io                    true         Route
+# configs                                                        samples.operator.openshift.io         false        Config
+# priorityclasses                       pc                       scheduling.k8s.io                     false        PriorityClass
+# podsecuritypolicyreviews                                       security.openshift.io                 true         PodSecurityPolicyReview
+# podsecuritypolicyselfsubjectreviews                            security.openshift.io                 true         PodSecurityPolicySelfSubjectReview
+# podsecuritypolicysubjectreviews                                security.openshift.io                 true         PodSecurityPolicySubjectReview
+# rangeallocations                                               security.openshift.io                 false        RangeAllocation
+# securitycontextconstraints            scc                      security.openshift.io                 false        SecurityContextConstraints
+# csidrivers                                                     storage.k8s.io                        false        CSIDriver
+# csinodes                                                       storage.k8s.io                        false        CSINode
+# storageclasses                        sc                       storage.k8s.io                        false        StorageClass
+# volumeattachments                                              storage.k8s.io                        false        VolumeAttachment
+# brokertemplateinstances                                        template.openshift.io                 false        BrokerTemplateInstance
+# processedtemplates                                             template.openshift.io                 true         Template
+# templateinstances                                              template.openshift.io                 true         TemplateInstance
+# templates                                                      template.openshift.io                 true         Template
+# tuneds                                                         tuned.openshift.io                    true         Tuned
+# groups                                                         user.openshift.io                     false        Group
+# identities                                                     user.openshift.io                     false        Identity
+# useridentitymappings                                           user.openshift.io                     false        UserIdentityMapping
+# users                                                          user.openshift.io                     false        User
+#+end_example
+
+#+begin_src bash
+oc get --help
+#+end_src
+
+#+begin_example
+# Display one or many resources
+# 
+#  Prints a table of the most important information about the specified resources. You can filter the
+# list using a label selector and the --selector flag. If the desired resource type is namespaced you
+# will only see results in your current namespace unless you pass --all-namespaces.
+# 
+#  Uninitialized objects are not shown unless --include-uninitialized is passed.
+# 
+#  By specifying the output as 'template' and providing a Go template as the value of the --template
+# flag, you can filter the attributes of the fetched resources.
+# 
+#  Use "oc api-resources" for a complete list of supported resources.
+# 
+# Usage:
+#   oc get
+# [(-o|--output=)json|yaml|wide|custom-columns=...|custom-columns-file=...|go-template=...|go-template-file=...|jsonpath=...|jsonpath-file=...]
+# (TYPE[.VERSION][.GROUP] [NAME | -l label] | TYPE[.VERSION][.GROUP]/NAME ...) [flags]
+# 
+# Examples:
+#   # List all pods in ps output format.
+#   oc get pods
+#   
+#   # List all pods in ps output format with more information (such as node name).
+#   oc get pods -o wide
+#   
+#   # List a single replication controller with specified NAME in ps output format.
+#   oc get replicationcontroller web
+#   
+#   # List deployments in JSON output format, in the "v1" version of the "apps" API group:
+#   oc get deployments.v1.apps -o json
+#   
+#   # List a single pod in JSON output format.
+#   oc get -o json pod web-pod-13je7
+#   
+#   # List a pod identified by type and name specified in "pod.yaml" in JSON output format.
+#   oc get -f pod.yaml -o json
+#   
+#   # List resources from a directory with kustomization.yaml - e.g. dir/kustomization.yaml.
+#   oc get -k dir/
+#   
+#   # Return only the phase value of the specified pod.
+#   oc get -o template pod/web-pod-13je7 --template={{.status.phase}}
+#   
+#   # List resource information in custom columns.
+#   oc get pod test-pod -o
+# custom-columns=CONTAINER:.spec.containers[0].name,IMAGE:.spec.containers[0].image
+#   
+#   # List all replication controllers and services together in ps output format.
+#   oc get rc,services
+#   
+#   # List one or more resources by their type and names.
+#   oc get rc/web service/frontend pods/web-pod-13je7
+# 
+# Options:
+#   -A, --all-namespaces=false: If present, list the requested object(s) across all namespaces.
+# Namespace in current context is ignored even if specified with --namespace.
+#       --allow-missing-template-keys=true: If true, ignore any errors in templates when a field or
+# map key is missing in the template. Only applies to golang and jsonpath output formats.
+#       --chunk-size=500: Return large lists in chunks rather than all at once. Pass 0 to disable.
+# This flag is beta and may change in the future.
+#       --field-selector='': Selector (field query) to filter on, supports '=', '==', and '!='.(e.g.
+# --field-selector key1=value1,key2=value2). The server only supports a limited number of field
+# queries per type.
+#   -f, --filename=[]: Filename, directory, or URL to files identifying the resource to get from a
+# server.
+#       --ignore-not-found=false: If the requested object does not exist the command will return exit
+# code 0.
+#   -k, --kustomize='': Process the kustomization directory. This flag can't be used together with -f
+# or -R.
+#   -L, --label-columns=[]: Accepts a comma separated list of labels that are going to be presented as
+# columns. Names are case-sensitive. You can also use multiple flag options like -L label1 -L
+# label2...
+#       --no-headers=false: When using the default or custom-column output format, don't print headers
+# (default print headers).
+#   -o, --output='': Output format. One of:
+# json|yaml|wide|name|custom-columns=...|custom-columns-file=...|go-template=...|go-template-file=...|jsonpath=...|jsonpath-file=...
+# See custom columns [http://kubernetes.io/docs/user-guide/kubectl-overview/#custom-columns], golang
+# template [http://golang.org/pkg/text/template/#pkg-overview] and jsonpath template
+# [http://kubernetes.io/docs/user-guide/jsonpath].
+#       --raw='': Raw URI to request from the server.  Uses the transport specified by the kubeconfig
+# file.
+#   -R, --recursive=false: Process the directory used in -f, --filename recursively. Useful when you
+# want to manage related manifests organized within the same directory.
+#   -l, --selector='': Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l
+# key1=value1,key2=value2)
+#       --server-print=true: If true, have the server return the appropriate table output. Supports
+# extension APIs and CRDs.
+#       --show-kind=false: If present, list the resource type for the requested object(s).
+#       --show-labels=false: When printing, show all labels as the last column (default hide labels
+# column)
+#       --sort-by='': If non-empty, sort list types using this field specification.  The field
+# specification is expressed as a JSONPath expression (e.g. '{.metadata.name}'). The field in the API
+# resource specified by this JSONPath expression must be an integer or a string.
+#       --template='': Template string or path to template file to use when -o=go-template,
+# -o=go-template-file. The template format is golang templates
+# [http://golang.org/pkg/text/template/#pkg-overview].
+#   -w, --watch=false: After listing/getting the requested object, watch for changes. Uninitialized
+# objects are excluded if no object name is provided.
+#       --watch-only=false: Watch for changes to the requested object(s), without listing/getting
+# first.
+# 
+# Use "oc options" for a list of global command-line options (applies to all commands).
+#+end_example
+
+#+begin_src bash
+oc options
+#+end_src
+
+#+begin_example
+# The following options can be passed to any command:
+# 
+#       --alsologtostderr=false: log to standard error as well as files
+#       --as='': Username to impersonate for the operation
+#       --as-group=[]: Group to impersonate for the operation, this flag can be repeated to specify
+# multiple groups.
+#       --cache-dir='/home/lab-user/.kube/http-cache': Default HTTP cache directory
+#       --certificate-authority='': Path to a cert file for the certificate authority
+#       --client-certificate='': Path to a client certificate file for TLS
+#       --client-key='': Path to a client key file for TLS
+#       --cluster='': The name of the kubeconfig cluster to use
+#       --config='': Path to the kubeconfig file to use for CLI requests.
+#       --context='': The name of the kubeconfig context to use
+#       --insecure-skip-tls-verify=false: If true, the server's certificate will not be checked for
+# validity. This will make your HTTPS connections insecure
+#       --kubeconfig='': Path to the kubeconfig file to use for CLI requests.
+#       --log-backtrace-at=:0: when logging hits line file:N, emit a stack trace
+#       --log-dir='': If non-empty, write log files in this directory
+#       --log-file='': If non-empty, use this log file
+#       --log-flush-frequency=5s: Maximum number of seconds between log flushes
+#       --log_backtrace_at=:0: when logging hits line file:N, emit a stack trace
+#       --log_dir='': If non-empty, write log files in this directory
+#       --log_file='': If non-empty, use this log file
+#       --loglevel=0: Set the level of log output (0-10)
+#       --logtostderr=true: log to standard error instead of files
+#       --match-server-version=false: Require server version to match client version
+#   -n, --namespace='': If present, the namespace scope for this CLI request
+#       --request-timeout='0': The length of time to wait before giving up on a single server request.
+# Non-zero values should contain a corresponding time unit (e.g. 1s, 2m, 3h). A value of zero means
+# don't timeout requests.
+#   -s, --server='': The address and port of the Kubernetes API server
+#       --skip-headers=false: If true, avoid header prefixes in the log messages
+#       --skip_headers=false: If true, avoid header prefixes in the log messages
+#       --stderrthreshold=2: logs at or above this threshold go to stderr
+#       --token='': Bearer token for authentication to the API server
+#       --user='': The name of the kubeconfig user to use
+#   -v, --v=0: log level for V logs
+#       --vmodule=: comma-separated list of pattern=N settings for file-filtered logging
+#+end_example
+
+#+begin_src bash
+oc --loglevel 7 get pod
+#+end_src
+
+#+begin_example
+# I0223 14:01:20.248276   17015 loader.go:359] Config loaded from file /home/lab-user/.kube/config
+# I0223 14:01:20.265067   17015 round_trippers.go:416] GET https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443/api/v1/namespaces/app-management/pods?limit=500
+# I0223 14:01:20.265084   17015 round_trippers.go:423] Request Headers:
+# I0223 14:01:20.265090   17015 round_trippers.go:426]     User-Agent: oc/v0.0.0 (linux/amd64) kubernetes/$Format
+# I0223 14:01:20.265096   17015 round_trippers.go:426]     Authorization: Bearer YuKDq0Ktu37ts0x9wEMqH6kaNuWom6Z0OAWl28eeYKQ
+# I0223 14:01:20.265102   17015 round_trippers.go:426]     Accept: application/json;as=Table;v=v1beta1;g=meta.k8s.io, application/json
+# I0223 14:01:20.386216   17015 round_trippers.go:441] Response Status: 200 OK in 121 milliseconds
+# I0223 14:01:20.386942   17015 get.go:568] no kind "Table" is registered for version "meta.k8s.io/v1beta1" in scheme "k8s.io/kubernetes/pkg/api/legacyscheme/scheme.go:29"
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          45h
+# mapit-2-deploy   0/1     Completed   0          45h
+# mapit-3-deploy   0/1     Completed   0          45h
+# mapit-3-rbjmb    1/1     Running     0          45h
+#+end_example
+
+#+begin_src bash
+oc --loglevel 9 get pods
+#+end_src
+
+#+begin_example
+# I0223 14:03:02.097682   17088 loader.go:359] Config loaded from file /home/lab-user/.kube/config
+# I0223 14:03:02.118740   17088 round_trippers.go:419] curl -k -v -XGET  -H "User-Agent: oc/v0.0.0 (linux/amd64) kubernetes/$Format" -H "Accept: application/json;as=Table;v=v1beta1;g=meta.k8s.io, application/json" -H "Authorization: Bearer YuKDq0Ktu37ts0x9wEMqH6kaNuWom6Z0OAWl28eeYKQ" 'https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443/api/v1/namespaces/app-management/pods?limit=500'
+# I0223 14:03:02.163825   17088 round_trippers.go:438] GET https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443/api/v1/namespaces/app-management/pods?limit=500 200 OK in 45 milliseconds
+# I0223 14:03:02.163852   17088 round_trippers.go:444] Response Headers:
+# I0223 14:03:02.163858   17088 round_trippers.go:447]     Date: Sun, 23 Feb 2020 14:03:02 GMT
+# I0223 14:03:02.163864   17088 round_trippers.go:447]     Audit-Id: 06b06627-252b-4b06-b9ed-8e6109d32f83
+# I0223 14:03:02.163869   17088 round_trippers.go:447]     Cache-Control: no-cache, private
+# I0223 14:03:02.163874   17088 round_trippers.go:447]     Content-Type: application/json
+# I0223 14:03:02.163995   17088 request.go:942] Response Body: {"kind":"Table","apiVersion":"meta.k8s.io/v1beta1","metadata":{"selfLink":"/api/v1/namespaces/app-management/pods","resourceVersion":"2496973"},"columnDefinitions":[{"name":"Name","type":"string","format":"name","description":"Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names","priority":0},{"name":"Ready","type":"string","format":"","description":"The aggregate readiness state of this pod for accepting traffic.","priority":0},{"name":"Status","type":"string","format":"","description":"The aggregate status of the containers in this pod.","priority":0},{"name":"Restarts","type":"integer","format":"","description":"The number of times the containers in this pod have been restarted.","priority":0},{"name":"Age","type":"string","format":"","description":"CreationTimestamp is a timestamp representing the server time when this object was created. It is not guaranteed to be set in happens-before order across separate operations. Clients may not set this value. It is represented in RFC3339 form and is in UTC.\n\nPopulated by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata","priority":0},{"name":"IP","type":"string","format":"","description":"IP address allocated to the pod. Routable at least within the cluster. Empty if not yet allocated.","priority":1},{"name":"Node","type":"string","format":"","description":"NodeName is a request to schedule this pod onto a specific node. If it is non-empty, the scheduler simply schedules this pod onto that node, assuming that it fits resource requirements.","priority":1},{"name":"Nominated Node","type":"string","format":"","description":"nominatedNodeName is set only when this pod preempts other pods on the node, but it cannot be scheduled right away as preemption victims receive their graceful termination periods. This field does not guarantee that the pod will be scheduled on this node. Scheduler may decide to place the pod elsewhere if other nodes become available sooner. Scheduler may also decide to give the resources on this node to a higher priority pod that is created after preemption. As a result, this field may be different than PodSpec.nodeName when the pod is scheduled.","priority":1},{"name":"Readiness Gates","type":"string","format":"","description":"If specified, all readiness gates will be evaluated for pod readiness. A pod is ready when all its containers are ready AND all conditions specified in the readiness gates have status equal to \"True\" More info: https://git.k8s.io/enhancements/keps/sig-network/0007-pod-ready%2B%2B.md","priority":1}],"rows":[{"cells":["mapit-1-deploy","0/1","Completed",0,"45h","10.129.6.17","ip-10-0-143-103.us-east-2.compute.internal","\u003cnone\u003e","\u003cnone\u003e"],"conditions":[{"type":"Completed","status":"True","reason":"Succeeded","message":"The pod has completed successfully."}],"object":{"kind":"PartialObjectMetadata","apiVersion":"meta.k8s.io/v1beta1","metadata":{"name":"mapit-1-deploy","namespace":"app-management","selfLink":"/api/v1/namespaces/app-management/pods/mapit-1-deploy","uid":"b97854a0-54c4-11ea-8e4e-029a3b7b53fa","resourceVersion":"928747","creationTimestamp":"2020-02-21T16:10:49Z","labels":{"openshift.io/deployer-pod-for.name":"mapit-1"},"annotations":{"k8s.v1.cni.cncf.io/networks-status":"","kubernetes.io/limit-ranger":"LimitRanger plugin set: cpu, memory request for container deployment; cpu, memory limit for container deployment","openshift.io/deployment-config.name":"mapit","openshift.io/deployment.name":"mapit-1","openshift.io/scc":"restricted"},"ownerReferences":[{"apiVersion":"v1","kind":"ReplicationController","name":"mapit-1","uid":"b96b188f-54c4-11ea-8e4e-029a3b7b53fa"}]}}},{"cells":["mapit-2-deploy","0/1","Completed",0,"45h","10.129.6.19","ip-10-0-143-103.us-east-2.compute.internal","\u003cnone\u003e","\u003cnone\u003e"],"conditions":[{"type":"Completed","status":"True","reason":"Succeeded","message":"The pod has completed successfully."}],"object":{"kind":"PartialObjectMetadata","apiVersion":"meta.k8s.io/v1beta1","metadata":{"name":"mapit-2-deploy","namespace":"app-management","selfLink":"/api/v1/namespaces/app-management/pods/mapit-2-deploy","uid":"66dd9b3f-54c6-11ea-8e4e-029a3b7b53fa","resourceVersion":"935443","creationTimestamp":"2020-02-21T16:22:49Z","labels":{"openshift.io/deployer-pod-for.name":"mapit-2"},"annotations":{"k8s.v1.cni.cncf.io/networks-status":"","kubernetes.io/limit-ranger":"LimitRanger plugin set: cpu, memory request for container deployment; cpu, memory limit for container deployment","openshift.io/deployment-config.name":"mapit","openshift.io/deployment.name":"mapit-2","openshift.io/scc":"restricted"},"ownerReferences":[{"apiVersion":"v1","kind":"ReplicationController","name":"mapit-2","uid":"66c7b354-54c6-11ea-8e4e-029a3b7b53fa"}]}}},{"cells":["mapit-3-deploy","0/1","Completed",0,"45h","10.129.2.44","ip-10-0-133-255.us-east-2.compute.internal","\u003cnone\u003e","\u003cnone\u003e"],"conditions":[{"type":"Completed","status":"True","reason":"Succeeded","message":"The pod has completed successfully."}],"object":{"kind":"PartialObjectMetadata","apiVersion":"meta.k8s.io/v1beta1","metadata":{"name":"mapit-3-deploy","namespace":"app-management","selfLink":"/api/v1/namespaces/app-management/pods/mapit-3-deploy","uid":"7e0db419-54c6-11ea-8e4e-029a3b7b53fa","resourceVersion":"936215","creationTimestamp":"2020-02-21T16:23:28Z","labels":{"openshift.io/deployer-pod-for.name":"mapit-3"},"annotations":{"k8s.v1.cni.cncf.io/networks-status":"","kubernetes.io/limit-ranger":"LimitRanger plugin set: cpu, memory request for container deployment; cpu, memory limit for container deployment","openshift.io/deployment-config.name":"mapit","openshift.io/deployment.name":"mapit-3","openshift.io/scc":"restricted"},"ownerReferences":[{"apiVersion":"v1","kind":"ReplicationController","name":"mapit-3","uid":"7e011d4f-54c6-11ea-8e4e-029a3b7b53fa"}]}}},{"cells":["mapit-3-rbjmb","1/1","Running",0,"45h","10.130.6.18","ip-10-0-153-85.us-east-2.compute.internal","\u003cnone\u003e","\u003cnone\u003e"],"object":{"kind":"PartialObjectMetadata","apiVersion":"meta.k8s.io/v1beta1","metadata":{"name":"mapit-3-rbjmb","generateName":"mapit-3-","namespace":"app-management","selfLink":"/api/v1/namespaces/app-management/pods/mapit-3-rbjmb","uid":"83ae9680-54c6-11ea-9d6d-06399a073c9e","resourceVersion":"936158","creationTimestamp":"2020-02-21T16:23:37Z","labels":{"app":"mapit","deployment":"mapit-3","deploymentconfig":"mapit"},"annotations":{"k8s.v1.cni.cncf.io/networks-status":"[{\n    \"name\": \"openshift-sdn\",\n    \"interface\": \"eth0\",\n    \"ips\": [\n        \"10.130.6.18\"\n    ],\n    \"default\": true,\n    \"dns\": {}\n}]","kubernetes.io/limit-ranger":"LimitRanger plugin set: cpu, memory request for container mapit; cpu, memory limit for container mapit","openshift.io/deployment-config.latest-version":"3","openshift.io/deployment-config.name":"mapit","openshift.io/deployment.name":"mapit-3","openshift.io/generated-by":"OpenShiftNewApp","openshift.io/scc":"restricted"},"ownerReferences":[{"apiVersion":"v1","kind":"ReplicationController","name":"mapit-3","uid":"7e011d4f-54c6-11ea-8e4e-029a3b7b53fa","controller":true,"blockOwnerDeletion":true}]}}}]}
+# I0223 14:03:02.164628   17088 get.go:568] no kind "Table" is registered for version "meta.k8s.io/v1beta1" in scheme "k8s.io/kubernetes/pkg/api/legacyscheme/scheme.go:29"
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          45h
+# mapit-2-deploy   0/1     Completed   0          45h
+# mapit-3-deploy   0/1     Completed   0          45h
+# mapit-3-rbjmb    1/1     Running     0          45h
+#+end_example
+
+#+begin_src bash
+# get the service being exposed by a route, only if the hostname matches my-docker-registry.example.com
+oc get routes -o=go-template='{{range .items}}{{if eq .spec.host "clientvm.munich-e7ab.internal"}}{{.metadata.name}}{{end}}{{end}}'
+#+end_src
+
+#+begin_src bash
+# get router deployment strategy
+oc get dc dashboard -o=go-template='{{ .spec.strategy.type }}' -n lab-ocp-cns
+#+end_src
+
+** openshift list all pods and thier specs (requests/limits)
+
+#+begin_src bash
+oc get pod -o jsonpath='{range .items[*]}{"SPEC:  \n  LIMITS  : "}{.spec.containers[*].resources.limits}{"\n  REQUESTS: "}{.spec.containers[*].resources.requests}{"\n"}{end}'
+#+end_src
+
+#+begin_example
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+#+end_example
+
+** openshift list all pods and thier specs with name (requests /limits)
+
+#+begin_src bash
+oc get pod -o jsonpath='{range .items[*]}{"NAME:  "}{.metadata.name}{"\nSPEC:  \n  LIMITS  : "}{.spec.containers[*].resources.limits}{"\n  REQUESTS: "}{.spec.containers[*].resources.requests}{"\n\n"}{end}'
+#+end_src
+
+#+begin_example
+# NAME:  mapit-1-deploy
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# 
+# NAME:  mapit-2-deploy
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# 
+# NAME:  mapit-3-deploy
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# 
+# NAME:  mapit-3-rbjmb
+# SPEC:  
+#   LIMITS  : map[cpu:4 memory:1Gi]
+#   REQUESTS: map[cpu:100m memory:512Mi]
+# 
+#+end_example
+
+** openshift list all nodes and thier corresponding os/kernel verion
+
+#+begin_src bash
+oc get nodes -o jsonpath='{range .items[*]}{"\t"}{.metadata.name}{"\t"}{.status.nodeInfo.osImage}{"\t"}{.status.nodeInfo.kernelVersion}{"\n"}{end}'
+#+end_src
+
+#+begin_example
+# 	ip-10-0-131-190.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-131-54.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-131-55.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-133-255.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-137-100.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-137-236.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-143-103.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-147-203.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-150-228.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-153-85.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-156-47.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-163-36.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-172-64.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-173-76.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+# 	ip-10-0-174-204.us-east-2.compute.internal	Red Hat Enterprise Linux CoreOS 42.81.20191113.0 (Ootpa)	4.18.0-147.0.3.el8_1.x86_64
+#+end_example
+
+** openshift fetch custom column name from metadata
+
+#+begin_src bash
+oc get rolebinding -o=custom-columns=USERS:.userNames,GROUPS:.groupNames
+#+end_src
+
+#+begin_example
+# USERS    GROUPS
+# <none>   <none>
+# <none>   <none>
+# <none>   <none>
+# <none>   <none>
+#+end_example
+
+#+begin_src bash
+for i in `oc get pv  -o=custom-columns=NAME:.metadata.name | grep pvc`
+do
+  oc describe pv $i | grep Path | awk '{ print $2 }';
+done
+#+end_src
+
+
+* TODO
+
+#+begin_src bash
+oc new-app https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json
+#+end_src
+
+#+begin_example
+oc whoami --help# error: unable to load template file "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json": unable to recognize "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json": Unauthorized
+# error: git ls-remote failed with: fatal: repository 'https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json/' not found;  local file access failed with: stat https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json: no such file or directory
+# error: unable to locate any images in image streams, templates loaded in accessible projects, template files, local docker images with name "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json"
+# 
+# Argument 'https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json' was classified as an image, image~source, or loaded template reference.
+# 
+# The 'oc new-app' command will match arguments to the following types:
+# 
+#   1. Images tagged into image streams in the current project or the 'openshift' project
+#      - if you don't specify a tag, we'll add ':latest'
+#   2. Images in the Docker Hub, on remote registries, or on the local Docker engine
+#   3. Templates in the current project or the 'openshift' project
+#   4. Git repository URLs or local paths that point to Git repositories
+# 
+# --allow-missing-images can be used to point to an image that does not exist yet.
+# 
+# See 'oc new-app -h' for examples.
+#+end_example
+
+#+begin_src bash
+oc new-app https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json \
+  --param WORKSHOP_IMAGE="quay.io/openshiftlabs/lab-kubernetes-fundamentals:master"
+#+end_src
+
+#+begin_example
+# > error: unable to load template file "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json": unable to recognize "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json": Unauthorized
+# error: git ls-remote failed with: fatal: repository 'https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json/' not found;  local file access failed with: stat https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json: no such file or directory
+# error: unable to locate any images in image streams, templates loaded in accessible projects, template files, local docker images with name "https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json"
+# 
+# Argument 'https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboard/master/templates/production.json' was classified as an image, image~source, or loaded template reference.
+# 
+# The 'oc new-app' command will match arguments to the following types:
+# 
+#   1. Images tagged into image streams in the current project or the 'openshift' project
+#      - if you don't specify a tag, we'll add ':latest'
+#   2. Images in the Docker Hub, on remote registries, or on the local Docker engine
+#   3. Templates in the current project or the 'openshift' project
+#   4. Git repository URLs or local paths that point to Git repositories
+# 
+# --allow-missing-images can be used to point to an image that does not exist yet.
+# 
+# See 'oc new-app -h' for examples.
+#+end_example
