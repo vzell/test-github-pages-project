@@ -21425,7 +21425,271 @@ _EOF
 oc new-build --binary --strategy=docker --name custom-builder-image
 #+end_src
 
+#+begin_example
+#     * A Docker build using binary input will be created
+#       * The resulting image will be pushed to image stream tag "custom-builder-image:latest"
+#       * A binary build was created, use 'oc start-build --from-dir' to trigger a new build
+# 
+# --> Creating resources with label build=custom-builder-image ...
+#     imagestream.image.openshift.io "custom-builder-image" created
+#     buildconfig.build.openshift.io "custom-builder-image" created
+# --> Success
+#+end_example
+
 #+begin_src bash
 oc start-build custom-builder-image --from-dir . -F
 #+end_src
+
+#+begin_example
+# Uploading directory "." as binary input for the build ...
+# ..
+# Uploading finished
+# build.build.openshift.io/custom-builder-image-1 started
+# Receiving source from STDIN as archive ...
+# Caching blobs under "/var/cache/blobs".
+# 
+# Pulling image docker.io/centos:7 ...
+# Getting image source signatures
+# Copying blob sha256:ab5ef0e5819490abe86106fd9f4381123e37a03e80e650be39f7938d30ecb530
+# Copying config sha256:5e35e350aded98340bc8fcb0ba392d809c807bc3eb5c618d4a0674d98d88bccd
+# Writing manifest to image destination
+# Storing signatures
+# STEP 1: FROM docker.io/centos:7
+# STEP 2: RUN yum install -y buildah
+# Loaded plugins: fastestmirror, ovl
+# Determining fastest mirrors
+#  * base: d36uatko69830t.cloudfront.net
+#  * extras: d36uatko69830t.cloudfront.net
+#  * updates: d36uatko69830t.cloudfront.net
+# Resolving Dependencies
+# --> Running transaction check
+# ---> Package buildah.x86_64 0:1.9.0-2.el7.centos will be installed
+# --> Processing Dependency: skopeo-containers >= 0.1.20-2 for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: runc >= 1.0.0-59 for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: libostree-1.so.1(LIBOSTREE_2016.8)(64bit) for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: libostree-1.so.1(LIBOSTREE_2016.3)(64bit) for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: container-selinux for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: libseccomp.so.2()(64bit) for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Processing Dependency: libostree-1.so.1()(64bit) for package: buildah-1.9.0-2.el7.centos.x86_64
+# --> Running transaction check
+# ---> Package container-selinux.noarch 2:2.107-3.el7 will be installed
+# --> Processing Dependency: selinux-policy-targeted >= 3.13.1-216.el7 for package: 2:container-selinux-2.107-3.el7.noarch
+# --> Processing Dependency: selinux-policy-base >= 3.13.1-216.el7 for package: 2:container-selinux-2.107-3.el7.noarch
+# --> Processing Dependency: selinux-policy >= 3.13.1-216.el7 for package: 2:container-selinux-2.107-3.el7.noarch
+# --> Processing Dependency: policycoreutils >= 2.5-11 for package: 2:container-selinux-2.107-3.el7.noarch
+# --> Processing Dependency: policycoreutils-python for package: 2:container-selinux-2.107-3.el7.noarch
+# --> Processing Dependency: libselinux-utils for package: 2:container-selinux-2.107-3.el7.noarch
+# ---> Package containers-common.x86_64 1:0.1.37-3.el7.centos will be installed
+# ---> Package libseccomp.x86_64 0:2.3.1-3.el7 will be installed
+# ---> Package ostree.x86_64 0:2019.1-2.el7 will be installed
+# --> Processing Dependency: libarchive.so.13()(64bit) for package: ostree-2019.1-2.el7.x86_64
+# ---> Package runc.x86_64 0:1.0.0-65.rc8.el7.centos will be installed
+# --> Processing Dependency: criu for package: runc-1.0.0-65.rc8.el7.centos.x86_64
+# --> Running transaction check
+# ---> Package criu.x86_64 0:3.12-2.el7 will be installed
+# --> Processing Dependency: libprotobuf-c.so.1(LIBPROTOBUF_C_1.0.0)(64bit) for package: criu-3.12-2.el7.x86_64
+# --> Processing Dependency: libnl-3.so.200(libnl_3)(64bit) for package: criu-3.12-2.el7.x86_64
+# --> Processing Dependency: libprotobuf-c.so.1()(64bit) for package: criu-3.12-2.el7.x86_64
+# --> Processing Dependency: libnl-3.so.200()(64bit) for package: criu-3.12-2.el7.x86_64
+# --> Processing Dependency: libnet.so.1()(64bit) for package: criu-3.12-2.el7.x86_64
+# ---> Package libarchive.x86_64 0:3.1.2-14.el7_7 will be installed
+# --> Processing Dependency: liblzo2.so.2()(64bit) for package: libarchive-3.1.2-14.el7_7.x86_64
+# ---> Package libselinux-utils.x86_64 0:2.5-14.1.el7 will be installed
+# ---> Package policycoreutils.x86_64 0:2.5-33.el7 will be installed
+# ---> Package policycoreutils-python.x86_64 0:2.5-33.el7 will be installed
+# --> Processing Dependency: setools-libs >= 3.3.8-4 for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libsemanage-python >= 2.5-14 for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: audit-libs-python >= 2.1.3-4 for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: python-IPy for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libselinux-python for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libqpol.so.1(VERS_1.4)(64bit) for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libqpol.so.1(VERS_1.2)(64bit) for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libcgroup for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libapol.so.4(VERS_4.0)(64bit) for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: checkpolicy for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libqpol.so.1()(64bit) for package: policycoreutils-python-2.5-33.el7.x86_64
+# --> Processing Dependency: libapol.so.4()(64bit) for package: policycoreutils-python-2.5-33.el7.x86_64
+# ---> Package selinux-policy.noarch 0:3.13.1-252.el7_7.6 will be installed
+# ---> Package selinux-policy-targeted.noarch 0:3.13.1-252.el7_7.6 will be installed
+# --> Running transaction check
+# ---> Package audit-libs-python.x86_64 0:2.8.5-4.el7 will be installed
+# ---> Package checkpolicy.x86_64 0:2.5-8.el7 will be installed
+# ---> Package libcgroup.x86_64 0:0.41-21.el7 will be installed
+# ---> Package libnet.x86_64 0:1.1.6-7.el7 will be installed
+# ---> Package libnl3.x86_64 0:3.2.28-4.el7 will be installed
+# ---> Package libselinux-python.x86_64 0:2.5-14.1.el7 will be installed
+# ---> Package libsemanage-python.x86_64 0:2.5-14.el7 will be installed
+# ---> Package lzo.x86_64 0:2.06-8.el7 will be installed
+# ---> Package protobuf-c.x86_64 0:1.0.2-3.el7 will be installed
+# ---> Package python-IPy.noarch 0:0.75-6.el7 will be installed
+# ---> Package setools-libs.x86_64 0:3.3.8-4.el7 will be installed
+# --> Finished Dependency Resolution
+# 
+# Dependencies Resolved
+# 
+# ================================================================================
+#  Package                   Arch     Version                     Repository
+#                                                                            Size
+# ================================================================================
+# Installing:
+#  buildah                   x86_64   1.9.0-2.el7.centos          extras    5.0 M
+# Installing for dependencies:
+#  audit-libs-python         x86_64   2.8.5-4.el7                 base       76 k
+#  checkpolicy               x86_64   2.5-8.el7                   base      295 k
+#  container-selinux         noarch   2:2.107-3.el7               extras     39 k
+#  containers-common         x86_64   1:0.1.37-3.el7.centos       extras     21 k
+#  criu                      x86_64   3.12-2.el7                  base      453 k
+#  libarchive                x86_64   3.1.2-14.el7_7              updates   319 k
+#  libcgroup                 x86_64   0.41-21.el7                 base       66 k
+#  libnet                    x86_64   1.1.6-7.el7                 base       59 k
+#  libnl3                    x86_64   3.2.28-4.el7                base      278 k
+#  libseccomp                x86_64   2.3.1-3.el7                 base       56 k
+#  libselinux-python         x86_64   2.5-14.1.el7                base      235 k
+#  libselinux-utils          x86_64   2.5-14.1.el7                base      151 k
+#  libsemanage-python        x86_64   2.5-14.el7                  base      113 k
+#  lzo                       x86_64   2.06-8.el7                  base       59 k
+#  ostree                    x86_64   2019.1-2.el7                extras    513 k
+#  policycoreutils           x86_64   2.5-33.el7                  base      916 k
+#  policycoreutils-python    x86_64   2.5-33.el7                  base      457 k
+#  protobuf-c                x86_64   1.0.2-3.el7                 base       28 k
+#  python-IPy                noarch   0.75-6.el7                  base       32 k
+#  runc                      x86_64   1.0.0-65.rc8.el7.centos     extras    2.0 M
+#  selinux-policy            noarch   3.13.1-252.el7_7.6          updates   492 k
+#  selinux-policy-targeted   noarch   3.13.1-252.el7_7.6          updates   7.0 M
+#  setools-libs              x86_64   3.3.8-4.el7                 base      620 k
+# 
+# Transaction Summary
+# ================================================================================
+# Install  1 Package (+23 Dependent packages)
+# 
+# Total download size: 19 M
+# Installed size: 62 M
+# Downloading packages:
+# warning: /var/cache/yum/x86_64/7/extras/packages/container-selinux-2.107-3.el7.noarch.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+# Public key for container-selinux-2.107-3.el7.noarch.rpm is not installed
+# Public key for checkpolicy-2.5-8.el7.x86_64.rpm is not installed
+# Public key for libarchive-3.1.2-14.el7_7.x86_64.rpm is not installed
+# --------------------------------------------------------------------------------
+# Total                                               16 MB/s |  19 MB  00:01     
+# Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+# Importing GPG key 0xF4A80EB5:
+#  Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+#  Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+#  Package    : centos-release-7-7.1908.0.el7.centos.x86_64 (@CentOS)
+#  From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+# Running transaction check
+# Running transaction test
+# Transaction test succeeded
+# Running transaction
+#   Installing : libselinux-utils-2.5-14.1.el7.x86_64                        1/24 
+#   Installing : policycoreutils-2.5-33.el7.x86_64                           2/24 
+#   Installing : selinux-policy-3.13.1-252.el7_7.6.noarch                    3/24 
+#   Installing : libseccomp-2.3.1-3.el7.x86_64                               4/24 
+#   Installing : selinux-policy-targeted-3.13.1-252.el7_7.6.noarch           5/24 
+#   Installing : libcgroup-0.41-21.el7.x86_64                                6/24 
+#   Installing : libnl3-3.2.28-4.el7.x86_64                                  7/24 
+#   Installing : libselinux-python-2.5-14.1.el7.x86_64                       8/24 
+#   Installing : audit-libs-python-2.8.5-4.el7.x86_64                        9/24 
+#   Installing : libnet-1.1.6-7.el7.x86_64                                  10/24 
+#   Installing : libsemanage-python-2.5-14.el7.x86_64                       11/24 
+#   Installing : protobuf-c-1.0.2-3.el7.x86_64                              12/24 
+#   Installing : criu-3.12-2.el7.x86_64                                     13/24 
+#   Installing : setools-libs-3.3.8-4.el7.x86_64                            14/24 
+#   Installing : python-IPy-0.75-6.el7.noarch                               15/24 
+#   Installing : 1:containers-common-0.1.37-3.el7.centos.x86_64             16/24 
+#   Installing : checkpolicy-2.5-8.el7.x86_64                               17/24 
+#   Installing : policycoreutils-python-2.5-33.el7.x86_64                   18/24 
+#   Installing : 2:container-selinux-2.107-3.el7.noarch                     19/24 
+# setsebool:  SELinux is disabled.
+#   Installing : runc-1.0.0-65.rc8.el7.centos.x86_64                        20/24 
+#   Installing : lzo-2.06-8.el7.x86_64                                      21/24 
+#   Installing : libarchive-3.1.2-14.el7_7.x86_64                           22/24 
+#   Installing : ostree-2019.1-2.el7.x86_64                                 23/24 
+#   Installing : buildah-1.9.0-2.el7.centos.x86_64                          24/24 
+#   Verifying  : buildah-1.9.0-2.el7.centos.x86_64                           1/24 
+#   Verifying  : 2:container-selinux-2.107-3.el7.noarch                      2/24 
+#   Verifying  : libseccomp-2.3.1-3.el7.x86_64                               3/24 
+#   Verifying  : lzo-2.06-8.el7.x86_64                                       4/24 
+#   Verifying  : runc-1.0.0-65.rc8.el7.centos.x86_64                         5/24 
+#   Verifying  : checkpolicy-2.5-8.el7.x86_64                                6/24 
+#   Verifying  : selinux-policy-3.13.1-252.el7_7.6.noarch                    7/24 
+#   Verifying  : 1:containers-common-0.1.37-3.el7.centos.x86_64              8/24 
+#   Verifying  : python-IPy-0.75-6.el7.noarch                                9/24 
+#   Verifying  : ostree-2019.1-2.el7.x86_64                                 10/24 
+#   Verifying  : setools-libs-3.3.8-4.el7.x86_64                            11/24 
+#   Verifying  : protobuf-c-1.0.2-3.el7.x86_64                              12/24 
+#   Verifying  : policycoreutils-python-2.5-33.el7.x86_64                   13/24 
+#   Verifying  : libarchive-3.1.2-14.el7_7.x86_64                           14/24 
+#   Verifying  : policycoreutils-2.5-33.el7.x86_64                          15/24 
+#   Verifying  : libsemanage-python-2.5-14.el7.x86_64                       16/24 
+#   Verifying  : criu-3.12-2.el7.x86_64                                     17/24 
+#   Verifying  : libnet-1.1.6-7.el7.x86_64                                  18/24 
+#   Verifying  : audit-libs-python-2.8.5-4.el7.x86_64                       19/24 
+#   Verifying  : libselinux-python-2.5-14.1.el7.x86_64                      20/24 
+#   Verifying  : selinux-policy-targeted-3.13.1-252.el7_7.6.noarch          21/24 
+#   Verifying  : libselinux-utils-2.5-14.1.el7.x86_64                       22/24 
+#   Verifying  : libnl3-3.2.28-4.el7.x86_64                                 23/24 
+#   Verifying  : libcgroup-0.41-21.el7.x86_64                               24/24 
+# 
+# Installed:
+#   buildah.x86_64 0:1.9.0-2.el7.centos                                           
+# 
+# Dependency Installed:
+#   audit-libs-python.x86_64 0:2.8.5-4.el7                                        
+#   checkpolicy.x86_64 0:2.5-8.el7                                                
+#   container-selinux.noarch 2:2.107-3.el7                                        
+#   containers-common.x86_64 1:0.1.37-3.el7.centos                                
+#   criu.x86_64 0:3.12-2.el7                                                      
+#   libarchive.x86_64 0:3.1.2-14.el7_7                                            
+#   libcgroup.x86_64 0:0.41-21.el7                                                
+#   libnet.x86_64 0:1.1.6-7.el7                                                   
+#   libnl3.x86_64 0:3.2.28-4.el7                                                  
+#   libseccomp.x86_64 0:2.3.1-3.el7                                               
+#   libselinux-python.x86_64 0:2.5-14.1.el7                                       
+#   libselinux-utils.x86_64 0:2.5-14.1.el7                                        
+#   libsemanage-python.x86_64 0:2.5-14.el7                                        
+#   lzo.x86_64 0:2.06-8.el7                                                       
+#   ostree.x86_64 0:2019.1-2.el7                                                  
+#   policycoreutils.x86_64 0:2.5-33.el7                                           
+#   policycoreutils-python.x86_64 0:2.5-33.el7                                    
+#   protobuf-c.x86_64 0:1.0.2-3.el7                                               
+#   python-IPy.noarch 0:0.75-6.el7                                                
+#   runc.x86_64 0:1.0.0-65.rc8.el7.centos                                         
+#   selinux-policy.noarch 0:3.13.1-252.el7_7.6                                    
+#   selinux-policy-targeted.noarch 0:3.13.1-252.el7_7.6                           
+#   setools-libs.x86_64 0:3.3.8-4.el7                                             
+# 
+# Complete!
+# time="2020-02-25T11:24:20Z" level=warning msg="pkg/chroot: error unmounting \"/tmp/buildah770205067/mnt/rootfs\": error checking if \"/tmp/buildah770205067/mnt/rootfs/sys/fs/cgroup/devices\" is mounted: no such file or directory"
+# time="2020-02-25T11:24:20Z" level=warning msg="pkg/bind: error unmounting \"/tmp/buildah770205067/mnt/rootfs\": error checking if \"/tmp/buildah770205067/mnt/rootfs/sys/fs/cgroup/devices\" is mounted: no such file or directory"
+# b68024b0d0f515ef565ef29d25709edd6168bd565e774d0574cca2f78d79fb91
+# STEP 3: ADD Dockerfile.sample /tmp/input/Dockerfile
+# a14eed747374072df00fd1b087d03c87575a29c7c2abcf04ee01f3cb8fd6cc85
+# STEP 4: ADD build.sh /usr/bin
+# ab2b4bce959dcb5c3980263650c78c25b022d112b247039019c53f69cbb2c46f
+# STEP 5: RUN chmod a+x /usr/bin/build.sh
+# time="2020-02-25T11:24:30Z" level=warning msg="pkg/chroot: error unmounting \"/tmp/buildah304609625/mnt/rootfs\": error checking if \"/tmp/buildah304609625/mnt/rootfs/sys/fs/cgroup/devices\" is mounted: no such file or directory"
+# time="2020-02-25T11:24:30Z" level=warning msg="pkg/bind: error unmounting \"/tmp/buildah304609625/mnt/rootfs\": error checking if \"/tmp/buildah304609625/mnt/rootfs/sys/fs/cgroup/devices\" is mounted: no such file or directory"
+# 0772dc045ab82219eb65cb5eb1f5fde0e701391e9ae721224b100c86b6d74d69
+# STEP 6: ENTRYPOINT ["/usr/bin/build.sh"]
+# b4c325091d0f9fa8f07c3efea2552e91c52f2417807459b15d0965ad43614458
+# STEP 7: ENV "OPENSHIFT_BUILD_NAME"="custom-builder-image-1" "OPENSHIFT_BUILD_NAMESPACE"="app-management"
+# 2a5c84f9f7ef856e8ff67c333df9afb08e2587ba629e5e73980eefe6b5573f76
+# STEP 8: LABEL "io.openshift.build.name"="custom-builder-image-1" "io.openshift.build.namespace"="app-management"
+# STEP 9: COMMIT temp.builder.openshift.io/app-management/custom-builder-image-1:7c16f305
+# 4b626f83e346ae3d8cfcaabaf183dffd98b19397ba2a23218763d0804c5f07e3
+# 
+# Pushing image image-registry.openshift-image-registry.svc:5000/app-management/custom-builder-image:latest ...
+# Getting image source signatures
+# Copying blob sha256:ab5ef0e5819490abe86106fd9f4381123e37a03e80e650be39f7938d30ecb530
+# Copying blob sha256:2c07ed1a143d92ac2771e1479b4e69a383ad02d1a0b7f5367369f46b58d885b1
+# Copying blob sha256:55df75d5c58e18e046661a835d39b577603e786127061479ea2f0122e3b71bc8
+# Copying blob sha256:78819b683be829166fd398e28ce89f6a43d4a288342f2c4b16d5407f64017377
+# Copying blob sha256:c1d812d3bf368918640edea95ccb06d76412a4cbb18a2c622ddc1d484b24d999
+# Copying config sha256:4b626f83e346ae3d8cfcaabaf183dffd98b19397ba2a23218763d0804c5f07e3
+# Writing manifest to image destination
+# Storing signatures
+# Successfully pushed image-registry.openshift-image-registry.svc:5000/app-management/custom-builder-image@sha256:8df4b238f591bba820f238533a0881509f84b364ecb2bcf2fb0647314fd79edf
+# Push successful
+#+end_example
 
