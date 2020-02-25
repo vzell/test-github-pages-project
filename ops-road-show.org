@@ -21736,6 +21736,10 @@ _EOF
 oc create -f buildconfig.yaml
 #+end_src
 
+#+begin_example
+# buildconfig.build.openshift.io/sample-custom-build created
+#+end_example
+
 #+begin_src bash
 cat > imagestream.yaml <<-"_EOF"
 kind: ImageStream
@@ -21750,8 +21754,40 @@ _EOF
 oc create -f imagestream.yaml
 #+end_src
 
+#+begin_example
+# imagestream.image.openshift.io/sample-custom created
+#+end_example
+
 #+begin_src bash
 oc start-build sample-custom-build -F
 #+end_src
+
+#+begin_example
+# build.build.openshift.io/sample-custom-build-1 started
+# STEP 1: FROM docker.io/centos:7
+# Getting image source signatures
+# Copying blob sha256:ab5ef0e5819490abe86106fd9f4381123e37a03e80e650be39f7938d30ecb530
+# Copying config sha256:5e35e350aded98340bc8fcb0ba392d809c807bc3eb5c618d4a0674d98d88bccd
+# Writing manifest to image destination
+# Storing signatures
+# STEP 2: RUN touch /tmp/built
+# STEP 3: COMMIT image-registry.openshift-image-registry.svc:5000/app-management/sample-custom:latest
+# Getting image source signatures
+# Copying blob sha256:77b174a6a187b610e4699546bd973a8d1e77663796e3724318a2a4b24cb07ea0
+# Copying blob sha256:0b38bc7ad736ce1ca2f1a2cafa42dcbdb16586c813eb96f2fa4619fac08bbc54
+# Copying config sha256:f0dc8335109908377c1cc460326c2835b21b3bd7204ef8386f485b466fbef68d
+# Writing manifest to image destination
+# Storing signatures
+# f0dc8335109908377c1cc460326c2835b21b3bd7204ef8386f485b466fbef68d
+# Getting image source signatures
+# Copying blob sha256:0b38bc7ad736ce1ca2f1a2cafa42dcbdb16586c813eb96f2fa4619fac08bbc54
+# Copying blob sha256:77b174a6a187b610e4699546bd973a8d1e77663796e3724318a2a4b24cb07ea0
+# Copying config sha256:f0dc8335109908377c1cc460326c2835b21b3bd7204ef8386f485b466fbef68d
+# Writing manifest to image destination
+# Copying config sha256:f0dc8335109908377c1cc460326c2835b21b3bd7204ef8386f485b466fbef68d
+# Writing manifest to image destination
+# Storing signatures
+# Successfully pushed //image-registry.openshift-image-registry.svc:5000/app-management/sample-custom:latest@sha256:8b177a64575447d3773e0eb839942d9eceb9fc25b30a54a99ce4bab8a46146d6
+#+end_example
 
 
