@@ -457,7 +457,6 @@ oc explain ClusterRoleBinding
 # 
 #+end_example
 
-
 #+begin_src bash
 oc get clusterrole cluster-admin -o yaml
 #+end_src
@@ -19487,3 +19486,1946 @@ oc new-app https://raw.githubusercontent.com/openshift-homeroom/workshop-dashboa
 # 
 # See 'oc new-app -h' for examples.
 #+end_example
+
+* OpenShift 4.3.1 - laptop
+** cd
+
+#+begin_src bash
+cd /devops/vagrant/openshift43
+#+end_src
+
+** login
+
+#+begin_src bash
+vagrant ssh
+#+end_src
+
+** Cluster Admin Authentication
+
+#+begin_src bash
+oc explain Role
+#+end_src
+
+#+begin_example
+# KIND:     Role
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      Role is a namespaced, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this Role
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRole
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRole
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRole is a cluster level, logical grouping of PolicyRules that can be
+#      referenced as a unit by a RoleBinding or ClusterRoleBinding.
+# 
+# FIELDS:
+#    aggregationRule	<Object>
+#      AggregationRule is an optional field that describes how to build the Rules
+#      for this ClusterRole. If AggregationRule is set, then the Rules are
+#      controller managed and direct changes to Rules will be stomped by the
+#      controller.
+# 
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    rules	<[]Object>
+#      Rules holds all the PolicyRules for this ClusterRole
+#+end_example
+
+#+begin_src bash
+oc explain RoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     RoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      RoleBinding references a role, but does not contain it. It can reference a
+#      Role in the same namespace or a ClusterRole in the global namespace. It
+#      adds who information via Subjects and namespace information by which
+#      namespace it exists in. RoleBindings in a given namespace only have effect
+#      in that namespace.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can reference a Role in the current namespace or a ClusterRole in
+#      the global namespace. If the RoleRef cannot be resolved, the Authorizer
+#      must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+#+end_example
+
+#+begin_src bash
+oc explain ClusterRoleBinding
+#+end_src
+
+#+begin_example
+# KIND:     ClusterRoleBinding
+# VERSION:  rbac.authorization.k8s.io/v1
+# 
+# DESCRIPTION:
+#      ClusterRoleBinding references a ClusterRole, but not contain it. It can
+#      reference a ClusterRole in the global namespace, and adds who information
+#      via Subject.
+# 
+# FIELDS:
+#    apiVersion	<string>
+#      APIVersion defines the versioned schema of this representation of an
+#      object. Servers should convert recognized schemas to the latest internal
+#      value, and may reject unrecognized values. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+# 
+#    kind	<string>
+#      Kind is a string value representing the REST resource this object
+#      represents. Servers may infer this from the endpoint the client submits
+#      requests to. Cannot be updated. In CamelCase. More info:
+#      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+# 
+#    metadata	<Object>
+#      Standard object's metadata.
+# 
+#    roleRef	<Object> -required-
+#      RoleRef can only reference a ClusterRole in the global namespace. If the
+#      RoleRef cannot be resolved, the Authorizer must return an error.
+# 
+#    subjects	<[]Object>
+#      Subjects holds references to the objects the role applies to.
+#+end_example
+
+#+begin_src bash
+oc get clusterrole cluster-admin -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   annotations:
+#     rbac.authorization.kubernetes.io/autoupdate: "true"
+#   creationTimestamp: "2020-02-24T13:21:17Z"
+#   labels:
+#     kubernetes.io/bootstrapping: rbac-defaults
+#   name: cluster-admin
+#   resourceVersion: "57"
+#   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterroles/cluster-admin
+#   uid: 234da39e-5609-42fd-8d80-be7cb42feab0
+# rules:
+# - apiGroups:
+#   - '*'
+#   resources:
+#   - '*'
+#   verbs:
+#   - '*'
+# - nonResourceURLs:
+#   - '*'
+#   verbs:
+#   - '*'
+#+end_example
+
+#+begin_src bash
+oc whoami --help
+#+end_src
+
+#+begin_example
+# Show information about the current session
+# 
+#  The default options for this command will return the currently authenticated
+# user name or an empty string.  Other flags support returning the currently used
+# token or the user context.
+# 
+# Usage:
+#   oc whoami [flags]
+# 
+# Options:
+#       --show-console=false: If true, print the current server's web console URL
+#   -c, --show-context=false: Print the current user context name
+#       --show-server=false: If true, print the current server's REST API URL
+#   -t, --show-token=false: Print the token the current session is using. This
+# will return an error if you are using a different form of authentication.
+# 
+# Use "oc options" for a list of global command-line options (applies to all
+# commands).
+#+end_example
+
+#+begin_src bash
+oc whoami
+#+end_src
+
+#+begin_example
+# system:admin
+#+end_example
+
+** Examine the Cluster Version
+
+#+begin_src bash
+oc get clusterversion
+#+end_src
+
+#+begin_example
+# NAME      VERSION   AVAILABLE   PROGRESSING   SINCE   STATUS
+# version   4.3.1     True        False         9h      Error while reconciling 4.3.1: the cluster operator openshift-samples is degraded
+#+end_example
+
+#+begin_src bash
+oc describe clusterversion
+#+end_src
+
+#+begin_example
+# Name:         version
+# Namespace:    
+# Labels:       <none>
+# Annotations:  <none>
+# API Version:  config.openshift.io/v1
+# Kind:         ClusterVersion
+# Metadata:
+#   Creation Timestamp:  2020-02-24T13:21:35Z
+#   Generation:          1
+#   Resource Version:    236646
+#   Self Link:           /apis/config.openshift.io/v1/clusterversions/version
+#   UID:                 0396c780-b6ef-4479-a6dd-0296bb1182d7
+# Spec:
+#   Channel:     stable-4.3
+#   Cluster ID:  7c4e88d7-d4ad-4b01-bbc1-ed19ea595a81
+#   Upstream:    https://api.openshift.com/api/upgrades_info/v1/graph
+# Status:
+#   Available Updates:  <nil>
+#   Conditions:
+#     Last Transition Time:  2020-02-24T14:12:20Z
+#     Message:               Done applying 4.3.1
+#     Status:                True
+#     Type:                  Available
+#     Last Transition Time:  2020-02-24T15:47:35Z
+#     Message:               Cluster operator openshift-samples is reporting a failure: Samples installed at 4.3.1, with image import failures for these imagestreams: mariadb jboss-webserver31-tomcat7-openshift redhat-openjdk18-openshift redhat-sso73-openshift golang jboss-eap70-openshift jboss-datagrid73-openshift apicast-gateway fuse-apicurito-generator java rhpam74-businesscentral-openshift fuse7-java-openshift nginx jboss-datagrid71-openshift jenkins-agent-maven redhat-sso71-openshift redis postgresql jboss-eap71-openshift dotnet dotnet-runtime jboss-datagrid65-client-openshift nodejs rhpam74-kieserver-openshift modern-webapp openjdk-11-rhel7 php jboss-webserver31-tomcat8-openshift fuse7-karaf-openshift jboss-datavirt64-openshift jboss-datagrid71-client-openshift jboss-eap72-openshift fis-java-openshift jenkins-agent-nodejs eap-cd-openshift mysql jboss-webserver30-tomcat7-openshift ruby apicurito-ui jboss-fuse70-console jboss-amq-62 jboss-fuse70-karaf-openshift mongodb jboss-webserver30-tomcat8-openshift jboss-decisionserver64-openshift redhat-sso72-openshift jboss-amq-63 httpd rhpam74-smartrouter-openshift jboss-fuse70-java-openshift jboss-webserver50-tomcat9-openshift jenkins rhdm74-optaweb-employee-rostering-openshift fuse7-console jboss-eap64-openshift fis-karaf-openshift fuse7-eap-openshift perl jboss-datavirt64-driver-openshift rhdm74-kieserver-openshift redhat-sso70-openshift rhpam74-businesscentral-monitoring-openshift python rhdm74-decisioncentral-openshift jboss-processserver64-openshift jboss-fuse70-eap-openshift jboss-datagrid72-openshift jboss-datagrid65-openshift ; last import attempt 2020-02-24 23:39:38 +0000 UTC
+#     Reason:                ClusterOperatorDegraded
+#     Status:                True
+#     Type:                  Failing
+#     Last Transition Time:  2020-02-24T14:12:20Z
+#     Message:               Error while reconciling 4.3.1: the cluster operator openshift-samples is degraded
+#     Reason:                ClusterOperatorDegraded
+#     Status:                False
+#     Type:                  Progressing
+#     Last Transition Time:  2020-02-24T13:21:41Z
+#     Message:               Unable to retrieve available updates: Get https://api.openshift.com/api/upgrades_info/v1/graph?arch=amd64&channel=stable-4.3&id=7c4e88d7-d4ad-4b01-bbc1-ed19ea595a81&version=4.3.1: dial tcp 52.206.121.207:443: connect: no route to host
+#     Reason:                RemoteFailed
+#     Status:                False
+#     Type:                  RetrievedUpdates
+#   Desired:
+#     Force:    false
+#     Image:    registry.ocp4.oc.de:5000/ocp4/openshift4@sha256:ea7ac3ad42169b39fce07e5e53403a028644810bee9a212e7456074894df40f3
+#     Version:  4.3.1
+#   History:
+#     Completion Time:    2020-02-24T14:12:20Z
+#     Image:              registry.ocp4.oc.de:5000/ocp4/openshift4@sha256:ea7ac3ad42169b39fce07e5e53403a028644810bee9a212e7456074894df40f3
+#     Started Time:       2020-02-24T13:21:41Z
+#     State:              Completed
+#     Verified:           false
+#     Version:            4.3.1
+#   Observed Generation:  1
+#   Version Hash:         _YO7YAaOleo=
+# Events:                 <none>
+#+end_example
+
+** Look at the Nodes
+
+#+begin_src bash
+oc get nodes
+#+end_src
+
+#+begin_example
+# NAME                 STATUS   ROLES    AGE   VERSION
+# master1.ocp4.oc.de   Ready    master   10h   v1.16.2
+# master2.ocp4.oc.de   Ready    master   10h   v1.16.2
+# master3.ocp4.oc.de   Ready    master   10h   v1.16.2
+# worker1.ocp4.oc.de   Ready    worker   9h    v1.16.2
+# worker2.ocp4.oc.de   Ready    worker   9h    v1.16.2
+#+end_example
+
+** Application Management Basics
+*** Projects
+
+#+begin_src bash
+oc new-project app-management
+#+end_src
+
+#+begin_example
+# Now using project "app-management" on server "https://api.ocp4.oc.de:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+#+end_example
+
+*** Deploy a Sample Application
+
+#+begin_src bash
+oc new-app -h
+#+end_src
+
+#+begin_example
+# Create a new application by specifying source code, templates, and/or images
+# 
+#  This command will try to build up the components of an application using
+# images, templates, or code that has a public repository. It will lookup the
+# images on the local Docker installation (if available), a container image
+# registry, an integrated image stream, or stored templates.
+# 
+#  If you specify a source code URL, it will set up a build that takes your source
+# code and converts it into an image that can run inside of a pod. Local source
+# must be in a git repository that has a remote repository that the server can
+# see. The images will be deployed via a deployment configuration, and a service
+# will be connected to the first public port of the app. You may either specify
+# components using the various existing flags or let new-app autodetect what kind
+# of components you have provided.
+# 
+#  If you provide source code, a new build will be automatically triggered. You
+# can use 'oc status' to check the progress.
+# 
+# Usage:
+#   oc new-app (IMAGE | IMAGESTREAM | TEMPLATE | PATH | URL ...) [flags]
+# 
+# Examples:
+#   # List all local templates and image streams that can be used to create an app
+#   oc new-app --list
+#   
+#   # Create an application based on the source code in the current git repository
+# (with a public remote) and a Docker image
+#   oc new-app . --docker-image=repo/langimage
+#   
+#   # Create an application myapp with Docker based build strategy expecting
+# binary input
+#   oc new-app  --strategy=docker --binary --name myapp
+#   
+#   # Create a Ruby application based on the provided [image]~[source code]
+# combination
+#   oc new-app centos/ruby-25-centos7~https://github.com/sclorg/ruby-ex.git
+#   
+#   # Use the public Docker Hub MySQL image to create an app. Generated artifacts
+# will be labeled with db=mysql
+#   oc new-app mysql MYSQL_USER=user MYSQL_PASSWORD=pass MYSQL_DATABASE=testdb -l
+# db=mysql
+#   
+#   # Use a MySQL image in a private registry to create an app and override
+# application artifacts' names
+#   oc new-app --docker-image=myregistry.com/mycompany/mysql --name=private
+#   
+#   # Create an application from a remote repository using its beta4 branch
+#   oc new-app https://github.com/openshift/ruby-hello-world#beta4
+#   
+#   # Create an application based on a stored template, explicitly setting a
+# parameter value
+#   oc new-app --template=ruby-helloworld-sample --param=MYSQL_USER=admin
+#   
+#   # Create an application from a remote repository and specify a context
+# directory
+#   oc new-app https://github.com/youruser/yourgitrepo --context-dir=src/build
+#   
+#   # Create an application from a remote private repository and specify which
+# existing secret to use
+#   oc new-app https://github.com/youruser/yourgitrepo --source-secret=yoursecret
+#   
+#   # Create an application based on a template file, explicitly setting a
+# parameter value
+#   oc new-app --file=./example/myapp/template.json --param=MYSQL_USER=admin
+#   
+#   # Search all templates, image streams, and Docker images for the ones that
+# match "ruby"
+#   oc new-app --search ruby
+#   
+#   # Search for "ruby", but only in stored templates (--template, --image-stream
+# and --docker-image
+#   # can be used to filter search results)
+#   oc new-app --search --template=ruby
+#   
+#   # Search for "ruby" in stored templates and print the output as an YAML
+#   oc new-app --search --template=ruby --output=yaml
+# 
+# Options:
+#       --allow-missing-images=false: If true, indicates that referenced Docker
+# images that cannot be found locally or in a registry should still be used.
+#       --allow-missing-imagestream-tags=false: If true, indicates that image
+# stream tags that don't exist should still be used.
+#       --allow-missing-template-keys=false: If true, ignore any errors in
+# templates when a field or map key is missing in the template. Only applies to
+# golang and jsonpath output formats.
+#       --as-test=false: If true create this application as a test deployment,
+# which validates that the deployment succeeds and then scales down.
+#       --binary=false: Instead of expecting a source URL, set the build to expect
+# binary contents. Will disable triggers.
+#       --build-env=[]: Specify a key-value pair for an environment variable to
+# set into each build image.
+#       --build-env-file=[]: File containing key-value pairs of environment
+# variables to set into each build image.
+#       --code=[]: Source code to use to build this application.
+#       --context-dir='': Context directory to be used for the build.
+#       --docker-image=[]: Name of a Docker image to include in the app.
+#       --dry-run=false: If true, show the result of the operation without
+# performing it.
+#   -e, --env=[]: Specify a key-value pair for an environment variable to set into
+# each container.
+#       --env-file=[]: File containing key-value pairs of environment variables to
+# set into each container.
+#   -f, --file=[]: Path to a template file to use for the app.
+#       --grant-install-rights=false: If true, a component that requires access to
+# your account may use your token to install software into your project. Only
+# grant images you trust the right to run with your token.
+#       --group=[]: Indicate components that should be grouped together as
+# <comp1>+<comp2>.
+#       --ignore-unknown-parameters=false: If true, will not stop processing if a
+# provided parameter does not exist in the template.
+#   -i, --image-stream=[]: Name of an image stream to use in the app.
+#       --insecure-registry=false: If true, indicates that the referenced Docker
+# images are on insecure registries and should bypass certificate checking
+#   -l, --labels='': Label to set in all resources for this application.
+#   -L, --list=false: List all local templates and image streams that can be used
+# to create.
+#       --name='': Set name to use for generated application artifacts
+#       --no-install=false: Do not attempt to run images that describe themselves
+# as being installable
+#   -o, --output='': Output format. One of:
+# json|yaml|name|go-template|go-template-file|template|templatefile|jsonpath|jsonpath-file.
+#       --output-version='': The preferred API versions of the output objects
+#   -p, --param=[]: Specify a key-value pair (e.g., -p FOO=BAR) to set/override a
+# parameter value in the template.
+#       --param-file=[]: File containing parameter values to set/override in the
+# template.
+#   -S, --search=false: Search all templates, image streams, and Docker images
+# that match the arguments provided.
+#   -a, --show-all=true: When printing, show all resources (false means hide
+# terminated pods.)
+#       --show-labels=false: When printing, show all labels as the last column
+# (default hide labels column)
+#       --sort-by='': If non-empty, sort list types using this field
+# specification.  The field specification is expressed as a JSONPath expression
+# (e.g. '{.metadata.name}'). The field in the API resource specified by this
+# JSONPath expression must be an integer or a string.
+#       --source-secret='': The name of an existing secret that should be used for
+# cloning a private git repository.
+#       --strategy=: Specify the build strategy to use if you don't want to detect
+# (docker|pipeline|source).
+#       --template=[]: Name of a stored template to use in the app.
+# 
+# Use "oc options" for a list of global command-line options (applies to all
+# commands).
+#+end_example
+
+#+begin_src bash
+oc new-app --list
+#+end_src
+
+#+begin_example
+# W0225 11:52:44.996125   16613 dockerimagelookup.go:236] container image registry lookup failed: unable to parse docker reference *:latest: invalid reference format
+# Templates (oc new-app --template=<template>)
+# -----
+# jws31-tomcat8-basic-s2i
+#   Project: openshift
+#   An example JBoss Web Server application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso73-x509-mysql-persistent
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-x509-https
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-postgresql-persistent
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-postgresql
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-mysql-persistent
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-mysql
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso73-https
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# sso72-x509-https
+#   Project: openshift
+#   An example RH-SSO 7 application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso72-postgresql-persistent
+#   Project: openshift
+#   An example RH-SSO 7 application with a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso72-postgresql
+#   Project: openshift
+#   An example RH-SSO 7 application with a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso72-mysql-persistent
+#   Project: openshift
+#   An example RH-SSO 7 application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso72-mysql
+#   Project: openshift
+#   An example RH-SSO 7 application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# sso72-https
+#   Project: openshift
+#   An example RH-SSO 7 application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# s2i-fuse74-spring-boot-camel-xml
+#   Project: openshift
+#   Spring Boot and Camel Xml QuickStart. This example demonstrates how you can use Apache Camel with Spring Boot on OpenShift. The quickstart uses Spring Boot to configure an application which includes a Camel route (in Spring xml) that triggers a message every 5th second, and routes the message to a log.
+# s2i-fuse74-spring-boot-camel-rest-3scale
+#   Project: openshift
+#   Spring Boot, Camel REST DSL and 3Scale QuickStart. This example demonstrates how to use Camel's REST DSL to expose a RESTful API and expose it to 3scale.
+# s2i-fuse74-spring-boot-camel
+#   Project: openshift
+#   Spring Boot and Camel QuickStart. This example demonstrates how you can use Apache Camel with Spring Boot on OpenShift. The quickstart uses Spring Boot to configure an application which includes a Camel route that triggers a message every 5th second, and routes the message to a log.
+# rhpam74-trial-ephemeral
+#   Project: openshift
+#   Application template for an ephemeral authoring and testing environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-prod-immutable-monitor
+#   Project: openshift
+#   Application template for a router and monitoring console in a production environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-prod-immutable-kieserver-amq
+#   Project: openshift
+#   Application template for an immultable KIE server in a production environment integrated with ActiveMQ, for Red Hat Process Automation Manager 7.4
+# rhpam74-prod-immutable-kieserver
+#   Project: openshift
+#   Application template for an immutable KIE server in a production environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-prod
+#   Project: openshift
+#   Application template for a managed HA production runtime environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-managed
+#   Project: openshift
+#   Application template for a managed HA production runtime environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-kieserver-postgresql
+#   Project: openshift
+#   Application template for a managed KIE Server with a PostgreSQL database, for Red Hat Process Automation Manager 7.4
+# rhpam74-kieserver-mysql
+#   Project: openshift
+#   Application template for a managed KIE Server with a MySQL database, for Red Hat Process Automation Manager 7.4
+# rhpam74-kieserver-externaldb
+#   Project: openshift
+#   Application template for a managed KIE Server with an external database, for Red Hat Process Automation Manager 7.4
+# rhpam74-authoring-ha
+#   Project: openshift
+#   Application template for a HA persistent authoring environment, for Red Hat Process Automation Manager 7.4
+# rhpam74-authoring
+#   Project: openshift
+#   Application template for a non-HA persistent authoring environment, for Red Hat Process Automation Manager 7.4
+# rhdm74-trial-ephemeral
+#   Project: openshift
+#   Application template for an ephemeral authoring and testing environment, for Red Hat Decision Manager 7.4
+# rhdm74-prod-immutable-kieserver-amq
+#   Project: openshift
+#   Application template for an immutable KIE server in a production environment integrated with ActiveMQ, for Red Hat Decision Manager 7.4
+# rhdm74-prod-immutable-kieserver
+#   Project: openshift
+#   Application template for an immutable KIE server in a production environment, for Red Hat Decision Manager 7.4
+# rhdm74-optaweb-employee-rostering
+#   Project: openshift
+#   Application template for a Optaweb Employee Rostering with a PostgreSQL database, for Red Hat Decision Manager 7.4
+# rhdm74-kieserver
+#   Project: openshift
+#   Application template for a managed KIE Server, for Red Hat Decision Manager 7.4
+# rhdm74-authoring-ha
+#   Project: openshift
+#   Application template for a HA persistent authoring environment, for Red Hat Decision Manager 7.4
+# rhdm74-authoring
+#   Project: openshift
+#   Application template for a non-HA persistent authoring environment, for Red Hat Decision Manager 7.4
+# redis-persistent
+#   Project: openshift
+#   Redis in-memory data structure store, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
+# 
+# NOTE: You must have persistent volumes available in your cluster to use this template.
+# redis-ephemeral
+#   Project: openshift
+#   Redis in-memory data structure store, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/redis-container/blob/master/3.2.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
+# react-web-app-example
+#   Project: openshift
+#   Build a basic React Web Application
+# rails-postgresql-example
+#   Project: openshift
+#   An example Rails application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# rails-pgsql-persistent
+#   Project: openshift
+#   An example Rails application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+# processserver64-postgresql-persistent-s2i
+#   Project: openshift
+#   An example BPM Suite application with a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-mysql-s2i
+#   Project: openshift
+#   An example BPM Suite application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-mysql-persistent-s2i
+#   Project: openshift
+#   An example BPM Suite application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-externaldb-s2i
+#   Project: openshift
+#   An example BPM Suite application with a external database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-basic-s2i
+#   Project: openshift
+#   An example BPM Suite application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-amq-postgresql-s2i
+#   Project: openshift
+#   An example BPM Suite application with A-MQ and a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-amq-postgresql-persistent-s2i
+#   Project: openshift
+#   An example BPM Suite application with A-MQ and a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-amq-mysql-s2i
+#   Project: openshift
+#   An example BPM Suite application with A-MQ and a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# processserver64-amq-mysql-persistent-s2i
+#   Project: openshift
+#   An example BPM Suite application with A-MQ and a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# postgresql-persistent
+#   Project: openshift
+#   PostgreSQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/.
+# 
+# NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+# postgresql-ephemeral
+#   Project: openshift
+#   PostgreSQL database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
+# openjdk-web-basic-s2i
+#   Project: openshift
+#   An example Java application using OpenJDK. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# nodejs-mongodb-example
+#   Project: openshift
+#   An example Node.js application with a MongoDB database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/nodejs-ex/blob/master/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# nodejs-mongo-persistent
+#   Project: openshift
+#   An example Node.js application with a MongoDB database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/nodejs-ex/blob/master/README.md.
+# nginx-example
+#   Project: openshift
+#   An example Nginx HTTP server and a reverse proxy (nginx) application that serves static content. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/nginx-ex/blob/master/README.md.
+# mysql-persistent
+#   Project: openshift
+#   MySQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mysql-container/blob/master/8.0/root/usr/share/container-scripts/mysql/README.md.
+# 
+# NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+# mysql-ephemeral
+#   Project: openshift
+#   MySQL database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mysql-container/blob/master/8.0/root/usr/share/container-scripts/mysql/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
+# mongodb-persistent
+#   Project: openshift
+#   MongoDB database service, with persistent storage. For more information about using this template, including OpenShift considerations, see documentation in the upstream repository: https://github.com/sclorg/mongodb-container.
+# 
+# NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+# mongodb-ephemeral
+#   Project: openshift
+#   MongoDB database service, without persistent storage. For more information about using this template, including OpenShift considerations, see documentation in the upstream repository: https://github.com/sclorg/mongodb-container.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
+# mariadb-persistent
+#   Project: openshift
+#   MariaDB database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mariadb-container/blob/master/10.2/root/usr/share/container-scripts/mysql/README.md.
+# 
+# NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+# mariadb-ephemeral
+#   Project: openshift
+#   MariaDB database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/mariadb-container/blob/master/10.2/root/usr/share/container-scripts/mysql/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
+# jws50-tomcat9-postgresql-persistent-s2i
+#   Project: openshift
+#   Application template for JWS PostgreSQL applications with persistent storage built using S2I.
+# jws50-tomcat9-mysql-s2i
+#   Project: openshift
+#   Application template for JWS MySQL applications built using S2I.
+# jws50-tomcat9-mysql-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws50-tomcat9-mongodb-s2i
+#   Project: openshift
+#   Application template for JWS MongoDB applications built using S2I.
+# jws50-tomcat9-mongodb-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MongoDB database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws50-tomcat9-https-s2i
+#   Project: openshift
+#   An example JBoss Web Server application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws50-tomcat9-basic-s2i
+#   Project: openshift
+#   An example JBoss Web Server application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat8-postgresql-persistent-s2i
+#   Project: openshift
+#   Application template for JWS PostgreSQL applications with persistent storage built using S2I.
+# jws31-tomcat8-mysql-s2i
+#   Project: openshift
+#   Application template for JWS MySQL applications built using S2I.
+# jws31-tomcat8-mysql-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat8-mongodb-s2i
+#   Project: openshift
+#   Application template for JWS MongoDB applications built using S2I.
+# jws31-tomcat8-mongodb-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MongoDB database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat8-https-s2i
+#   Project: openshift
+#   An example JBoss Web Server application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# 3scale-gateway
+#   Project: openshift
+#   3scale's APIcast is an NGINX based API gateway used to integrate your internal and external API services with 3scale's API Management Platform. It supports OpenID connect to integrate with external Identity Providers such as Red Hat Single Sign On, for API traffic authentication
+# amq63-basic
+#   Project: openshift
+#   Application template for JBoss A-MQ brokers. These can be deployed as standalone or in a mesh. This template doesn't feature SSL support.
+# amq63-persistent
+#   Project: openshift
+#   An example JBoss A-MQ application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# amq63-persistent-ssl
+#   Project: openshift
+#   An example JBoss A-MQ application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# amq63-ssl
+#   Project: openshift
+#   An example JBoss A-MQ application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# apicurito
+#   Project: openshift
+#   Design beautiful, functional APIs with zero coding, using a visual designer for OpenAPI documents.
+# cache-service
+#   Project: openshift
+#   Red Hat Data Grid is an in-memory, distributed key/value store.
+# cakephp-mysql-example
+#   Project: openshift
+#   An example CakePHP application with a MySQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/cakephp-ex/blob/master/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# cakephp-mysql-persistent
+#   Project: openshift
+#   An example CakePHP application with a MySQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/cakephp-ex/blob/master/README.md.
+# dancer-mysql-example
+#   Project: openshift
+#   An example Dancer application with a MySQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/dancer-ex/blob/master/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# dancer-mysql-persistent
+#   Project: openshift
+#   An example Dancer application with a MySQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/dancer-ex/blob/master/README.md.
+# datagrid-service
+#   Project: openshift
+#   Red Hat Data Grid is an in-memory, distributed key/value store.
+# datavirt64-basic-s2i
+#   Project: openshift
+#   Application template for JBoss Data Virtualization 6.4 services built using S2I.
+# datavirt64-extensions-support-s2i
+#   Project: openshift
+#   An example JBoss Data Virtualization application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# datavirt64-ldap-s2i
+#   Project: openshift
+#   Application template for JBoss Data Virtualization 6.4 services that configures security domain using S2I.
+# datavirt64-secure-s2i
+#   Project: openshift
+#   An example JBoss Data Virtualization application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# decisionserver64-amq-s2i
+#   Project: openshift
+#   An example BRMS decision server A-MQ application. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# decisionserver64-basic-s2i
+#   Project: openshift
+#   Application template for Red Hat JBoss BRMS 6.4 decision server applications built using S2I.
+# django-psql-example
+#   Project: openshift
+#   An example Django application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/django-ex/blob/master/README.md.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# django-psql-persistent
+#   Project: openshift
+#   An example Django application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/django-ex/blob/master/README.md.
+# dotnet-example
+#   Project: openshift
+#   An example .NET Core application.
+# dotnet-pgsql-persistent
+#   Project: openshift
+#   An example .NET Core application with a PostgreSQL database. For more information about using this template, including OpenShift considerations, see https://github.com/redhat-developer/s2i-dotnetcore.
+# eap-cd-basic-s2i
+#   Project: openshift
+#   An example JBoss Enterprise Application Platform continuous delivery application. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap-cd/README.adoc
+# eap-cd-starter-s2i
+#   Project: openshift
+#   An example JBoss Enterprise Application Platform continuous delivery application. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap-cd/README.adoc
+# eap72-basic-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc
+# eap72-https-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application configured with secure communication using HTTPS. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc
+# eap72-mongodb-persistent-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application with a MongoDB database. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc.
+# eap72-mongodb-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application with a MongoDB database. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc.
+# eap72-mysql-persistent-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7.2 application with a persistent MySQL database. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc.
+# eap72-mysql-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application with a MySQL database. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc.
+# eap72-postgresql-persistent-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application with a persistent PostgreSQL database. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc
+# eap72-postgresql-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application with an PostgreSQL database configured with secure communication using https and ephemeral storage. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc
+# eap72-sso-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application Single Sign-On application. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc
+# eap72-third-party-db-s2i
+#   Project: openshift
+#   An example Red Hat JBoss EAP 7 application. For more information about using this template, see https://github.com/jboss-container-images/jboss-eap-7-openshift-image/blob/eap72/README.adoc.
+# fuse74-console
+#   Project: openshift
+#   The Red Hat Fuse Console eases the discovery and management of Fuse applications deployed on OpenShift.
+# httpd-example
+#   Project: openshift
+#   An example Apache HTTP Server (httpd) application that serves static content. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/httpd-ex/blob/master/README.md.
+# jenkins-ephemeral
+#   Project: openshift
+#   Jenkins service, without persistent storage.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# jenkins-ephemeral-monitored
+#   Project: openshift
+#   Jenkins service, without persistent storage.
+# 
+# WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
+# jenkins-persistent
+#   Project: openshift
+#   Jenkins service, with persistent storage.
+# 
+# NOTE: You must have persistent volumes available in your cluster to use this template.
+# jenkins-persistent-monitored
+#   Project: openshift
+#   Jenkins service, with persistent storage.
+# 
+# NOTE: You must have persistent volumes available in your cluster to use this template.
+# jws31-tomcat7-basic-s2i
+#   Project: openshift
+#   Application template for JWS applications built using S2I.
+# jws31-tomcat7-https-s2i
+#   Project: openshift
+#   An example JBoss Web Server application configured for use with https. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat7-mongodb-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MongoDB database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat7-mongodb-s2i
+#   Project: openshift
+#   Application template for JWS MongoDB applications built using S2I.
+# jws31-tomcat7-mysql-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a MySQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat7-mysql-s2i
+#   Project: openshift
+#   Application template for JWS MySQL applications built using S2I.
+# jws31-tomcat7-postgresql-persistent-s2i
+#   Project: openshift
+#   An example JBoss Web Server application with a PostgreSQL database. For more information about using this template, see https://github.com/jboss-openshift/application-templates.
+# jws31-tomcat7-postgresql-s2i
+#   Project: openshift
+#   Application template for JWS PostgreSQL applications built using S2I.
+# sso73-x509-postgresql-persistent
+#   Project: openshift
+#   An example application based on RH-SSO 7.3 image. For more information about using this template, see https://github.com/jboss-container-images/redhat-sso-7-openshift-image/docs.
+# 
+# Image streams (oc new-app --image-stream=<image-stream> [--code=<source>])
+# -----
+# tests
+#   Project: openshift
+#   Tags:    latest
+# ruby
+#   Project: openshift
+#   Tags:    2.4, 2.5
+# rhpam74-smartrouter-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhpam74-kieserver-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhpam74-businesscentral-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhpam74-businesscentral-monitoring-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhdm74-optaweb-employee-rostering-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhdm74-kieserver-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# rhdm74-decisioncentral-openshift
+#   Project: openshift
+#   Tags:    1.0, 1.1
+# redis
+#   Project: openshift
+#   Tags:    3.2
+# redhat-sso73-openshift
+#   Project: openshift
+#   Tags:    
+#   Red Hat Single Sign-On 7.3
+# redhat-sso72-openshift
+#   Project: openshift
+#   Tags:    
+#   Red Hat SSO 7.2
+# redhat-sso71-openshift
+#   Project: openshift
+#   Tags:    
+#   Red Hat SSO 7.1
+# redhat-sso70-openshift
+#   Project: openshift
+#   Tags:    
+#   Red Hat SSO 7.0
+# redhat-openjdk18-openshift
+#   Project: openshift
+#   Tags:    
+# python
+#   Project: openshift
+#   Tags:    2.7, 3.6
+# postgresql
+#   Project: openshift
+#   Tags:    10, 9.6
+# php
+#   Project: openshift
+#   Tags:    7.0, 7.1, 7.2
+# perl
+#   Project: openshift
+#   Tags:    5.24, 5.26
+# openjdk-11-rhel7
+#   Project: openshift
+#   Tags:    
+# nodejs
+#   Project: openshift
+#   Tags:    10-SCL, 8, 8-RHOAR
+# nginx
+#   Project: openshift
+#   Tags:    1.10, 1.12
+# mysql
+#   Project: openshift
+#   Tags:    5.7, 8.0
+# must-gather
+#   Project: openshift
+#   Tags:    latest
+# mongodb
+#   Project: openshift
+#   Tags:    3.4, 3.6
+# modern-webapp
+#   Project: openshift
+#   Tags:    10.x
+# mariadb
+#   Project: openshift
+#   Tags:    10.2
+# jenkins-agent-nodejs
+#   Project: openshift
+#   Tags:    v4.0
+# jenkins-agent-maven
+#   Project: openshift
+#   Tags:    v4.0
+# jenkins
+#   Project: openshift
+#   Tags:    2
+# jboss-webserver50-tomcat9-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-webserver31-tomcat8-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-webserver31-tomcat7-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-webserver30-tomcat8-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-webserver30-tomcat7-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-processserver64-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-fuse70-karaf-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-fuse70-java-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-fuse70-eap-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-fuse70-console
+#   Project: openshift
+#   Tags:    
+# jboss-eap72-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-eap71-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-eap70-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-eap64-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-decisionserver64-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datavirt64-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datavirt64-driver-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid73-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid72-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid71-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid71-client-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid65-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-datagrid65-client-openshift
+#   Project: openshift
+#   Tags:    
+# jboss-amq-63
+#   Project: openshift
+#   Tags:    
+# jboss-amq-62
+#   Project: openshift
+#   Tags:    
+# java
+#   Project: openshift
+#   Tags:    11, 8
+# installer-artifacts
+#   Project: openshift
+#   Tags:    latest
+# installer
+#   Project: openshift
+#   Tags:    latest
+# httpd
+#   Project: openshift
+#   Tags:    2.4
+# golang
+#   Project: openshift
+#   Tags:    1.11.5
+# fuse7-karaf-openshift
+#   Project: openshift
+#   Tags:    
+# fuse7-java-openshift
+#   Project: openshift
+#   Tags:    
+# fuse7-eap-openshift
+#   Project: openshift
+#   Tags:    
+# fuse7-console
+#   Project: openshift
+#   Tags:    
+# fuse-apicurito-generator
+#   Project: openshift
+#   Tags:    
+# fis-karaf-openshift
+#   Project: openshift
+#   Tags:    
+# fis-java-openshift
+#   Project: openshift
+#   Tags:    
+# eap-cd-openshift
+#   Project: openshift
+#   Tags:    
+# dotnet-runtime
+#   Project: openshift
+#   Tags:    2.1, 2.2, 3.0
+# dotnet
+#   Project: openshift
+#   Tags:    2.1, 2.2, 3.0
+# cli-artifacts
+#   Project: openshift
+#   Tags:    latest
+# cli
+#   Project: openshift
+#   Tags:    latest
+# apicurito-ui
+#   Project: openshift
+#   Tags:    
+# apicast-gateway
+#   Project: openshift
+#   Tags:    2.1.0.GA, 2.2.0.GA, 2.3.0.GA, 2.4.0.GA, 2.5.0.GA, 2.6.0.GA
+#+end_example
+
+#+begin_src bash
+oc new-app --search ruby
+#+end_src
+
+#+begin_example
+# W0225 12:00:48.352859   16651 dockerimagelookup.go:236] container image registry lookup failed: docker.io/library/ruby:latest: Get https://registry-1.docker.io/v2/: dial tcp 100.24.246.89:443: connect: no route to host
+# Image streams (oc new-app --image-stream=<image-stream> [--code=<source>])
+# -----
+# ruby
+#   Project: openshift
+#   Tags:    2.4, 2.5
+# 
+#+end_example
+
+#+begin_src bash
+oc new-app --image-stream=ruby
+#+end_src
+
+#+begin_example
+# error: no tags found on matching image stream: "openshift/ruby"
+# 
+# The image stream "openshift/ruby" exists, but it has no tags.
+# 
+#   Use --allow-missing-imagestream-tags to use this image stream
+# 
+#+end_example
+
+#+begin_src bash
+oc new-app --image-stream=ruby --allow-missing-imagestream-tags
+#+end_src
+
+#+begin_example
+# --> Found tag :latest in image stream "openshift/ruby" for "ruby"
+# 
+#     * This image will be deployed in deployment config "ruby"
+# 
+# --> Creating resources ...
+#     error: ImageStreamTag.image.openshift.io "ruby:latest" is invalid: tag.from.name: Required value
+#     deploymentconfig.apps.openshift.io "ruby" created
+# --> Failed
+#+end_example
+
+#+begin_src bash
+oc new-app quay.io/thoraxe/mapit
+#+end_src
+
+#+begin_example
+# W0225 11:39:58.572580   16567 dockerimagelookup.go:236] container image registry lookup failed: quay.io/thoraxe/mapit:latest: Get https://quay.io/v2/: dial tcp 34.195.60.239:443: connect: no route to host
+# error:  local file access failed with: stat quay.io/thoraxe/mapit: no such file or directory
+# error: unable to locate any images in image streams, templates loaded in accessible projects, template files, local docker images with name "quay.io/thoraxe/mapit"
+# 
+# Argument 'quay.io/thoraxe/mapit' was classified as an image, image~source, or loaded template reference.
+# 
+# The 'oc new-app' command will match arguments to the following types:
+# 
+#   1. Images tagged into image streams in the current project or the 'openshift' project
+#      - if you don't specify a tag, we'll add ':latest'
+#   2. Images in the Docker Hub, on remote registries, or on the local Docker engine
+#   3. Templates in the current project or the 'openshift' project
+#   4. Git repository URLs or local paths that point to Git repositories
+# 
+# --allow-missing-images can be used to point to an image that does not exist yet.
+# 
+# See 'oc new-app -h' for examples.
+#+end_example
+
+#+begin_example
+# --> Found container image 7ce7ade (2 years old) from quay.io for "quay.io/thoraxe/mapit"
+# 
+#     * An image stream tag will be created as "mapit:latest" that will track this image
+#     * This image will be deployed in deployment config "mapit"
+#     * Ports 8080/tcp, 8778/tcp, 9779/tcp will be load balanced by service "mapit"
+#       * Other containers can access this service through the hostname "mapit"
+# 
+# --> Creating resources ...
+#     imagestream.image.openshift.io "mapit" created
+#     deploymentconfig.apps.openshift.io "mapit" created
+#     service "mapit" created
+# --> Success
+#     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
+#      'oc expose svc/mapit' 
+#     Run 'oc status' to view your app.
+#+end_example
+
+*** Pods
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   0/1     ContainerCreating   0          3s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   1/1     Running             0          26s
+# mapit-1-dt5k7    0/1     ContainerCreating   0          18s
+#+end_example
+
+#+begin_src bash
+oc describe pod $(oc get pods | grep "Running" | awk '{ print $1 }')
+#+end_src
+
+#+begin_example
+# Name:               mapit-1-dt5k7
+# Namespace:          app-management
+# Priority:           0
+# PriorityClassName:  <none>
+# Node:               ip-10-0-172-64.us-east-2.compute.internal/10.0.172.64
+# Start Time:         Fri, 21 Feb 2020 16:10:57 +0000
+# Labels:             app=mapit
+#                     deployment=mapit-1
+#                     deploymentconfig=mapit
+# Annotations:        k8s.v1.cni.cncf.io/networks-status:
+#                       [{
+#                           "name": "openshift-sdn",
+#                           "interface": "eth0",
+#                           "ips": [
+#                               "10.130.2.13"
+#                           ],
+#                           "default": true,
+#                           "dns": {}
+#                       }]
+#                     kubernetes.io/limit-ranger: LimitRanger plugin set: cpu, memory request for container mapit; cpu, memory limit for container mapit
+#                     openshift.io/deployment-config.latest-version: 1
+#                     openshift.io/deployment-config.name: mapit
+#                     openshift.io/deployment.name: mapit-1
+#                     openshift.io/generated-by: OpenShiftNewApp
+#                     openshift.io/scc: restricted
+# Status:             Running
+# IP:                 10.130.2.13
+# Controlled By:      ReplicationController/mapit-1
+# Containers:
+#   mapit:
+#     Container ID:   cri-o://5c6adb041ba82010938d70def3b37f6bbb25db27c87108b675698ae6db9bc553
+#     Image:          quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Image ID:       quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Ports:          8080/TCP, 8778/TCP, 9779/TCP
+#     Host Ports:     0/TCP, 0/TCP, 0/TCP
+#     State:          Running
+#       Started:      Fri, 21 Feb 2020 16:11:14 +0000
+#     Ready:          True
+#     Restart Count:  0
+#     Limits:
+#       cpu:     4
+#       memory:  1Gi
+#     Requests:
+#       cpu:        100m
+#       memory:     512Mi
+#     Environment:  <none>
+#     Mounts:
+#       /var/run/secrets/kubernetes.io/serviceaccount from default-token-w6rh2 (ro)
+# Conditions:
+#   Type              Status
+#   Initialized       True 
+#   Ready             True 
+#   ContainersReady   True 
+#   PodScheduled      True 
+# Volumes:
+#   default-token-w6rh2:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  default-token-w6rh2
+#     Optional:    false
+# QoS Class:       Burstable
+# Node-Selectors:  <none>
+# Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule
+#                  node.kubernetes.io/not-ready:NoExecute for 300s
+#                  node.kubernetes.io/unreachable:NoExecute for 300s
+# Events:
+#   Type    Reason     Age    From                                                Message
+#   ----    ------     ----   ----                                                -------
+#   Normal  Scheduled  4m5s   default-scheduler                                   Successfully assigned app-management/mapit-1-dt5k7 to ip-10-0-172-64.us-east-2.compute.internal
+#   Normal  Pulling    3m58s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Pulling image "quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d"
+#   Normal  Pulled     3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Successfully pulled image "quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d"
+#   Normal  Created    3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Created container mapit
+#   Normal  Started    3m48s  kubelet, ip-10-0-172-64.us-east-2.compute.internal  Started container mapit
+#+end_example
+
+*** Services
+
+#+begin_src bash
+oc get services
+#+end_src
+
+#+begin_example
+# NAME    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+# mapit   ClusterIP   172.30.67.133   <none>        8080/TCP,8778/TCP,9779/TCP   4m48s
+#+end_example
+
+#+begin_src bash
+oc describe service mapit
+#+end_src
+
+#+begin_example
+# Name:              mapit
+# Namespace:         app-management
+# Labels:            app=mapit
+# Annotations:       openshift.io/generated-by: OpenShiftNewApp
+# Selector:          app=mapit,deploymentconfig=mapit
+# Type:              ClusterIP
+# IP:                172.30.67.133
+# Port:              8080-tcp  8080/TCP
+# TargetPort:        8080/TCP
+# Endpoints:         10.130.2.13:8080
+# Port:              8778-tcp  8778/TCP
+# TargetPort:        8778/TCP
+# Endpoints:         10.130.2.13:8778
+# Port:              9779-tcp  9779/TCP
+# TargetPort:        9779/TCP
+# Endpoints:         10.130.2.13:9779
+# Session Affinity:  None
+# Events:            <none>
+#+end_example
+
+#+begin_src bash
+oc get service mapit -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   annotations:
+#     openshift.io/generated-by: OpenShiftNewApp
+#   creationTimestamp: "2020-02-21T16:10:46Z"
+#   labels:
+#     app: mapit
+#   name: mapit
+#   namespace: app-management
+#   resourceVersion: "928455"
+#   selfLink: /api/v1/namespaces/app-management/services/mapit
+#   uid: b7acba15-54c4-11ea-9d6d-06399a073c9e
+# spec:
+#   clusterIP: 172.30.67.133
+#   ports:
+#   - name: 8080-tcp
+#     port: 8080
+#     protocol: TCP
+#     targetPort: 8080
+#   - name: 8778-tcp
+#     port: 8778
+#     protocol: TCP
+#     targetPort: 8778
+#   - name: 9779-tcp
+#     port: 9779
+#     protocol: TCP
+#     targetPort: 9779
+#   selector:
+#     app: mapit
+#     deploymentconfig: mapit
+#   sessionAffinity: None
+#   type: ClusterIP
+# status:
+#   loadBalancer: {}
+#+end_example
+
+#+begin_src bash
+oc get pod $(oc get pods | grep "Running" | awk '{ print $1 }') -o yaml
+#+end_src
+
+#+begin_example
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   annotations:
+#     k8s.v1.cni.cncf.io/networks-status: |-
+#       [{
+#           "name": "openshift-sdn",
+#           "interface": "eth0",
+#           "ips": [
+#               "10.130.2.13"
+#           ],
+#           "default": true,
+#           "dns": {}
+#       }]
+#     kubernetes.io/limit-ranger: 'LimitRanger plugin set: cpu, memory request for container
+#       mapit; cpu, memory limit for container mapit'
+#     openshift.io/deployment-config.latest-version: "1"
+#     openshift.io/deployment-config.name: mapit
+#     openshift.io/deployment.name: mapit-1
+#     openshift.io/generated-by: OpenShiftNewApp
+#     openshift.io/scc: restricted
+#   creationTimestamp: "2020-02-21T16:10:57Z"
+#   generateName: mapit-1-
+#   labels:
+#     app: mapit
+#     deployment: mapit-1
+#     deploymentconfig: mapit
+#   name: mapit-1-dt5k7
+#   namespace: app-management
+#   ownerReferences:
+#   - apiVersion: v1
+#     blockOwnerDeletion: true
+#     controller: true
+#     kind: ReplicationController
+#     name: mapit-1
+#     uid: b96b188f-54c4-11ea-8e4e-029a3b7b53fa
+#   resourceVersion: "928735"
+#   selfLink: /api/v1/namespaces/app-management/pods/mapit-1-dt5k7
+#   uid: be5766ef-54c4-11ea-9d6d-06399a073c9e
+# spec:
+#   containers:
+#   - image: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     imagePullPolicy: Always
+#     name: mapit
+#     ports:
+#     - containerPort: 8080
+#       protocol: TCP
+#     - containerPort: 8778
+#       protocol: TCP
+#     - containerPort: 9779
+#       protocol: TCP
+#     resources:
+#       limits:
+#         cpu: "4"
+#         memory: 1Gi
+#       requests:
+#         cpu: 100m
+#         memory: 512Mi
+#     securityContext:
+#       capabilities:
+#         drop:
+#         - KILL
+#         - MKNOD
+#         - SETGID
+#         - SETUID
+#       runAsUser: 1000890000
+#     terminationMessagePath: /dev/termination-log
+#     terminationMessagePolicy: File
+#     volumeMounts:
+#     - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+#       name: default-token-w6rh2
+#       readOnly: true
+#   dnsPolicy: ClusterFirst
+#   enableServiceLinks: true
+#   imagePullSecrets:
+#   - name: default-dockercfg-sgc84
+#   nodeName: ip-10-0-172-64.us-east-2.compute.internal
+#   priority: 0
+#   restartPolicy: Always
+#   schedulerName: default-scheduler
+#   securityContext:
+#     fsGroup: 1000890000
+#     seLinuxOptions:
+#       level: s0:c30,c10
+#   serviceAccount: default
+#   serviceAccountName: default
+#   terminationGracePeriodSeconds: 30
+#   tolerations:
+#   - effect: NoSchedule
+#     key: node.kubernetes.io/memory-pressure
+#     operator: Exists
+#   - effect: NoExecute
+#     key: node.kubernetes.io/not-ready
+#     operator: Exists
+#     tolerationSeconds: 300
+#   - effect: NoExecute
+#     key: node.kubernetes.io/unreachable
+#     operator: Exists
+#     tolerationSeconds: 300
+#   volumes:
+#   - name: default-token-w6rh2
+#     secret:
+#       defaultMode: 420
+#       secretName: default-token-w6rh2
+# status:
+#   conditions:
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:10:57Z"
+#     status: "True"
+#     type: Initialized
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:11:15Z"
+#     status: "True"
+#     type: Ready
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:11:15Z"
+#     status: "True"
+#     type: ContainersReady
+#   - lastProbeTime: null
+#     lastTransitionTime: "2020-02-21T16:10:57Z"
+#     status: "True"
+#     type: PodScheduled
+#   containerStatuses:
+#   - containerID: cri-o://5c6adb041ba82010938d70def3b37f6bbb25db27c87108b675698ae6db9bc553
+#     image: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     imageID: quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     lastState: {}
+#     name: mapit
+#     ready: true
+#     restartCount: 0
+#     state:
+#       running:
+#         startedAt: "2020-02-21T16:11:14Z"
+#   hostIP: 10.0.172.64
+#   phase: Running
+#   podIP: 10.130.2.13
+#   qosClass: Burstable
+#   startTime: "2020-02-21T16:10:57Z"
+#+end_example
+
+*** Exploring Deployment-related Objects
+
+#+begin_src bash
+oc get dc
+#+end_src
+
+#+begin_example
+# NAME    REVISION   DESIRED   CURRENT   TRIGGERED BY
+# mapit   1          1         1         config,image(mapit:latest)
+#+end_example
+
+#+begin_src bash
+oc get rc
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   1         1         1       7m57s
+#+end_example
+
+*** Scaling the Application
+
+#+begin_src bash
+oc scale --replicas=2 dc/mapit
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit scaled
+#+end_example
+
+#+begin_src bash
+oc get rc
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   2         2         2       8m19s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          8m39s
+# mapit-1-dt5k7    1/1     Running     0          8m31s
+# mapit-1-zwxg6    1/1     Running     0          40s
+#+end_example
+
+#+begin_src bash
+oc describe svc mapit
+#+end_src
+
+#+begin_example
+# Name:              mapit
+# Namespace:         app-management
+# Labels:            app=mapit
+# Annotations:       openshift.io/generated-by: OpenShiftNewApp
+# Selector:          app=mapit,deploymentconfig=mapit
+# Type:              ClusterIP
+# IP:                172.30.67.133
+# Port:              8080-tcp  8080/TCP
+# TargetPort:        8080/TCP
+# Endpoints:         10.129.6.18:8080,10.130.2.13:8080
+# Port:              8778-tcp  8778/TCP
+# TargetPort:        8778/TCP
+# Endpoints:         10.129.6.18:8778,10.130.2.13:8778
+# Port:              9779-tcp  9779/TCP
+# TargetPort:        9779/TCP
+# Endpoints:         10.129.6.18:9779,10.130.2.13:9779
+# Session Affinity:  None
+# Events:            <none>
+#+end_example
+
+#+begin_src bash
+oc get endpoints mapit
+#+end_src
+
+#+begin_example
+# NAME    ENDPOINTS                                                        AGE
+# mapit   10.129.6.18:8080,10.130.2.13:8080,10.129.6.18:9779 + 3 more...   9m2s
+#+end_example
+
+*** Application "Self Healing"
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          10m
+# mapit-1-dt5k7    1/1     Running     0          10m
+# mapit-1-zwxg6    1/1     Running     0          2m34s
+#+end_example
+
+#+begin_src bash
+oc delete pod mapit-1-zwxg6
+#+end_src
+
+#+begin_example
+# pod "mapit-1-zwxg6" deleted
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          11m
+# mapit-1-dt5k7    1/1     Running     0          11m
+# mapit-1-wcsfm    1/1     Running     0          17s
+#+end_example
+
+*** Background: Routes
+
+#+begin_src bash
+oc describe deployment router-default -n openshift-ingress
+#+end_src
+
+#+begin_example
+# Name:                   router-default
+# Namespace:              openshift-ingress
+# CreationTimestamp:      Wed, 19 Feb 2020 18:02:18 +0000
+# Labels:                 ingresscontroller.operator.openshift.io/owning-ingresscontroller=default
+# Annotations:            deployment.kubernetes.io/revision: 2
+# Selector:               ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+# Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+# StrategyType:           RollingUpdate
+# MinReadySeconds:        0
+# RollingUpdateStrategy:  25% max unavailable, 0 max surge
+# Pod Template:
+#   Labels:           ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+#   Service Account:  router
+#   Containers:
+#    router:
+#     Image:       quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7476ec12a318b52bd7a8f83eb9fec6f2fdd87e3f594562aeea2c29d5af536690
+#     Ports:       80/TCP, 443/TCP, 1936/TCP
+#     Host Ports:  0/TCP, 0/TCP, 0/TCP
+#     Requests:
+#       cpu:      100m
+#       memory:   256Mi
+#     Liveness:   http-get http://:1936/healthz delay=10s timeout=1s period=10s #success=1 #failure=3
+#     Readiness:  http-get http://:1936/healthz/ready delay=10s timeout=1s period=10s #success=1 #failure=3
+#     Environment:
+#       STATS_PORT:                    1936
+#       ROUTER_SERVICE_NAMESPACE:      openshift-ingress
+#       DEFAULT_CERTIFICATE_DIR:       /etc/pki/tls/private
+#       ROUTER_SERVICE_NAME:           default
+#       STATS_USERNAME:                <set to the key 'statsUsername' in secret 'router-stats-default'>  Optional: false
+#       STATS_PASSWORD:                <set to the key 'statsPassword' in secret 'router-stats-default'>  Optional: false
+#       ROUTER_METRICS_TYPE:           haproxy
+#       ROUTER_METRICS_TLS_CERT_FILE:  /etc/pki/tls/metrics-certs/tls.crt
+#       ROUTER_METRICS_TLS_KEY_FILE:   /etc/pki/tls/metrics-certs/tls.key
+#       ROUTER_CANONICAL_HOSTNAME:     apps.cluster-munich-e7ab.sandbox1596.opentlc.com
+#       ROUTER_USE_PROXY_PROTOCOL:     true
+#       ROUTER_THREADS:                4
+#     Mounts:
+#       /etc/pki/tls/metrics-certs from metrics-certs (ro)
+#       /etc/pki/tls/private from default-certificate (ro)
+#   Volumes:
+#    default-certificate:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  router-certs-default
+#     Optional:    false
+#    metrics-certs:
+#     Type:        Secret (a volume populated by a Secret)
+#     SecretName:  router-metrics-certs-default
+#     Optional:    false
+# Conditions:
+#   Type           Status  Reason
+#   ----           ------  ------
+#   Available      True    MinimumReplicasAvailable
+#   Progressing    True    NewReplicaSetAvailable
+# OldReplicaSets:  router-default-5d5f9f8649 (2/2 replicas created)
+# NewReplicaSet:   <none>
+# Events:          <none>
+#+end_example
+
+*** Creating a Route
+
+#+begin_src bash
+oc expose service mapit
+#+end_src
+
+#+begin_example
+# route.route.openshift.io/mapit exposed
+#+end_example
+
+#+begin_src bash
+oc get route
+#+end_src
+
+#+begin_example
+# NAME    HOST/PORT                                                               PATH   SERVICES   PORT       TERMINATION   WILDCARD
+# mapit   mapit-app-management.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          mapit      8080-tcp                 None
+#+end_example
+
+*** Scale Down
+
+#+begin_src bash
+oc scale --replicas=1 dc/mapit
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit scaled
+#+end_example
+
+*** Add Probes to the Application
+
+#+begin_src bash
+curl mapit-app-management.apps.cluster-munich-e7ab.sandbox1596.opentlc.com/health
+#+end_src
+
+#+begin_example
+# 
+# 
+#+end_example
+
+#+begin_src bash
+oc set probe dc/mapit --liveness --get-url=http://:8080/health --initial-delay-seconds=30
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit probes updated
+#+end_example
+
+#+begin_src bash
+oc describe dc mapit
+#+end_src
+
+#+begin_example
+# Name:		mapit
+# Namespace:	app-management
+# Created:	12 minutes ago
+# Labels:		app=mapit
+# Annotations:	openshift.io/generated-by=OpenShiftNewApp
+# Latest Version:	2
+# Selector:	app=mapit,deploymentconfig=mapit
+# Replicas:	1
+# Triggers:	Config, Image(mapit@latest, auto=true)
+# Strategy:	Rolling
+# Template:
+# Pod Template:
+#   Labels:	app=mapit
+# 		deploymentconfig=mapit
+#   Annotations:	openshift.io/generated-by: OpenShiftNewApp
+#   Containers:
+#    mapit:
+#     Image:		quay.io/thoraxe/mapit@sha256:8c7e0349b6a016e3436416f3c54debda4594ba09fd34b8a0dee0c4497102590d
+#     Ports:		8080/TCP, 8778/TCP, 9779/TCP
+#     Host Ports:		0/TCP, 0/TCP, 0/TCP
+#     Liveness:		http-get http://:8080/health delay=30s timeout=1s period=10s #success=1 #failure=3
+#     Environment:	<none>
+#     Mounts:		<none>
+#   Volumes:		<none>
+# 
+# Deployment #2 (latest):
+# 	Created:	3 seconds ago
+# 	Status:		Pending
+# 	Replicas:	0 current / 0 desired
+# Deployment #1:
+# 	Name:		mapit-1
+# 	Created:	12 minutes ago
+# 	Status:		Complete
+# 	Replicas:	1 current / 1 desired
+# 	Selector:	app=mapit,deployment=mapit-1,deploymentconfig=mapit
+# 	Labels:		app=mapit,openshift.io/deployment-config.name=mapit
+# 	Pods Status:	1 Running / 0 Waiting / 0 Succeeded / 0 Failed
+# 
+# Events:
+#   Type		Reason				Age	From				Message
+#   ----		------				----	----				-------
+#   Normal	DeploymentCreated		12m	deploymentconfig-controller	Created new replication controller "mapit-1" for version 1
+#   Normal	ReplicationControllerScaled	4m4s	deploymentconfig-controller	Scaled replication controller "mapit-1" from 1 to 2
+#   Normal	ReplicationControllerScaled	16s	deploymentconfig-controller	Scaled replication controller "mapit-1" from 2 to 1
+#   Normal	DeploymentCreated		3s	deploymentconfig-controller	Created new replication controller "mapit-2" for version 2
+#+end_example
+
+#+begin_src bash
+oc set probe dc/mapit --readiness --get-url=http://:8080/health --initial-delay-seconds=30
+#+end_src
+
+#+begin_example
+# deploymentconfig.apps.openshift.io/mapit probes updated
+#+end_example
+
+*** Examining DeploymentConfigs and ReplicationControllers
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS              RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed           0          12m
+# mapit-2-bwrhg    1/1     Running             0          37s
+# mapit-2-deploy   0/1     Completed           0          46s
+# mapit-3-deploy   0/1     ContainerCreating   0          7s
+#+end_example
+
+#+begin_src bash
+oc get pods
+#+end_src
+
+#+begin_example
+# NAME             READY   STATUS      RESTARTS   AGE
+# mapit-1-deploy   0/1     Completed   0          13m
+# mapit-2-bwrhg    1/1     Running     0          65s
+# mapit-2-deploy   0/1     Completed   0          74s
+# mapit-3-deploy   1/1     Running     0          35s
+# mapit-3-rbjmb    0/1     Running     0          26s
+#+end_example
+
+#+begin_src bash
+oc get deploymentconfigs
+#+end_src
+
+#+begin_example
+# NAME    REVISION   DESIRED   CURRENT   TRIGGERED BY
+# mapit   3          1         1         config,image(mapit:latest)
+#+end_example
+
+#+begin_src bash
+oc get replicationcontrollers
+#+end_src
+
+#+begin_example
+# NAME      DESIRED   CURRENT   READY   AGE
+# mapit-1   0         0         0       13m
+# mapit-2   1         1         1       85s
+# mapit-3   1         1         0       46s
+#+end_example
+
+
+* Custom image builds with Buildah
+** Creating custom build artifacts
+
+#+begin_src bash
+mkdir -p ~/custom-build
+#+end_src
+
+#+begin_src bash
+cd ~/custom-build
+#+end_src
+
+#+begin_src bash
+cat > Dockerfile <<-"_EOF"
+FROM docker.io/centos:7
+RUN yum install -y buildah
+# For simplicity, /tmp/build contains the inputs we’ll be building when we
+# run this custom builder image. Normally the custom builder image would
+# fetch this content from some location at build time. (e.g. via git clone).
+ADD Dockerfile.sample /tmp/input/Dockerfile
+ADD build.sh /usr/bin
+RUN chmod a+x /usr/bin/build.sh
+# /usr/bin/build.sh contains the actual custom build logic that will be executed when
+# this custom builder image is executed.
+ENTRYPOINT ["/usr/bin/build.sh"]
+_EOF
+#+end_src
+
+#+begin_src bash
+cat > Dockerfile.sample <<-"_EOF"
+FROM docker.io/centos:7
+RUN touch /tmp/built
+_EOF
+#+end_src
+
+#+begin_src bash
+cat > build.sh <<-"_EOF"
+#!/bin/sh
+# Note that in this case the build inputs are part of the custom builder image, but normally this
+# would be retrieved from an external source.
+cd /tmp/input
+# OUTPUT_REGISTRY and OUTPUT_IMAGE are env variables provided by the custom
+# build framework
+TAG="${OUTPUT_REGISTRY}/${OUTPUT_IMAGE}"
+
+
+# performs the build of the new image defined by Dockerfile.sample
+buildah --storage-driver vfs bud --isolation chroot -t ${TAG} .
+
+
+# buildah requires a slight modification to the push secret provided by the service
+# account in order to use it for pushing the image
+cp /var/run/secrets/openshift.io/push/.dockercfg /tmp
+(echo "{ \"auths\": " ; cat /var/run/secrets/openshift.io/push/.dockercfg ; echo "}") > /tmp/.dockercfg
+
+
+# push the new image to the target for the build
+buildah --storage-driver vfs push --tls-verify=false --authfile /tmp/.dockercfg ${TAG}
+_EOF
+#+end_src
+
+** Build custom builder image
+
+#+begin_src bash
+oc new-build --binary --strategy=docker --name custom-builder-image
+#+end_src
+
+#+begin_src bash
+oc start-build custom-builder-image --from-dir . -F
+#+end_src
+
