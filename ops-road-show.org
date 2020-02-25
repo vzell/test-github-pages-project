@@ -21440,6 +21440,17 @@ oc new-build --binary --strategy=docker --name custom-builder-image
 oc start-build custom-builder-image --from-dir . -F
 #+end_src
 
+On laptop:
+
+#+begin_example
+# Uploading directory "." as binary input for the build ...
+# ............
+# Uploading finished
+# Unable to connect to the server: unexpected EOF
+#+end_example
+
+On Red Hat lab env:
+
 #+begin_example
 # Uploading directory "." as binary input for the build ...
 # ..
@@ -21692,4 +21703,55 @@ oc start-build custom-builder-image --from-dir . -F
 # Successfully pushed image-registry.openshift-image-registry.svc:5000/app-management/custom-builder-image@sha256:8df4b238f591bba820f238533a0881509f84b364ecb2bcf2fb0647314fd79edf
 # Push successful
 #+end_example
+
+** Use custom builder image
+
+#+begin_src bash
+cat > buildconfig.yaml <<-"_EOF"
+kind: BuildConfig
+apiVersion: v1
+metadata:
+  name: sample-custom-build
+  labels:
+    name: sample-custom-build
+  annotations:
+    template.alpha.openshift.io/wait-for-ready: 'true'
+spec:
+  strategy:
+    type: Custom
+    customStrategy:
+      forcePull: true
+      from:
+        kind: ImageStreamTag
+        name: custom-builder-image:latest
+        namespace: app-management
+  output:
+    to:
+      kind: ImageStreamTag
+      name: sample-custom:latest
+_EOF
+#+end_src
+
+#+begin_src bash
+oc create -f buildconfig.yaml
+#+end_src
+
+#+begin_src bash
+cat > imagestream.yaml <<-"_EOF"
+kind: ImageStream
+apiVersion: v1
+metadata:
+  name: sample-custom
+spec: {}
+_EOF
+#+end_src
+
+#+begin_src bash
+oc create -f imagestream.yaml
+#+end_src
+
+#+begin_src bash
+oc start-build sample-custom-build -F
+#+end_src
+
 
