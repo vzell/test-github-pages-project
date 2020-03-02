@@ -5,7 +5,7 @@
 https://dashboard-lab-ocp-cns.apps.cluster-muc-af9e.muc-af9e.sandbox348.opentlc.com
 
 OpenShift Console
-https://console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.com
+https://console-openshift-console.apps.cluster-muc-af9e.muc-af9e.sandbox348.opentlc.com
 
 #+begin_example
 Username:  kubeadmin
@@ -1340,17 +1340,17 @@ ls -al ~/cluster-$GUID
 #+end_src
 
 #+begin_example
-# total 2824
-# drwxrwxr-x.  4 ec2-user ec2-user     209 Feb 19 18:02 ./
-# drwx------. 15 lab-user users       4096 Feb 20 16:01 ../
-# drwxr-xr-x.  2 ec2-user ec2-user      50 Feb 19 17:44 auth/
-# -rw-r--r--.  1 ec2-user ec2-user     292 Feb 19 17:44 metadata.json
-# -rw-r--r--.  1 ec2-user ec2-user  129762 Feb 19 18:08 .openshift_install.log
-# -rw-r--r--.  1 ec2-user ec2-user 2294231 Feb 19 17:50 .openshift_install_state.json
-# -rw-r--r--.  1 ec2-user ec2-user     772 Feb 19 17:44 terraform.aws.auto.tfvars.json
-# -rw-r--r--.  1 ec2-user ec2-user  130217 Feb 19 18:02 terraform.tfstate
-# -rw-r--r--.  1 ec2-user ec2-user  315708 Feb 19 17:44 terraform.tfvars.json
-# drwxr-xr-x.  2 ec2-user ec2-user      62 Feb 19 17:44 tls/
+# total 2900
+# drwxrwxr-x.  4 ec2-user                         ec2-user     209 Mar  2 06:50 ./
+# drwx------. 11 stefan.kuehnlein-opitz-consultin users        239 Mar  2 11:22 ../
+# drwxr-x---.  2 ec2-user                         ec2-user      50 Mar  2 06:30 auth/
+# -rw-r-----.  1 ec2-user                         ec2-user     283 Mar  2 06:30 metadata.json
+# -rw-r--r--.  1 ec2-user                         ec2-user  132575 Mar  2 07:00 .openshift_install.log
+# -rw-r-----.  1 ec2-user                         ec2-user 2358291 Mar  2 06:37 .openshift_install_state.json
+# -rw-r-----.  1 ec2-user                         ec2-user     936 Mar  2 06:30 terraform.aws.auto.tfvars.json
+# -rw-r--r--.  1 ec2-user                         ec2-user  145988 Mar  2 06:50 terraform.tfstate
+# -rw-r-----.  1 ec2-user                         ec2-user  319478 Mar  2 06:30 terraform.tfvars.json
+# drwxr-x---.  2 ec2-user                         ec2-user      62 Mar  2 06:30 tls/
 #+end_example
 
 #+begin_src bash
@@ -1358,11 +1358,11 @@ tail -n5 ~/cluster-$GUID/.openshift_install.log
 #+end_src
 
 #+begin_example
-# time="2020-02-19T18:08:42Z" level=debug msg="OpenShift console route is created"
-# time="2020-02-19T18:08:42Z" level=info msg="Install complete!"
-# time="2020-02-19T18:08:42Z" level=info msg="To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/home/ec2-user/cluster-munich-e7ab/auth/kubeconfig'"
-# time="2020-02-19T18:08:42Z" level=info msg="Access the OpenShift web-console here: https://console-openshift-console.apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
-# time="2020-02-19T18:08:42Z" level=info msg="Login to the console with user: kubeadmin, password: RmEAm-FN5EH-XhpAH-YYbf8"
+# time="2020-03-02T07:00:08Z" level=debug msg="OpenShift console route is created"
+# time="2020-03-02T07:00:08Z" level=info msg="Install complete!"
+# time="2020-03-02T07:00:08Z" level=info msg="To access the cluster as the system:admin user when using 'oc', run 'export KUBECONFIG=/home/ec2-user/cluster-muc-af9e/auth/kubeconfig'"
+# time="2020-03-02T07:00:08Z" level=info msg="Access the OpenShift web-console here: https://console-openshift-console.apps.cluster-muc-af9e.muc-af9e.sandbox348.opentlc.com"
+# time="2020-03-02T07:00:08Z" level=info msg="Login to the console with user: kubeadmin, password: odjQZ-TSIR4-2NjS9-urzQR"
 #+end_example
 
 #+begin_src bash
@@ -1370,7 +1370,7 @@ oc whoami
 #+end_src
 
 #+begin_example
-# kube:admin
+# system:admin
 #+end_example
 
 *** Examine the Cluster Version
