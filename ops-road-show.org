@@ -4587,73 +4587,71 @@ oc -n openshift-storage get sc
 *** Using the Rook-Ceph toolbox to check on the Ceph backing storage
 
 #+begin_src bash
-cat ~/support/ocslab_toolbox.yaml
+cat > ~/ocp/ocslab_toolbox.yaml <<-"_EOF"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rook-ceph-tools
+  namespace: openshift-storage
+  labels:
+    app: rook-ceph-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rook-ceph-tools
+  template:
+    metadata:
+      labels:
+        app: rook-ceph-tools
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: rook-ceph-tools
+        image: rook/ceph:v1.1.8
+        command: ["/tini"]
+        args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: ROOK_ADMIN_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: rook-ceph-mon
+                key: admin-secret
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /dev
+            name: dev
+          - mountPath: /sys/bus
+            name: sysbus
+          - mountPath: /lib/modules
+            name: libmodules
+          - name: mon-endpoint-volume
+            mountPath: /etc/rook
+      # if hostNetwork: false, the "rbd map" command hangs, see https://github.com/rook/rook/issues/2021
+      hostNetwork: true
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: sysbus
+          hostPath:
+            path: /sys/bus
+        - name: libmodules
+          hostPath:
+            path: /lib/modules
+        - name: mon-endpoint-volume
+          configMap:
+            name: rook-ceph-mon-endpoints
+            items:
+            - key: data
+              path: mon-endpoints
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: rook-ceph-tools
-#   namespace: openshift-storage
-#   labels:
-#     app: rook-ceph-tools
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: rook-ceph-tools
-#   template:
-#     metadata:
-#       labels:
-#         app: rook-ceph-tools
-#     spec:
-#       dnsPolicy: ClusterFirstWithHostNet
-#       containers:
-#       - name: rook-ceph-tools
-#         image: rook/ceph:v1.1.8
-#         command: ["/tini"]
-#         args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
-#         imagePullPolicy: IfNotPresent
-#         env:
-#           - name: ROOK_ADMIN_SECRET
-#             valueFrom:
-#               secretKeyRef:
-#                 name: rook-ceph-mon
-#                 key: admin-secret
-#         securityContext:
-#           privileged: true
-#         volumeMounts:
-#           - mountPath: /dev
-#             name: dev
-#           - mountPath: /sys/bus
-#             name: sysbus
-#           - mountPath: /lib/modules
-#             name: libmodules
-#           - name: mon-endpoint-volume
-#             mountPath: /etc/rook
-#       # if hostNetwork: false, the "rbd map" command hangs, see https://github.com/rook/rook/issues/2021
-#       hostNetwork: true
-#       volumes:
-#         - name: dev
-#           hostPath:
-#             path: /dev
-#         - name: sysbus
-#           hostPath:
-#             path: /sys/bus
-#         - name: libmodules
-#           hostPath:
-#             path: /lib/modules
-#         - name: mon-endpoint-volume
-#           configMap:
-#             name: rook-ceph-mon-endpoints
-#             items:
-#             - key: data
-#               path: mon-endpoints
-#+end_example
-
 #+begin_src bash
-oc apply -f ~/support/ocslab_toolbox.yaml
+oc apply -f ~/ocp/ocslab_toolbox.yaml
 #+end_src
 
 #+begin_example
@@ -5223,414 +5221,412 @@ oc new-project my-database-app
 #+end_example
 
 #+begin_src bash
-cat ~/support/ocslab_rails-app.yaml
+cat > ~/ocp/ocslab_rails-app.yaml <<-"_EOF"
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  app: rails-pgsql-persistent-storageclass
+  template: rails-pgsql-persistent-storageclass
+message: |-
+  The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
+
+  For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
+metadata:
+  annotations:
+    description: An example Rails application with a PostgreSQL database. For more
+      information about using this template, including OpenShift considerations, see
+      https://github.com/sclorg/rails-ex/blob/master/README.md.
+    iconClass: icon-ruby
+    openshift.io/display-name: Rails + PostgreSQL + Congigigurable StorageClass
+    openshift.io/documentation-url: https://github.com/sclorg/rails-ex
+    openshift.io/long-description: This template defines resources needed to develop
+      a Rails application, including a build configuration, application deployment
+      configuration, and database deployment configuration.
+    openshift.io/provider-display-name: Red Hat, Inc.
+    openshift.io/support-url: https://access.redhat.com
+    samples.operator.openshift.io/version: 4.2.4
+    tags: quickstart,ruby,rails
+    template.openshift.io/bindable: "false"
+  labels:
+    samples.operator.openshift.io/managed: "true"
+  name: rails-pgsql-persistent-storageclass
+objects:
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    name: ${NAME}
+  stringData:
+    application-password: ${APPLICATION_PASSWORD}
+    application-user: ${APPLICATION_USER}
+    database-password: ${DATABASE_PASSWORD}
+    database-user: ${DATABASE_USER}
+    keybase: ${SECRET_KEY_BASE}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes and load balances the application pods
+      service.alpha.openshift.io/dependencies: '[{"name": "${DATABASE_SERVICE_NAME}",
+        "kind": "Service"}]'
+    name: ${NAME}
+  spec:
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 8080
+    selector:
+      name: ${NAME}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: ${NAME}
+  spec:
+    host: ${APPLICATION_DOMAIN}
+    to:
+      kind: Service
+      name: ${NAME}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      description: Keeps track of changes in the application image
+    name: ${NAME}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      description: Defines how to build the application
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: ${NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${NAME}:latest
+    postCommit:
+      script: bundle exec rake test
+    source:
+      contextDir: ${CONTEXT_DIR}
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: RUBYGEM_MIRROR
+          value: ${RUBYGEM_MIRROR}
+        from:
+          kind: ImageStreamTag
+          name: ruby:2.5
+          namespace: ${NAMESPACE}
+      type: Source
+    triggers:
+    - type: ImageChange
+    - type: ConfigChange
+    - github:
+        secret: ${GITHUB_WEBHOOK_SECRET}
+      type: GitHub
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the application server
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: ${NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${NAME}
+    strategy:
+      recreateParams:
+        pre:
+          execNewPod:
+            command:
+            - ./migrate-database.sh
+            containerName: ${NAME}
+          failurePolicy: Abort
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${NAME}
+        name: ${NAME}
+      spec:
+        containers:
+        - env:
+          - name: DATABASE_SERVICE_NAME
+            value: ${DATABASE_SERVICE_NAME}
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: ${NAME}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${NAME}
+          - name: SECRET_KEY_BASE
+            valueFrom:
+              secretKeyRef:
+                key: keybase
+                name: ${NAME}
+          - name: POSTGRESQL_DATABASE
+            value: ${DATABASE_NAME}
+          - name: POSTGRESQL_MAX_CONNECTIONS
+            value: ${POSTGRESQL_MAX_CONNECTIONS}
+          - name: POSTGRESQL_SHARED_BUFFERS
+            value: ${POSTGRESQL_SHARED_BUFFERS}
+          - name: APPLICATION_DOMAIN
+            value: ${APPLICATION_DOMAIN}
+          - name: APPLICATION_USER
+            valueFrom:
+              secretKeyRef:
+                key: application-user
+                name: ${NAME}
+          - name: APPLICATION_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: application-password
+                name: ${NAME}
+          - name: RAILS_ENV
+            value: ${RAILS_ENV}
+          image: ' '
+          livenessProbe:
+            httpGet:
+              path: /articles
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 3
+          name: ${NAME}
+          ports:
+          - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /articles
+              port: 8080
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+          resources:
+            limits:
+              memory: ${MEMORY_LIMIT}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - ${NAME}
+        from:
+          kind: ImageStreamTag
+          name: ${NAME}:latest
+      type: ImageChange
+    - type: ConfigChange
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    storageClassName: ${STORAGE_CLASS}
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      description: Exposes the database server
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    ports:
+    - name: postgresql
+      port: 5432
+      targetPort: 5432
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    annotations:
+      description: Defines how to deploy the database
+      template.alpha.openshift.io/wait-for-ready: "true"
+    name: ${DATABASE_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${DATABASE_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${DATABASE_SERVICE_NAME}
+        name: ${DATABASE_SERVICE_NAME}
+      spec:
+        containers:
+        - env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: ${NAME}
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${NAME}
+          - name: POSTGRESQL_DATABASE
+            value: ${DATABASE_NAME}
+          - name: POSTGRESQL_MAX_CONNECTIONS
+            value: ${POSTGRESQL_MAX_CONNECTIONS}
+          - name: POSTGRESQL_SHARED_BUFFERS
+            value: ${POSTGRESQL_SHARED_BUFFERS}
+          image: ' '
+          livenessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+              - --live
+            initialDelaySeconds: 120
+            timeoutSeconds: 10
+          name: postgresql
+          ports:
+          - containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+              - /usr/libexec/check-container
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: ${MEMORY_POSTGRESQL_LIMIT}
+          volumeMounts:
+          - mountPath: /var/lib/pgsql/data
+            name: ${DATABASE_SERVICE_NAME}-data
+        volumes:
+        - name: ${DATABASE_SERVICE_NAME}-data
+          persistentVolumeClaim:
+            claimName: ${DATABASE_SERVICE_NAME}
+    triggers:
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - postgresql
+        from:
+          kind: ImageStreamTag
+          name: postgresql:10
+          namespace: ${NAMESPACE}
+      type: ImageChange
+    - type: ConfigChange
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: rails-pgsql-persistent
+- description: The OpenShift Namespace where the ImageStream resides.
+  displayName: Namespace
+  name: NAMESPACE
+  required: true
+  value: openshift
+- description: Maximum amount of memory the Rails container can use.
+  displayName: Memory Limit
+  name: MEMORY_LIMIT
+  required: true
+  value: 512Mi
+- description: Maximum amount of memory the PostgreSQL container can use.
+  displayName: Memory Limit (PostgreSQL)
+  name: MEMORY_POSTGRESQL_LIMIT
+  required: true
+  value: 512Mi
+- description: Volume space available for data, e.g. 512Mi, 2Gi
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 1Gi
+- description: Storage Class used to provision Persistent Volume
+  displayName: Volume Storage Class
+  name: STORAGE_CLASS
+  required: true
+  value: gp2
+- description: The URL of the repository with your application source code.
+  displayName: Git Repository URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/sclorg/rails-ex.git
+- description: Set this to a branch name, tag or other ref of your repository if you
+    are not using the default branch.
+  displayName: Git Reference
+  name: SOURCE_REPOSITORY_REF
+- description: Set this to the relative path to your project if it is not in the root
+    of your repository.
+  displayName: Context Directory
+  name: CONTEXT_DIR
+- description: The exposed hostname that will route to the Rails service, if left
+    blank a value will be defaulted.
+  displayName: Application Hostname
+  name: APPLICATION_DOMAIN
+- description: Github trigger secret.  A difficult to guess string encoded as part
+    of the webhook URL.  Not encrypted.
+  displayName: GitHub Webhook Secret
+  from: '[a-zA-Z0-9]{40}'
+  generate: expression
+  name: GITHUB_WEBHOOK_SECRET
+- description: Your secret key for verifying the integrity of signed cookies.
+  displayName: Secret Key
+  from: '[a-z0-9]{127}'
+  generate: expression
+  name: SECRET_KEY_BASE
+- description: The application user that is used within the sample application to
+    authorize access on pages.
+  displayName: Application Username
+  name: APPLICATION_USER
+  required: true
+  value: openshift
+- description: The application password that is used within the sample application
+    to authorize access on pages.
+  displayName: Application Password
+  name: APPLICATION_PASSWORD
+  required: true
+  value: secret
+- description: Environment under which the sample application will run. Could be set
+    to production, development or test.
+  displayName: Rails Environment
+  name: RAILS_ENV
+  required: true
+  value: production
+- displayName: Database Service Name
+  name: DATABASE_SERVICE_NAME
+  required: true
+  value: postgresql
+- displayName: Database Username
+  from: user[A-Z0-9]{3}
+  generate: expression
+  name: DATABASE_USER
+- displayName: Database Password
+  from: '[a-zA-Z0-9]{8}'
+  generate: expression
+  name: DATABASE_PASSWORD
+- displayName: Database Name
+  name: DATABASE_NAME
+  required: true
+  value: root
+- displayName: Maximum Database Connections
+  name: POSTGRESQL_MAX_CONNECTIONS
+  value: "100"
+- displayName: Shared Buffer Amount
+  name: POSTGRESQL_SHARED_BUFFERS
+  value: 12MB
+- description: The custom RubyGems mirror URL
+  displayName: Custom RubyGems Mirror URL
+  name: RUBYGEM_MIRROR
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: template.openshift.io/v1
-# kind: Template
-# labels:
-#   app: rails-pgsql-persistent-storageclass
-#   template: rails-pgsql-persistent-storageclass
-# message: |-
-#   The following service(s) have been created in your project: ${NAME}, ${DATABASE_SERVICE_NAME}.
-# 
-#   For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/rails-ex/blob/master/README.md.
-# metadata:
-#   annotations:
-#     description: An example Rails application with a PostgreSQL database. For more
-#       information about using this template, including OpenShift considerations, see
-#       https://github.com/sclorg/rails-ex/blob/master/README.md.
-#     iconClass: icon-ruby
-#     openshift.io/display-name: Rails + PostgreSQL + Congigigurable StorageClass
-#     openshift.io/documentation-url: https://github.com/sclorg/rails-ex
-#     openshift.io/long-description: This template defines resources needed to develop
-#       a Rails application, including a build configuration, application deployment
-#       configuration, and database deployment configuration.
-#     openshift.io/provider-display-name: Red Hat, Inc.
-#     openshift.io/support-url: https://access.redhat.com
-#     samples.operator.openshift.io/version: 4.2.4
-#     tags: quickstart,ruby,rails
-#     template.openshift.io/bindable: "false"
-#   labels:
-#     samples.operator.openshift.io/managed: "true"
-#   name: rails-pgsql-persistent-storageclass
-# objects:
-# - apiVersion: v1
-#   kind: Secret
-#   metadata:
-#     name: ${NAME}
-#   stringData:
-#     application-password: ${APPLICATION_PASSWORD}
-#     application-user: ${APPLICATION_USER}
-#     database-password: ${DATABASE_PASSWORD}
-#     database-user: ${DATABASE_USER}
-#     keybase: ${SECRET_KEY_BASE}
-# - apiVersion: v1
-#   kind: Service
-#   metadata:
-#     annotations:
-#       description: Exposes and load balances the application pods
-#       service.alpha.openshift.io/dependencies: '[{"name": "${DATABASE_SERVICE_NAME}",
-#         "kind": "Service"}]'
-#     name: ${NAME}
-#   spec:
-#     ports:
-#     - name: web
-#       port: 8080
-#       targetPort: 8080
-#     selector:
-#       name: ${NAME}
-# - apiVersion: v1
-#   kind: Route
-#   metadata:
-#     name: ${NAME}
-#   spec:
-#     host: ${APPLICATION_DOMAIN}
-#     to:
-#       kind: Service
-#       name: ${NAME}
-# - apiVersion: v1
-#   kind: ImageStream
-#   metadata:
-#     annotations:
-#       description: Keeps track of changes in the application image
-#     name: ${NAME}
-# - apiVersion: v1
-#   kind: BuildConfig
-#   metadata:
-#     annotations:
-#       description: Defines how to build the application
-#       template.alpha.openshift.io/wait-for-ready: "true"
-#     name: ${NAME}
-#   spec:
-#     output:
-#       to:
-#         kind: ImageStreamTag
-#         name: ${NAME}:latest
-#     postCommit:
-#       script: bundle exec rake test
-#     source:
-#       contextDir: ${CONTEXT_DIR}
-#       git:
-#         ref: ${SOURCE_REPOSITORY_REF}
-#         uri: ${SOURCE_REPOSITORY_URL}
-#       type: Git
-#     strategy:
-#       sourceStrategy:
-#         env:
-#         - name: RUBYGEM_MIRROR
-#           value: ${RUBYGEM_MIRROR}
-#         from:
-#           kind: ImageStreamTag
-#           name: ruby:2.5
-#           namespace: ${NAMESPACE}
-#       type: Source
-#     triggers:
-#     - type: ImageChange
-#     - type: ConfigChange
-#     - github:
-#         secret: ${GITHUB_WEBHOOK_SECRET}
-#       type: GitHub
-# - apiVersion: v1
-#   kind: DeploymentConfig
-#   metadata:
-#     annotations:
-#       description: Defines how to deploy the application server
-#       template.alpha.openshift.io/wait-for-ready: "true"
-#     name: ${NAME}
-#   spec:
-#     replicas: 1
-#     selector:
-#       name: ${NAME}
-#     strategy:
-#       recreateParams:
-#         pre:
-#           execNewPod:
-#             command:
-#             - ./migrate-database.sh
-#             containerName: ${NAME}
-#           failurePolicy: Abort
-#       type: Recreate
-#     template:
-#       metadata:
-#         labels:
-#           name: ${NAME}
-#         name: ${NAME}
-#       spec:
-#         containers:
-#         - env:
-#           - name: DATABASE_SERVICE_NAME
-#             value: ${DATABASE_SERVICE_NAME}
-#           - name: POSTGRESQL_USER
-#             valueFrom:
-#               secretKeyRef:
-#                 key: database-user
-#                 name: ${NAME}
-#           - name: POSTGRESQL_PASSWORD
-#             valueFrom:
-#               secretKeyRef:
-#                 key: database-password
-#                 name: ${NAME}
-#           - name: SECRET_KEY_BASE
-#             valueFrom:
-#               secretKeyRef:
-#                 key: keybase
-#                 name: ${NAME}
-#           - name: POSTGRESQL_DATABASE
-#             value: ${DATABASE_NAME}
-#           - name: POSTGRESQL_MAX_CONNECTIONS
-#             value: ${POSTGRESQL_MAX_CONNECTIONS}
-#           - name: POSTGRESQL_SHARED_BUFFERS
-#             value: ${POSTGRESQL_SHARED_BUFFERS}
-#           - name: APPLICATION_DOMAIN
-#             value: ${APPLICATION_DOMAIN}
-#           - name: APPLICATION_USER
-#             valueFrom:
-#               secretKeyRef:
-#                 key: application-user
-#                 name: ${NAME}
-#           - name: APPLICATION_PASSWORD
-#             valueFrom:
-#               secretKeyRef:
-#                 key: application-password
-#                 name: ${NAME}
-#           - name: RAILS_ENV
-#             value: ${RAILS_ENV}
-#           image: ' '
-#           livenessProbe:
-#             httpGet:
-#               path: /articles
-#               port: 8080
-#             initialDelaySeconds: 10
-#             timeoutSeconds: 3
-#           name: ${NAME}
-#           ports:
-#           - containerPort: 8080
-#           readinessProbe:
-#             httpGet:
-#               path: /articles
-#               port: 8080
-#             initialDelaySeconds: 5
-#             timeoutSeconds: 3
-#           resources:
-#             limits:
-#               memory: ${MEMORY_LIMIT}
-#     triggers:
-#     - imageChangeParams:
-#         automatic: true
-#         containerNames:
-#         - ${NAME}
-#         from:
-#           kind: ImageStreamTag
-#           name: ${NAME}:latest
-#       type: ImageChange
-#     - type: ConfigChange
-# - apiVersion: v1
-#   kind: PersistentVolumeClaim
-#   metadata:
-#     name: ${DATABASE_SERVICE_NAME}
-#   spec:
-#     accessModes:
-#     - ReadWriteOnce
-#     storageClassName: ${STORAGE_CLASS}
-#     resources:
-#       requests:
-#         storage: ${VOLUME_CAPACITY}
-# - apiVersion: v1
-#   kind: Service
-#   metadata:
-#     annotations:
-#       description: Exposes the database server
-#     name: ${DATABASE_SERVICE_NAME}
-#   spec:
-#     ports:
-#     - name: postgresql
-#       port: 5432
-#       targetPort: 5432
-#     selector:
-#       name: ${DATABASE_SERVICE_NAME}
-# - apiVersion: v1
-#   kind: DeploymentConfig
-#   metadata:
-#     annotations:
-#       description: Defines how to deploy the database
-#       template.alpha.openshift.io/wait-for-ready: "true"
-#     name: ${DATABASE_SERVICE_NAME}
-#   spec:
-#     replicas: 1
-#     selector:
-#       name: ${DATABASE_SERVICE_NAME}
-#     strategy:
-#       type: Recreate
-#     template:
-#       metadata:
-#         labels:
-#           name: ${DATABASE_SERVICE_NAME}
-#         name: ${DATABASE_SERVICE_NAME}
-#       spec:
-#         containers:
-#         - env:
-#           - name: POSTGRESQL_USER
-#             valueFrom:
-#               secretKeyRef:
-#                 key: database-user
-#                 name: ${NAME}
-#           - name: POSTGRESQL_PASSWORD
-#             valueFrom:
-#               secretKeyRef:
-#                 key: database-password
-#                 name: ${NAME}
-#           - name: POSTGRESQL_DATABASE
-#             value: ${DATABASE_NAME}
-#           - name: POSTGRESQL_MAX_CONNECTIONS
-#             value: ${POSTGRESQL_MAX_CONNECTIONS}
-#           - name: POSTGRESQL_SHARED_BUFFERS
-#             value: ${POSTGRESQL_SHARED_BUFFERS}
-#           image: ' '
-#           livenessProbe:
-#             exec:
-#               command:
-#               - /usr/libexec/check-container
-#               - --live
-#             initialDelaySeconds: 120
-#             timeoutSeconds: 10
-#           name: postgresql
-#           ports:
-#           - containerPort: 5432
-#           readinessProbe:
-#             exec:
-#               command:
-#               - /usr/libexec/check-container
-#             initialDelaySeconds: 5
-#             timeoutSeconds: 1
-#           resources:
-#             limits:
-#               memory: ${MEMORY_POSTGRESQL_LIMIT}
-#           volumeMounts:
-#           - mountPath: /var/lib/pgsql/data
-#             name: ${DATABASE_SERVICE_NAME}-data
-#         volumes:
-#         - name: ${DATABASE_SERVICE_NAME}-data
-#           persistentVolumeClaim:
-#             claimName: ${DATABASE_SERVICE_NAME}
-#     triggers:
-#     - imageChangeParams:
-#         automatic: true
-#         containerNames:
-#         - postgresql
-#         from:
-#           kind: ImageStreamTag
-#           name: postgresql:10
-#           namespace: ${NAMESPACE}
-#       type: ImageChange
-#     - type: ConfigChange
-# parameters:
-# - description: The name assigned to all of the frontend objects defined in this template.
-#   displayName: Name
-#   name: NAME
-#   required: true
-#   value: rails-pgsql-persistent
-# - description: The OpenShift Namespace where the ImageStream resides.
-#   displayName: Namespace
-#   name: NAMESPACE
-#   required: true
-#   value: openshift
-# - description: Maximum amount of memory the Rails container can use.
-#   displayName: Memory Limit
-#   name: MEMORY_LIMIT
-#   required: true
-#   value: 512Mi
-# - description: Maximum amount of memory the PostgreSQL container can use.
-#   displayName: Memory Limit (PostgreSQL)
-#   name: MEMORY_POSTGRESQL_LIMIT
-#   required: true
-#   value: 512Mi
-# - description: Volume space available for data, e.g. 512Mi, 2Gi
-#   displayName: Volume Capacity
-#   name: VOLUME_CAPACITY
-#   required: true
-#   value: 1Gi
-# - description: Storage Class used to provision Persistent Volume
-#   displayName: Volume Storage Class
-#   name: STORAGE_CLASS
-#   required: true
-#   value: gp2
-# - description: The URL of the repository with your application source code.
-#   displayName: Git Repository URL
-#   name: SOURCE_REPOSITORY_URL
-#   required: true
-#   value: https://github.com/sclorg/rails-ex.git
-# - description: Set this to a branch name, tag or other ref of your repository if you
-#     are not using the default branch.
-#   displayName: Git Reference
-#   name: SOURCE_REPOSITORY_REF
-# - description: Set this to the relative path to your project if it is not in the root
-#     of your repository.
-#   displayName: Context Directory
-#   name: CONTEXT_DIR
-# - description: The exposed hostname that will route to the Rails service, if left
-#     blank a value will be defaulted.
-#   displayName: Application Hostname
-#   name: APPLICATION_DOMAIN
-# - description: Github trigger secret.  A difficult to guess string encoded as part
-#     of the webhook URL.  Not encrypted.
-#   displayName: GitHub Webhook Secret
-#   from: '[a-zA-Z0-9]{40}'
-#   generate: expression
-#   name: GITHUB_WEBHOOK_SECRET
-# - description: Your secret key for verifying the integrity of signed cookies.
-#   displayName: Secret Key
-#   from: '[a-z0-9]{127}'
-#   generate: expression
-#   name: SECRET_KEY_BASE
-# - description: The application user that is used within the sample application to
-#     authorize access on pages.
-#   displayName: Application Username
-#   name: APPLICATION_USER
-#   required: true
-#   value: openshift
-# - description: The application password that is used within the sample application
-#     to authorize access on pages.
-#   displayName: Application Password
-#   name: APPLICATION_PASSWORD
-#   required: true
-#   value: secret
-# - description: Environment under which the sample application will run. Could be set
-#     to production, development or test.
-#   displayName: Rails Environment
-#   name: RAILS_ENV
-#   required: true
-#   value: production
-# - displayName: Database Service Name
-#   name: DATABASE_SERVICE_NAME
-#   required: true
-#   value: postgresql
-# - displayName: Database Username
-#   from: user[A-Z0-9]{3}
-#   generate: expression
-#   name: DATABASE_USER
-# - displayName: Database Password
-#   from: '[a-zA-Z0-9]{8}'
-#   generate: expression
-#   name: DATABASE_PASSWORD
-# - displayName: Database Name
-#   name: DATABASE_NAME
-#   required: true
-#   value: root
-# - displayName: Maximum Database Connections
-#   name: POSTGRESQL_MAX_CONNECTIONS
-#   value: "100"
-# - displayName: Shared Buffer Amount
-#   name: POSTGRESQL_SHARED_BUFFERS
-#   value: 12MB
-# - description: The custom RubyGems mirror URL
-#   displayName: Custom RubyGems Mirror URL
-#   name: RUBYGEM_MIRROR
-#+end_example
-
 #+begin_src bash
-oc new-app -f ~/support/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
+oc new-app -f ~/ocp/ocslab_rails-app.yaml -p STORAGE_CLASS=ocs-storagecluster-ceph-rbd -p VOLUME_CAPACITY=5Gi
 #+end_src
 
 #+begin_example
@@ -6199,61 +6195,60 @@ If you are missing the ConfigMap, create it using this command
 oc apply -f /opt/app-root/support/ocslab_cluster-monitoring-noinfra.yaml
 #+end_src
 
-If the ConfigMap already exists because of completing prior module OpenShift Infrastructure Nodes, you will apply changes to the existing ConfigMap.
+If the ConfigMap already exists because of completing prior module OpenShift
+Infrastructure Nodes, you will apply changes to the existing ConfigMap.
 
 #+begin_src bash
-cat ~/support/ocslab_cluster-monitoring-withinfra.yaml
+cat > ~/ocp/ocslab_cluster-monitoring-withinfra.yaml <<-"_EOF"
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |+
+    alertmanagerMain:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      volumeClaimTemplate:
+        metadata:
+          name: alertmanager
+        spec:
+          storageClassName: ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 40Gi
+    prometheusK8s:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+      volumeClaimTemplate:
+        metadata:
+          name: prometheusdb
+        spec:
+          storageClassName: ocs-storagecluster-ceph-rbd
+          resources:
+            requests:
+              storage: 40Gi
+    prometheusOperator:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    grafana:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    k8sPrometheusAdapter:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    kubeStateMetrics:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+    telemeterClient:
+      nodeSelector:
+        node-role.kubernetes.io/infra: ""
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: cluster-monitoring-config
-#   namespace: openshift-monitoring
-# data:
-#   config.yaml: |+
-#     alertmanagerMain:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#       volumeClaimTemplate:
-#         metadata:
-#           name: alertmanager
-#         spec:
-#           storageClassName: ocs-storagecluster-ceph-rbd
-#           resources:
-#             requests:
-#               storage: 40Gi
-#     prometheusK8s:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#       volumeClaimTemplate:
-#         metadata:
-#           name: prometheusdb
-#         spec:
-#           storageClassName: ocs-storagecluster-ceph-rbd
-#           resources:
-#             requests:
-#               storage: 40Gi
-#     prometheusOperator:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#     grafana:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#     k8sPrometheusAdapter:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#     kubeStateMetrics:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#     telemeterClient:
-#       nodeSelector:
-#         node-role.kubernetes.io/infra: ""
-#+end_example
-
 #+begin_src bash
-oc apply -f ~/support/ocslab_cluster-monitoring-withinfra.yaml
+oc apply -f ~/ocp/ocslab_cluster-monitoring-withinfra.yaml
 #+end_src
 
 #+begin_example
@@ -6780,79 +6775,77 @@ https://noobaa-mgmt-openshift-storage.apps.cluster-munich-e7ab.sandbox1596.opent
 **** Using an OBC inside a container
 
 #+begin_src bash
-cat ~/support/ocslab_obc-app-example.yaml
+cat > ~/ocp/ocslab_obc-app-example.yaml <<-"_EOF"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: obc-test
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: obc-test
+  namespace: obc-test
+spec:
+  generateBucketName: "obc-test-noobaa"
+  storageClassName: openshift-storage.noobaa.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: obc-test
+  namespace: obc-test
+  labels:
+    app: obc-test
+spec:
+  template:
+    metadata:
+      labels:
+        app: obc-test
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - image: mesosphere/aws-cli:latest
+          command: ["sh"]
+          args: 
+            - '-c'
+            - 'set -x && s3cmd --no-check-certificate --host $BUCKET_HOST:$BUCKET_PORT --host-bucket $BUCKET_HOST:$BUCKET_PORT du'
+          name: obc-test
+          env:
+            - name: BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: obc-test
+                  key: BUCKET_NAME
+            - name: BUCKET_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: obc-test
+                  key: BUCKET_HOST
+            - name: BUCKET_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: obc-test
+                  key: BUCKET_PORT
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: obc-test
+                  key: BUCKET_REGION
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: obc-test
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: obc-test
+                  key: AWS_SECRET_ACCESS_KEY_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: obc-test
-# ---
-# apiVersion: objectbucket.io/v1alpha1
-# kind: ObjectBucketClaim
-# metadata:
-#   name: obc-test
-#   namespace: obc-test
-# spec:
-#   generateBucketName: "obc-test-noobaa"
-#   storageClassName: openshift-storage.noobaa.io
-# ---
-# apiVersion: batch/v1
-# kind: Job
-# metadata:
-#   name: obc-test
-#   namespace: obc-test
-#   labels:
-#     app: obc-test
-# spec:
-#   template:
-#     metadata:
-#       labels:
-#         app: obc-test
-#     spec:
-#       restartPolicy: OnFailure
-#       containers:
-#         - image: mesosphere/aws-cli:latest
-#           command: ["sh"]
-#           args: 
-#             - '-c'
-#             - 'set -x && s3cmd --no-check-certificate --host $BUCKET_HOST:$BUCKET_PORT --host-bucket $BUCKET_HOST:$BUCKET_PORT du'
-#           name: obc-test
-#           env:
-#             - name: BUCKET_NAME
-#               valueFrom:
-#                 configMapKeyRef:
-#                   name: obc-test
-#                   key: BUCKET_NAME
-#             - name: BUCKET_HOST
-#               valueFrom:
-#                 configMapKeyRef:
-#                   name: obc-test
-#                   key: BUCKET_HOST
-#             - name: BUCKET_PORT
-#               valueFrom:
-#                 configMapKeyRef:
-#                   name: obc-test
-#                   key: BUCKET_PORT
-#             - name: AWS_DEFAULT_REGION
-#               valueFrom:
-#                 configMapKeyRef:
-#                   name: obc-test
-#                   key: BUCKET_REGION
-#             - name: AWS_ACCESS_KEY_ID
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: obc-test
-#                   key: AWS_ACCESS_KEY_ID
-#             - name: AWS_SECRET_ACCESS_KEY
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: obc-test
-#+end_example
-
 #+begin_src bash
-oc apply -f ~/support/ocslab_obc-app-example.yaml
+oc apply -f ~/ocp/ocslab_obc-app-example.yaml
 #+end_src
 
 #+begin_example
@@ -20100,28 +20093,26 @@ oc project default
 *** Execute the Creation Script
 
 #+begin_src bash
-cat ~/support/create-net-projects.sh
+cat > ~/ocp/create-net-projects.sh <<-"_EOF"
+#!/bin/bash
+
+# We want to bail if an error occurs.
+set -e
+
+
+cd $(dirname $0)
+
+
+image=$(oc get deployments -n openshift-image-registry image-registry --template '{{ range $x := .spec.template.spec.containers }} {{- $x.image -}} {{ end }}')
+
+# deploy the DC definition into the projects
+oc process -f netproj-template.yaml NAMESPACE=netproj-a IMAGE="$image" | oc apply -n netproj-a -f -
+oc process -f netproj-template.yaml NAMESPACE=netproj-b IMAGE="$image" | oc apply -n netproj-b -f -
+_EOF
 #+end_src
 
-#+begin_example
-# #!/bin/bash
-# 
-# # We want to bail if an error occurs.
-# set -e
-# 
-# 
-# cd $(dirname $0)
-# 
-# 
-# image=$(oc get deployments -n openshift-image-registry image-registry --template '{{ range $x := .spec.template.spec.containers }} {{- $x.image -}} {{ end }}')
-# 
-# # deploy the DC definition into the projects
-# oc process -f netproj-template.yaml NAMESPACE=netproj-a IMAGE="$image" | oc apply -n netproj-a -f -
-# oc process -f netproj-template.yaml NAMESPACE=netproj-b IMAGE="$image" | oc apply -n netproj-b -f -
-#+end_example
-
 #+begin_src bash
-bash ~/support/create-net-projects.sh
+bash ~/ocp/create-net-projects.sh
 #+end_src
 
 #+begin_example
@@ -20156,59 +20147,57 @@ oc get pods -n netproj-b
 *** Test Connectivity (should work)
 
 #+begin_src bash
-cat ~/support/test-connectivity.sh
+cat > ~/ocp/test-connectivity.sh <<-"_EOF"
+#!/bin/bash
+
+normal_color=$(echo -e "\e[0m")
+red_color=$(echo -e "\e[31m")
+green_color=$(echo -e "\e[32m")
+max_tries=3
+sleep_between_tries=1
+
+
+echo -n "Getting Pod B's IP... "
+pod_b_ip=$(oc get pod -n netproj-b $(oc get pod -n netproj-b | grep -v deploy | awk '/ose-/ {print $1}') -o jsonpath='{.status.podIP}{"\n"}')
+echo $pod_b_ip
+
+
+echo -n "Getting Pod A's Name... "
+pod_a_name=$(oc get pod -n netproj-a | grep -v deploy | awk '/ose-/ {print $1}')
+echo $pod_a_name
+
+
+echo -n "Checking connectivity between Pod A and Pod B..."
+
+
+i=1
+while [ $i -le ${max_tries} ]; do
+  if [ $i -gt 1 ]; then
+    # Don't sleep on first loop
+    echo -n "."
+    sleep ${sleep_between_tries}
+  fi
+
+  if oc exec -n netproj-a $pod_a_name -- timeout 2 bash -c "</dev/tcp/$pod_b_ip/5000" 2>/dev/null ; then
+    break
+  fi
+
+  i=$((i + 1))
+done
+
+if [ $i -ge ${max_tries} ] ; then
+  # Failed the maximum amount of times.
+  echo " ${red_color}FAILED!${normal_color}"
+  exit 1
+else
+  echo " ${green_color}worked${normal_color}"
+fi
+
+_EOF
 #+end_src
 
-#+begin_example
-# #!/bin/bash
-# 
-# normal_color=$(echo -e "\e[0m")
-# red_color=$(echo -e "\e[31m")
-# green_color=$(echo -e "\e[32m")
-# max_tries=3
-# sleep_between_tries=1
-# 
-# 
-# echo -n "Getting Pod B's IP... "
-# pod_b_ip=$(oc get pod -n netproj-b $(oc get pod -n netproj-b | grep -v deploy | awk '/ose-/ {print $1}') -o jsonpath='{.status.podIP}{"\n"}')
-# echo $pod_b_ip
-# 
-# 
-# echo -n "Getting Pod A's Name... "
-# pod_a_name=$(oc get pod -n netproj-a | grep -v deploy | awk '/ose-/ {print $1}')
-# echo $pod_a_name
-# 
-# 
-# echo -n "Checking connectivity between Pod A and Pod B..."
-# 
-# 
-# i=1
-# while [ $i -le ${max_tries} ]; do
-#   if [ $i -gt 1 ]; then
-#     # Don't sleep on first loop
-#     echo -n "."
-#     sleep ${sleep_between_tries}
-#   fi
-# 
-#   if oc exec -n netproj-a $pod_a_name -- timeout 2 bash -c "</dev/tcp/$pod_b_ip/5000" 2>/dev/null ; then
-#     break
-#   fi
-# 
-#   i=$((i + 1))
-# done
-# 
-# if [ $i -ge ${max_tries} ] ; then
-#   # Failed the maximum amount of times.
-#   echo " ${red_color}FAILED!${normal_color}"
-#   exit 1
-# else
-#   echo " ${green_color}worked${normal_color}"
-# fi
-# 
-#+end_example
-
 #+begin_src bash
-bash ~/support/test-connectivity.sh
+bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -20247,7 +20236,7 @@ oc create -n netproj-b -f ~/support/network-policy-block-all.yaml
 *** Test Connectivity #2 (should fail)
 
 #+begin_src bash
-bash ~/support/test-connectivity.sh
+bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -20295,7 +20284,7 @@ oc create -n netproj-b -f ~/support/network-policy-allow-all-from-netproj-a.yaml
 *** Test Connectivity #3 (should work again)
 
 #+begin_src bash
-bash ~/support/test-connectivity.sh
+bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
@@ -22289,6 +22278,23 @@ oc scale machineset cluster-5fa6-hx2ml-worker-us-east-2c -n openshift-machine-ap
 
 #+begin_src bash
 oc get machineset -n openshift-machine-api -o yaml cluster-5fa6-hx2ml-worker-us-east-2c
+#+end_src
+
+#+begin_src bash
+cat > ~/ocp/infra-nodes.sh <<-"_EOF"
+#!/bin/bash
+export REGION=us-east-2c
+export NAME="infra-$REGION"
+oc get machineset -n openshift-machine-api -o json\
+| jq '.items[0]'\
+| jq '.metadata.name=env["NAME"]'\
+| jq '.spec.selector.matchLabels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.metadata.labels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.spec.metadata.labels."node-role.kubernetes.io/infra"=""'\
+| jq 'del (.metadata.annotations)'\
+| jq '.spec.replicas=3'\
+| oc create -f -
+_EOF
 #+end_src
 
 #+begin_src bash
