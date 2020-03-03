@@ -3210,26 +3210,257 @@ oc get machineset -n openshift-machine-api -o yaml cluster-opitz-698d-lb67r-work
 #+end_example
 
 #+begin_src bash
-cat ~/support/infra-nodes.sh
+cat > ~/ocp/infra-nodes.sh <<-"_EOF"
+#!/bin/bash
+export REGION=eu-west-1c
+export NAME="infra-$REGION"
+oc get machineset -n openshift-machine-api -o json\
+| jq '.items[0]'\
+| jq '.metadata.name=env["NAME"]'\
+| jq '.spec.selector.matchLabels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.metadata.labels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.spec.metadata.labels."node-role.kubernetes.io/infra"=""'\
+| jq 'del (.metadata.annotations)'\
+| jq '.spec.replicas=3'\
+| oc create -f -
+_EOF
 #+end_src
 
 #+begin_src bash
-bash ~/support/infra-nodes.sh
+export REGION=eu-west-1c
+export NAME="infra-$REGION"
+oc get machineset -n openshift-machine-api -o json\
+| jq '.items[0]'\
+| jq '.metadata.name=env["NAME"]'\
+| jq '.spec.selector.matchLabels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.metadata.labels."machine.openshift.io/cluster-api-machineset"=env["NAME"]'\
+| jq '.spec.template.spec.metadata.labels."node-role.kubernetes.io/infra"=""'\
+| jq 'del (.metadata.annotations)'\
+| jq '.spec.replicas=3'
 #+end_src
+
+#+begin_example
+# {
+#   "apiVersion": "machine.openshift.io/v1beta1",
+#   "kind": "MachineSet",
+#   "metadata": {
+#     "creationTimestamp": "2020-03-03T10:01:41Z",
+#     "generation": 1,
+#     "labels": {
+#       "machine.openshift.io/cluster-api-cluster": "cluster-opitz-698d-lb67r"
+#     },
+#     "name": "infra-eu-west-1c",
+#     "namespace": "openshift-machine-api",
+#     "resourceVersion": "8481",
+#     "selfLink": "/apis/machine.openshift.io/v1beta1/namespaces/openshift-machine-api/machinesets/cluster-opitz-698d-lb67r-worker-eu-west-1a",
+#     "uid": "2c9d7a62-117e-4a96-9203-0031651a3acc"
+#   },
+#   "spec": {
+#     "replicas": 3,
+#     "selector": {
+#       "matchLabels": {
+#         "machine.openshift.io/cluster-api-cluster": "cluster-opitz-698d-lb67r",
+#         "machine.openshift.io/cluster-api-machineset": "infra-eu-west-1c"
+#       }
+#     },
+#     "template": {
+#       "metadata": {
+#         "creationTimestamp": null,
+#         "labels": {
+#           "machine.openshift.io/cluster-api-cluster": "cluster-opitz-698d-lb67r",
+#           "machine.openshift.io/cluster-api-machine-role": "worker",
+#           "machine.openshift.io/cluster-api-machine-type": "worker",
+#           "machine.openshift.io/cluster-api-machineset": "infra-eu-west-1c"
+#         }
+#       },
+#       "spec": {
+#         "metadata": {
+#           "creationTimestamp": null,
+#           "labels": {
+#             "node-role.kubernetes.io/infra": ""
+#           }
+#         },
+#         "providerSpec": {
+#           "value": {
+#             "ami": {
+#               "id": "ami-0e95125b57fa63b0d"
+#             },
+#             "apiVersion": "awsproviderconfig.openshift.io/v1beta1",
+#             "blockDevices": [
+#               {
+#                 "ebs": {
+#                   "iops": 0,
+#                   "volumeSize": 120,
+#                   "volumeType": "gp2"
+#                 }
+#               }
+#             ],
+#             "credentialsSecret": {
+#               "name": "aws-cloud-credentials"
+#             },
+#             "deviceIndex": 0,
+#             "iamInstanceProfile": {
+#               "id": "cluster-opitz-698d-lb67r-worker-profile"
+#             },
+#             "instanceType": "m5.2xlarge",
+#             "kind": "AWSMachineProviderConfig",
+#             "metadata": {
+#               "creationTimestamp": null
+#             },
+#             "placement": {
+#               "availabilityZone": "eu-west-1a",
+#               "region": "eu-west-1"
+#             },
+#             "publicIp": null,
+#             "securityGroups": [
+#               {
+#                 "filters": [
+#                   {
+#                     "name": "tag:Name",
+#                     "values": [
+#                       "cluster-opitz-698d-lb67r-worker-sg"
+#                     ]
+#                   }
+#                 ]
+#               }
+#             ],
+#             "subnet": {
+#               "filters": [
+#                 {
+#                   "name": "tag:Name",
+#                   "values": [
+#                     "cluster-opitz-698d-lb67r-private-eu-west-1a"
+#                   ]
+#                 }
+#               ]
+#             },
+#             "tags": [
+#               {
+#                 "name": "kubernetes.io/cluster/cluster-opitz-698d-lb67r",
+#                 "value": "owned"
+#               },
+#               {
+#                 "name": "Stack",
+#                 "value": "project ocp4-workshop-opitz-698d"
+#               },
+#               {
+#                 "name": "catalog_item",
+#                 "value": "OCP4_and_Container_Storage_for_Admins"
+#               },
+#               {
+#                 "name": "email",
+#                 "value": "ecrosbie_generic@redhat.com"
+#               },
+#               {
+#                 "name": "env_type",
+#                 "value": "ocp4-workshop"
+#               },
+#               {
+#                 "name": "guid",
+#                 "value": "opitz-698d"
+#               },
+#               {
+#                 "name": "owner",
+#                 "value": "ecrosbie+generic@redhat.com"
+#               },
+#               {
+#                 "name": "platform",
+#                 "value": "RHPDS"
+#               },
+#               {
+#                 "name": "uuid",
+#                 "value": "36e52503-1df8-4747-94bd-c8a2d7c6fd31"
+#               }
+#             ],
+#             "userDataSecret": {
+#               "name": "worker-user-data"
+#             }
+#           }
+#         }
+#       }
+#     }
+#   },
+#   "status": {
+#     "availableReplicas": 1,
+#     "fullyLabeledReplicas": 1,
+#     "observedGeneration": 1,
+#     "readyReplicas": 1,
+#     "replicas": 1
+#   }
+# }
+#+end_example
+
+#+begin_src bash
+bash ~/ocp/infra-nodes.sh
+#+end_src
+
+#+begin_example
+# machineset.machine.openshift.io/infra-eu-west-1c created
+#+end_example
 
 #+begin_src bash
 oc get machineset -n openshift-machine-api
 #+end_src
 
+#+begin_example
+# NAME                                         DESIRED   CURRENT   READY   AVAILABLE   AGE
+# cluster-opitz-698d-lb67r-worker-eu-west-1a   1         1         1       1           4h15m
+# cluster-opitz-698d-lb67r-worker-eu-west-1b   1         1         1       1           4h15m
+# cluster-opitz-698d-lb67r-worker-eu-west-1c   1         1         1       1           4h15m
+# infra-eu-west-1c                             3         3                             4s
+#+end_example
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api
+#+end_src
+
+#+begin_example
+# NAME                                         DESIRED   CURRENT   READY   AVAILABLE   AGE
+# cluster-opitz-698d-lb67r-worker-eu-west-1a   1         1         1       1           4h16m
+# cluster-opitz-698d-lb67r-worker-eu-west-1b   1         1         1       1           4h16m
+# cluster-opitz-698d-lb67r-worker-eu-west-1c   1         1         1       1           4h16m
+# infra-eu-west-1c                             3         3                             69s
+#+end_example
+
+#+begin_src bash
+oc get machineset -n openshift-machine-api
+#+end_src
+
+#+begin_example
+# NAME                                         DESIRED   CURRENT   READY   AVAILABLE   AGE
+# cluster-opitz-698d-lb67r-worker-eu-west-1a   1         1         1       1           4h42m
+# cluster-opitz-698d-lb67r-worker-eu-west-1b   1         1         1       1           4h42m
+# cluster-opitz-698d-lb67r-worker-eu-west-1c   1         1         1       1           4h42m
+# infra-eu-west-1c                             3         3         3       3           27m
+#+end_example
+
 #+begin_src bash
 oc get nodes
 #+end_src
 
+#+begin_example
+# NAME                                         STATUS   ROLES          AGE     VERSION
+# ip-10-0-131-236.eu-west-1.compute.internal   Ready    infra,worker   21m     v1.16.2
+# ip-10-0-133-102.eu-west-1.compute.internal   Ready    master         4h41m   v1.16.2
+# ip-10-0-133-175.eu-west-1.compute.internal   Ready    infra,worker   21m     v1.16.2
+# ip-10-0-138-230.eu-west-1.compute.internal   Ready    worker         4h31m   v1.16.2
+# ip-10-0-143-92.eu-west-1.compute.internal    Ready    infra,worker   21m     v1.16.2
+# ip-10-0-148-58.eu-west-1.compute.internal    Ready    master         4h41m   v1.16.2
+# ip-10-0-159-7.eu-west-1.compute.internal     Ready    worker         64m     v1.16.2
+# ip-10-0-162-64.eu-west-1.compute.internal    Ready    master         4h41m   v1.16.2
+# ip-10-0-166-196.eu-west-1.compute.internal   Ready    worker         53m     v1.16.2
+#+end_example
+
 *** Check the Labels
 
 #+begin_src bash
-oc get node ip-10-0-128-138.us-east-1.compute.internal --show-labels
+oc get node ip-10-0-131-236.eu-west-1.compute.internal --show-labels
 #+end_src
+
+#+begin_example
+# NAME                                         STATUS   ROLES          AGE   VERSION   LABELS
+# ip-10-0-131-236.eu-west-1.compute.internal   Ready    infra,worker   35m   v1.16.2   beta.kubernetes.io/arch=amd64,beta.kubernetes.io/instance-type=m5.2xlarge,beta.kubernetes.io/os=linux,failure-domain.beta.kubernetes.io/region=eu-west-1,failure-domain.beta.kubernetes.io/zone=eu-west-1a,kubernetes.io/arch=amd64,kubernetes.io/hostname=ip-10-0-131-236,kubernetes.io/os=linux,node-role.kubernetes.io/infra=,node-role.kubernetes.io/worker=,node.openshift.io/os_id=rhcos
+#+end_example
 
 *** Moving Infrastructure Components
 **** Router
@@ -3238,29 +3469,178 @@ oc get node ip-10-0-128-138.us-east-1.compute.internal --show-labels
 oc get pod -n openshift-ingress-operator
 #+end_src
 
+#+begin_example
+# NAME                                READY   STATUS    RESTARTS   AGE
+# ingress-operator-855959d8d9-xt2t5   2/2     Running   0          4h42m
+#+end_example
+
 #+begin_src bash
 oc get pods -n openshift-ingress -o wide
 #+end_src
 
+#+begin_example
+# NAME                             READY   STATUS    RESTARTS   AGE     IP           NODE                                         NOMINATED NODE   READINESS GATES
+# router-default-d8668c67d-6gk92   1/1     Running   0          4h42m   10.131.0.5   ip-10-0-138-230.eu-west-1.compute.internal   <none>           <none>
+# router-default-d8668c67d-6jswm   1/1     Running   0          76m     10.129.2.9   ip-10-0-159-7.eu-west-1.compute.internal     <none>           <none>
+#+end_example
+
 #+begin_src bash
-oc get node ip-10-0-144-70.us-east-2.compute.internal
+oc get node ip-10-0-138-230.eu-west-1.compute.internal
 #+end_src
+
+#+begin_example
+# NAME                                         STATUS   ROLES    AGE     VERSION
+# ip-10-0-138-230.eu-west-1.compute.internal   Ready    worker   4h46m   v1.16.2
+#+end_example
 
 #+begin_src bash
 oc get ingresses.config.openshift.io cluster -o yaml
 #+end_src
 
+#+begin_example
+# apiVersion: config.openshift.io/v1
+# kind: Ingress
+# metadata:
+#   creationTimestamp: "2020-03-03T10:01:05Z"
+#   generation: 1
+#   name: cluster
+#   resourceVersion: "427"
+#   selfLink: /apis/config.openshift.io/v1/ingresses/cluster
+#   uid: b42186c6-2aee-40f1-accb-58bd53919f37
+# spec:
+#   domain: apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com
+# status: {}
+#+end_example
+
 #+begin_src bash
 oc get ingresscontrollers.operator.openshift.io default -n openshift-ingress-operator -o yaml
 #+end_src
 
+#+begin_example
+# apiVersion: operator.openshift.io/v1
+# kind: IngressController
+# metadata:
+#   creationTimestamp: "2020-03-03T10:15:20Z"
+#   finalizers:
+#   - ingresscontroller.operator.openshift.io/finalizer-ingresscontroller
+#   generation: 1
+#   name: default
+#   namespace: openshift-ingress-operator
+#   resourceVersion: "72127"
+#   selfLink: /apis/operator.openshift.io/v1/namespaces/openshift-ingress-operator/ingresscontrollers/default
+#   uid: 3c75109e-1793-4063-ba8a-48e748df1437
+# spec:
+#   replicas: 2
+# status:
+#   availableReplicas: 2
+#   conditions:
+#   - lastTransitionTime: "2020-03-03T10:15:21Z"
+#     reason: Valid
+#     status: "True"
+#     type: Admitted
+#   - lastTransitionTime: "2020-03-03T13:41:12Z"
+#     status: "True"
+#     type: Available
+#   - lastTransitionTime: "2020-03-03T13:41:12Z"
+#     message: The deployment has Available status condition set to True
+#     reason: DeploymentAvailable
+#     status: "False"
+#     type: DeploymentDegraded
+#   - lastTransitionTime: "2020-03-03T10:15:24Z"
+#     message: The endpoint publishing strategy supports a managed load balancer
+#     reason: WantedByEndpointPublishingStrategy
+#     status: "True"
+#     type: LoadBalancerManaged
+#   - lastTransitionTime: "2020-03-03T10:15:27Z"
+#     message: The LoadBalancer service is provisioned
+#     reason: LoadBalancerProvisioned
+#     status: "True"
+#     type: LoadBalancerReady
+#   - lastTransitionTime: "2020-03-03T10:15:24Z"
+#     message: DNS management is supported and zones are specified in the cluster DNS
+#       config.
+#     reason: Normal
+#     status: "True"
+#     type: DNSManaged
+#   - lastTransitionTime: "2020-03-03T10:15:31Z"
+#     message: The record is provisioned in all reported zones.
+#     reason: NoFailedZones
+#     status: "True"
+#     type: DNSReady
+#   - lastTransitionTime: "2020-03-03T13:41:12Z"
+#     status: "False"
+#     type: Degraded
+#   domain: apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com
+#   endpointPublishingStrategy:
+#     loadBalancer:
+#       scope: External
+#     type: LoadBalancerService
+#   observedGeneration: 1
+#   selector: ingresscontroller.operator.openshift.io/deployment-ingresscontroller=default
+#   tlsProfile:
+#     ciphers:
+#     - TLS_AES_128_GCM_SHA256
+#     - TLS_AES_256_GCM_SHA384
+#     - TLS_CHACHA20_POLY1305_SHA256
+#     - ECDHE-ECDSA-AES128-GCM-SHA256
+#     - ECDHE-RSA-AES128-GCM-SHA256
+#     - ECDHE-ECDSA-AES256-GCM-SHA384
+#     - ECDHE-RSA-AES256-GCM-SHA384
+#     - ECDHE-ECDSA-CHACHA20-POLY1305
+#     - ECDHE-RSA-CHACHA20-POLY1305
+#     - DHE-RSA-AES128-GCM-SHA256
+#     - DHE-RSA-AES256-GCM-SHA384
+#     minTLSVersion: VersionTLS12
+#+end_example
+
 #+begin_src bash
-oc apply -f ~/support/ingresscontroller.yaml
+cat > ~/ocp/ingresscontroller.yaml <<-"_EOF"
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  finalizers:
+  - ingresscontroller.operator.openshift.io/finalizer-ingresscontroller
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  nodePlacement:
+    nodeSelector:
+      matchLabels:
+        node-role.kubernetes.io/infra: ""
+_EOF
 #+end_src
+
+#+begin_src bash
+oc apply -f ~/ocp/ingresscontroller.yaml
+#+end_src
+
+#+begin_example
+# Warning: oc apply should be used on resource created by either oc create --save-config or oc apply
+# ingresscontroller.operator.openshift.io/default configured
+#+end_example
 
 #+begin_src bash
 oc get pod -n openshift-ingress -o wide
 #+end_src
+
+#+begin_example
+# NAME                             READY   STATUS              RESTARTS   AGE     IP           NODE                                         NOMINATED NODE   READINESS GATES
+# router-default-b47f6d448-d4pnp   0/1     ContainerCreating   0          9s      <none>       ip-10-0-143-92.eu-west-1.compute.internal    <none>           <none>
+# router-default-d8668c67d-6gk92   1/1     Running             0          4h46m   10.131.0.5   ip-10-0-138-230.eu-west-1.compute.internal   <none>           <none>
+# router-default-d8668c67d-6jswm   1/1     Running             0          81m     10.129.2.9   ip-10-0-159-7.eu-west-1.compute.internal     <none>           <none>
+#+end_example
+
+#+begin_src bash
+oc get pod -n openshift-ingress -o wide
+#+end_src
+
+#+begin_example
+# NAME                             READY   STATUS              RESTARTS   AGE     IP           NODE                                         NOMINATED NODE   READINESS GATES
+# router-default-b47f6d448-d4pnp   1/1     Running             0          39s     10.129.4.4   ip-10-0-143-92.eu-west-1.compute.internal    <none>           <none>
+# router-default-b47f6d448-dlcvv   0/1     ContainerCreating   0          9s      <none>       ip-10-0-131-236.eu-west-1.compute.internal   <none>           <none>
+# router-default-d8668c67d-6gk92   1/1     Running             0          4h46m   10.131.0.5   ip-10-0-138-230.eu-west-1.compute.internal   <none>           <none>
+# router-default-d8668c67d-6jswm   0/1     Terminating         0          81m     10.129.2.9   ip-10-0-159-7.eu-west-1.compute.internal     <none>           <none>
+#+end_example
 
 **** Registry
 
