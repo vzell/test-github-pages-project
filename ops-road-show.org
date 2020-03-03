@@ -1689,6 +1689,12 @@ oc get clusterrolebinding dashboard-cluster-admin -o yaml
 #+end_example
 
 ** Installation and Verification
+*** Export Admin password
+
+#+begin_src bash
+export admin_pwd=wQNdE-sQSGS-CAccY-nd37W
+#+end_src
+
 *** Logging in to bastion node
 
 Already done...
@@ -18760,22 +18766,21 @@ https://docs.openshift.com/container-platform/4.1/logging/efk-logging.html
 *** Create the openshift-logging namespace
 
 #+begin_src bash
-cat ~/support/openshift_logging_namespace.yaml
+cat > ~/ocp/openshift_logging_namespace.yaml <<-"_EOF"
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-logging
+  annotations:
+    openshift.io/node-selector: "" 
+  labels:
+    openshift.io/cluster-logging: "true"
+    openshift.io/cluster-monitoring: "true"
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: openshift-logging
-#   annotations:
-#     openshift.io/node-selector: "" 
-#   labels:
-#     openshift.io/cluster-logging: "true"
-#+end_example
-
 #+begin_src bash
-oc create -f ~/support/openshift_logging_namespace.yaml
+oc create -f ~/ocp/openshift_logging_namespace.yaml
 #+end_src
 
 #+begin_example
@@ -18783,6 +18788,107 @@ oc create -f ~/support/openshift_logging_namespace.yaml
 #+end_example
 
 *** Install the Elasticsearch and Cluster Logging Operators in the cluster
+
+In order to install and configure the EFK stack into the cluster, additional
+operators need to be installed. These can be installed from the Operator Hub
+from within the cluster via the GUI.
+
+When using operators in OpenShift, it is important to understand the basics of
+some of the underlying principles that make up the
+Operators. CustomResourceDefinion (CRD) and CustomResource (CR) are two
+Kubernetes objects that we will briefly describe.CRDs are generic pre-defined
+structures of data. The operator understands how to apply the data that is
+defined by the CRD. In terms of programming, CRDs can be thought as being
+similar to a class. CustomResource (CR) is an actual implementations of the CRD,
+where the structured data has actual values. These values are what the operator
+will use when configuring it’s service. Again, in programming terms, CRs would
+be similar to an instantiated object of the class.
+
+The general pattern for using Operators is first, install the Operator, which
+will create the necessary CRDs. After the CRDs have been created, we can create
+the CR which will tell the operator how to act, what to install, and/or what to
+configure. For installing openshift-logging, we will follow this pattern.
+
+To begin, log-in to the OpenShift Cluster’s
+GUI. https://console-openshift-console.apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com
+
+Then follow the following steps:
+
+    Install the Elasticsearch Operator:
+
+        In the OpenShift console, click Operators → OperatorHub.
+
+        Choose Elasticsearch Operator from the list of available Operators, and click Install.
+
+        On the Create Operator Subscription page, select Update Channel 4.3,
+        leave all other defaults and then click Subscribe.
+
+        This makes the Operator available to all users and projects that use
+        this OpenShift Container Platform cluster.
+
+    Install the Cluster Logging Operator:
+    
+
+    The Cluster Logging operator needs to be installed in the openshift-logging
+    namespace. Please ensure that the openshift-logging namespace was created
+    from the previous steps
+
+        In the OpenShift console, click Operators → OperatorHub.
+
+        Choose Cluster Logging from the list of available Operators, and click Install.
+
+        On the Create Operator Subscription page, Under ensure Installation Mode
+        that A specific namespace on the cluster is selected, and choose
+        openshift-logging. In addition, select Update Channel 4.3 and leave all
+        other defaults and then click Subscribe.
+
+    Verify the operator installations:
+
+        Switch to the Operators → Installed Operators page.
+
+        Make sure the openshift-logging project is selected.
+
+        In the Status column you should see green checks with either InstallSucceeded or Copied and the text Up to date.
+
+        During installation an operator might display a Failed status. If the
+        operator then installs with an InstallSucceeded message, you can safely
+        ignore the Failed message.
+
+    Troubleshooting (optional)
+
+    If either operator does not appear as installed, to troubleshoot further:
+
+        On the Copied tab of the Installed Operators page, if an operator show a
+        Status of Copied, this indicates the installation is in process and is
+        expected behavior.
+
+        Switch to the Catalog → Operator Management page and inspect the
+        Operator Subscriptions and Install Plans tabs for any failure or errors
+        under Status.
+
+        Switch to the Workloads → Pods page and check the logs in any Pods in
+        the openshift-logging and openshift-operators projects that are
+        reporting issues.
+
+*** Create the Loggging CustomResource (CR) instance
+
+Now that we have the operators installed, along with the CRDs, we can now kick
+off the logging install by creating a Logging CR. This will define how we want
+to install and configure logging.
+
+   - In the OpenShift Console, switch to the the Administration → Custom Resource Definitions page.
+
+   - On the Custom Resource Definitions page, click ClusterLogging.
+
+   - On the Custom Resource Definition Overview page, select View Instances from the Actions menu.
+ 
+   - If you see a 404 error, don’t panic. While the operator installation succeeded, the operator itself has not finished installing and the CustomResourceDefinition may not have been created yet. Wait a few moments and then refresh the page.
+
+   - On the Cluster Loggings page, click Create Cluster Logging.
+
+   - This step requires that you have completed the Deploying and Managing OpenShift Container Storage Module. If you have not completed the OCS module, you will need to substitute storageClassName: ocs-storagecluster-ceph-rbd with storageClassName: gp2 in the YAML below before copying to the editor.
+
+In the YAML editor, replace the code with the following:
 
 #+begin_example
 apiVersion: "logging.openshift.io/v1"
@@ -18831,26 +18937,20 @@ oc get pods -n openshift-logging
 
 #+begin_example
 # NAME                                            READY   STATUS              RESTARTS   AGE
-# cluster-logging-operator-7bfd9895c9-hglc7       1/1     Running             0          5m53s
-# elasticsearch-cdm-cfsd60sz-1-97986d555-7rb52    0/2     ContainerCreating   0          39s
-# elasticsearch-cdm-cfsd60sz-2-f4896798b-65jfl    0/2     ContainerCreating   0          36s
-# elasticsearch-cdm-cfsd60sz-3-6f4c858b5d-x558b   0/2     ContainerCreating   0          33s
-# fluentd-5l7tr                                   1/1     Running             0          38s
-# fluentd-5nhpr                                   1/1     Running             0          38s
-# fluentd-5nxxb                                   1/1     Running             0          38s
-# fluentd-72bgk                                   1/1     Running             0          39s
-# fluentd-84tk4                                   1/1     Running             0          38s
-# fluentd-9m44j                                   1/1     Running             0          39s
-# fluentd-9tvd8                                   1/1     Running             0          38s
-# fluentd-f7nfv                                   1/1     Running             0          39s
-# fluentd-hqmfz                                   1/1     Running             0          38s
-# fluentd-l8w7l                                   1/1     Running             0          39s
-# fluentd-lp2lt                                   1/1     Running             0          38s
-# fluentd-mbw6x                                   1/1     Running             0          38s
-# fluentd-q7pqf                                   1/1     Running             0          39s
-# fluentd-rfmm4                                   1/1     Running             0          39s
-# fluentd-zxx9h                                   1/1     Running             0          39s
-# kibana-6ff8fd577b-x8ktn                         2/2     Running             0          40s
+# cluster-logging-operator-6f686cd78c-vbr9r       1/1     Running             0          3m37s
+# elasticsearch-cdm-o0vyvhkb-1-648485c6f5-x7b9j   0/2     Pending             0          20s
+# elasticsearch-cdm-o0vyvhkb-2-c9fdf744b-gkf87    0/2     Pending             0          15s
+# fluentd-7h7vs                                   0/1     ContainerCreating   0          6s
+# fluentd-bnm7l                                   0/1     ContainerCreating   0          15s
+# fluentd-fhn6c                                   0/1     ContainerCreating   0          12s
+# fluentd-h5bn6                                   0/1     ContainerCreating   0          11s
+# fluentd-kftth                                   0/1     ContainerCreating   0          15s
+# fluentd-khjg9                                   0/1     ContainerCreating   0          10s
+# fluentd-nz8lw                                   0/1     ContainerCreating   0          11s
+# fluentd-zc7d5                                   0/1     ContainerCreating   0          10s
+# fluentd-zqbll                                   0/1     ContainerCreating   0          8s
+# kibana-577dbb87f7-8xxvb                         0/2     ContainerCreating   0          19s
+# kibana-64596c889-sdrnb                          0/2     ContainerCreating   0          19s
 #+end_example
 
 #+begin_src bash
@@ -18859,27 +18959,22 @@ oc get pods -n openshift-logging
 
 #+begin_example
 # NAME                                            READY   STATUS    RESTARTS   AGE
-# cluster-logging-operator-7bfd9895c9-hglc7       1/1     Running   0          6m41s
-# elasticsearch-cdm-cfsd60sz-1-97986d555-7rb52    2/2     Running   0          87s
-# elasticsearch-cdm-cfsd60sz-2-f4896798b-65jfl    2/2     Running   0          84s
-# elasticsearch-cdm-cfsd60sz-3-6f4c858b5d-x558b   2/2     Running   0          81s
-# fluentd-5l7tr                                   1/1     Running   0          86s
-# fluentd-5nhpr                                   1/1     Running   0          86s
-# fluentd-5nxxb                                   1/1     Running   0          86s
-# fluentd-72bgk                                   1/1     Running   0          87s
-# fluentd-84tk4                                   1/1     Running   0          86s
-# fluentd-9m44j                                   1/1     Running   0          87s
-# fluentd-9tvd8                                   1/1     Running   0          86s
-# fluentd-f7nfv                                   1/1     Running   0          87s
-# fluentd-hqmfz                                   1/1     Running   0          86s
-# fluentd-l8w7l                                   1/1     Running   0          87s
-# fluentd-lp2lt                                   1/1     Running   0          86s
-# fluentd-mbw6x                                   1/1     Running   0          86s
-# fluentd-q7pqf                                   1/1     Running   0          87s
-# fluentd-rfmm4                                   1/1     Running   0          87s
-# fluentd-zxx9h                                   1/1     Running   0          87s
-# kibana-6ff8fd577b-x8ktn                         2/2     Running   0          88s
+# cluster-logging-operator-6f686cd78c-vbr9r       1/1     Running   0          4m5s
+# elasticsearch-cdm-o0vyvhkb-1-648485c6f5-x7b9j   0/2     Pending   0          48s
+# elasticsearch-cdm-o0vyvhkb-2-c9fdf744b-gkf87    0/2     Pending   0          43s
+# fluentd-7h7vs                                   1/1     Running   0          34s
+# fluentd-bnm7l                                   1/1     Running   0          43s
+# fluentd-fhn6c                                   1/1     Running   0          40s
+# fluentd-h5bn6                                   1/1     Running   0          39s
+# fluentd-kftth                                   1/1     Running   0          43s
+# fluentd-khjg9                                   1/1     Running   0          38s
+# fluentd-nz8lw                                   1/1     Running   0          39s
+# fluentd-zc7d5                                   1/1     Running   0          38s
+# fluentd-zqbll                                   1/1     Running   0          36s
+# kibana-577dbb87f7-8xxvb                         2/2     Running   0          47s
 #+end_example
+
+pod has unbound immediate PersistentVolumeClaims (repeated 3 times)
 
 #+begin_src bash
 oc get daemonset -n openshift-logging
@@ -18887,12 +18982,19 @@ oc get daemonset -n openshift-logging
 
 #+begin_example
 # NAME      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
-# fluentd   15        15        15      15           15          kubernetes.io/os=linux   99s
+# fluentd   9         9         9       9            9           kubernetes.io/os=linux   3m39s
 #+end_example
 
 #+begin_src bash
 oc get pvc -n openshift-logging
 #+end_src
+
+#+begin_example
+# NAME                                         STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
+# elasticsearch-elasticsearch-cdm-o0vyvhkb-1   Pending                                      ocs-storagecluster-ceph-rbd   3m53s
+# elasticsearch-elasticsearch-cdm-o0vyvhkb-2   Pending                                      ocs-storagecluster-ceph-rbd   3m53s
+# elasticsearch-elasticsearch-cdm-o0vyvhkb-3   Pending                                      ocs-storagecluster-ceph-rbd   3m53s
+#+end_example
 
 #+begin_example
 # NAME                                         STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS                  AGE
@@ -18906,6 +19008,11 @@ oc get pvc -n openshift-logging
 #+begin_src bash
 oc get route -n openshift-logging
 #+end_src
+
+#+begin_example
+# NAME     HOST/PORT                                                                            PATH   SERVICES   PORT    TERMINATION          WILDCARD
+# kibana   kibana-openshift-logging.apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com          kibana     <all>   reencrypt/Redirect   None
+#+end_example
 
 #+begin_example
 # NAME     HOST/PORT                                                                   PATH   SERVICES   PORT    TERMINATION          WILDCARD
@@ -18925,12 +19032,12 @@ oc get oauth cluster -o yaml
 # metadata:
 #   annotations:
 #     release.openshift.io/create-only: "true"
-#   creationTimestamp: "2020-02-19T17:56:51Z"
+#   creationTimestamp: "2020-03-03T10:02:14Z"
 #   generation: 1
 #   name: cluster
-#   resourceVersion: "1738"
+#   resourceVersion: "1812"
 #   selfLink: /apis/config.openshift.io/v1/oauths/cluster
-#   uid: 34bf32d6-5341-11ea-8707-027cbd288fd4
+#   uid: a6d589d6-f730-48d0-9e76-12e630c9d940
 # spec: {}
 #+end_example
 
@@ -18941,15 +19048,15 @@ oc get secret -n kube-system kubeadmin -o yaml
 #+begin_example
 # apiVersion: v1
 # data:
-#   kubeadmin: JDJhJDEwJGQ0bkRqQzFkamdhem01cnFldm9PSGVObHYxSzdDNTQ2QUMyb0Q1TjdwUnpSbUIzOHNNQ0xh
+#   kubeadmin: JDJhJDEwJDljRkt3ZUFNSi9PcjZwajNKSFRyaHV5d1g0RHUxVVNldW5mT1lkby9ZcnhIdjRTcjRSTi8y
 # kind: Secret
 # metadata:
-#   creationTimestamp: "2020-02-19T17:55:47Z"
+#   creationTimestamp: "2020-03-03T10:00:48Z"
 #   name: kubeadmin
 #   namespace: kube-system
-#   resourceVersion: "53"
+#   resourceVersion: "54"
 #   selfLink: /api/v1/namespaces/kube-system/secrets/kubeadmin
-#   uid: 0eb17e0f-5341-11ea-8707-027cbd288fd4
+#   uid: 7136217b-4714-4e23-99a4-865a2b515097
 # type: Opaque
 #+end_example
 
@@ -18962,25 +19069,25 @@ oc create secret generic ldap-secret --from-literal=bindPassword=bindingpassword
 #+end_example
 
 #+begin_src bash
-curl http://idm.openshiftworkshop.com/pub/ca.crt -o ~/ca.crt
+curl http://idm.openshiftworkshop.com/pub/ca.crt -o /tmp/ca.crt
 #+end_src
 
 #+begin_example
 #   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
 #                                  Dload  Upload   Total   Spent    Left  Speed
-# 100  1350  100  1350    0     0  16015      0 --:--:-- --:--:-- --:--:-- 16071
+# 100  1350  100  1350    0     0   6283      0 --:--:-- --:--:-- --:--:--  6308
 #+end_example
 
 #+begin_src bash
-ls -lt ~/ca.crt
+ls -lt /tmp/ca.crt
 #+end_src
 
 #+begin_example
-# -rw-r--r--. 1 lab-user users 1350 Feb 22 09:28 /home/lab-user/ca.crt
+# -rw-r--r--. 1 generic_emea_ecrosbie users 1350 Mar  3 16:48 /tmp/ca.crt
 #+end_example
 
 #+begin_src bash
-oc create configmap ca-config-map --from-file=/home/lab-user/ca.crt -n openshift-config
+oc create configmap ca-config-map --from-file=/tmp/ca.crt -n openshift-config
 #+end_src
 
 #+begin_example
@@ -18988,43 +19095,42 @@ oc create configmap ca-config-map --from-file=/home/lab-user/ca.crt -n openshift
 #+end_example
 
 #+begin_src bash
-cat ~/support/oauth-cluster.yaml
+cat > ~/ocp/oauth-cluster.yaml <<-"_EOF"
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  name: cluster
+spec:
+  identityProviders:
+  - name: idm
+    challenge: false
+    login: true
+    mappingMethod: claim
+    type: LDAP
+    ldap:
+      attributes:
+        id:
+        - dn
+        email:
+        - mail
+        name:
+        - cn
+        preferredUsername:
+        - uid
+      bindDN: "uid=system,cn=sysaccounts,cn=etc,dc=auth,dc=openshiftworkshop,dc=com"
+      bindPassword:
+        name: ldap-secret
+      ca:
+        name: ca-config-map
+      insecure: false
+      url: "ldap://idm.openshiftworkshop.com/cn=users,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com?uid?sub?(memberOf=cn=ose-user,cn=groups,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com)"
+  tokenConfig:
+    accessTokenMaxAgeSeconds: 86400
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: config.openshift.io/v1
-# kind: OAuth
-# metadata:
-#   name: cluster
-# spec:
-#   identityProviders:
-#   - name: idm
-#     challenge: false
-#     login: true
-#     mappingMethod: claim
-#     type: LDAP
-#     ldap:
-#       attributes:
-#         id:
-#         - dn
-#         email:
-#         - mail
-#         name:
-#         - cn
-#         preferredUsername:
-#         - uid
-#       bindDN: "uid=system,cn=sysaccounts,cn=etc,dc=auth,dc=openshiftworkshop,dc=com"
-#       bindPassword:
-#         name: ldap-secret
-#       ca:
-#         name: ca-config-map
-#       insecure: false
-#       url: "ldap://idm.openshiftworkshop.com/cn=users,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com?uid?sub?(memberOf=cn=ose-user,cn=groups,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com)"
-#   tokenConfig:
-#+end_example
-
 #+begin_src bash
-oc apply -f ~/support/oauth-cluster.yaml
+oc apply -f ~/ocp/oauth-cluster.yaml
 #+end_src
 
 #+begin_example
@@ -19034,40 +19140,41 @@ oc apply -f ~/support/oauth-cluster.yaml
 
 *** Syncing LDAP Groups to OpenShift Groups
 
-Change ca: to point to the downloaded ca.crt file
+Change "ca:" to point to the downloaded ca.crt file
 
 #+begin_src bash
-cat ~/support/groupsync.yaml
+cat > ~/ocp/groupsync.yaml <<-"_EOF"
+kind: LDAPSyncConfig
+apiVersion: v1
+url: ldap://idm.openshiftworkshop.com
+ca: /tmp/ca.crt
+bindDN: uid=system,cn=sysaccounts,cn=etc,dc=auth,dc=openshiftworkshop,dc=com
+bindPassword: bindingpassword
+rfc2307:
+  groupsQuery:
+    baseDN: cn=groups,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com
+    derefAliases: never
+    filter: '(|(cn=ose-*))'
+  groupUIDAttribute: dn
+  groupNameAttributes:
+  - cn
+  groupMembershipAttributes:
+  - member
+  usersQuery:
+    baseDN: cn=users,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com
+    derefAliases: never
+  userUIDAttribute: dn
+  userNameAttributes:
+  - uid
+_EOF
 #+end_src
 
 #+begin_example
-# kind: LDAPSyncConfig
-# apiVersion: v1
-# url: ldap://idm.openshiftworkshop.com
-# ca: /home/lab-user/ca.crt
-# bindDN: uid=system,cn=sysaccounts,cn=etc,dc=auth,dc=openshiftworkshop,dc=com
-# bindPassword: bindingpassword
-# rfc2307:
-#   groupsQuery:
-#     baseDN: cn=groups,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com
-#     derefAliases: never
-#     filter: '(|(cn=ose-*))'
-#   groupUIDAttribute: dn
-#   groupNameAttributes:
-#   - cn
-#   groupMembershipAttributes:
-#   - member
-#   usersQuery:
-#     baseDN: cn=users,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com
-#     derefAliases: never
-#   userUIDAttribute: dn
-#   userNameAttributes:
-#   - uid
-# 
+# generic_emea_ecrosbie
 #+end_example
 
 #+begin_src bash
-oc adm groups sync --sync-config=/home/lab-user/support/groupsync.yaml --confirm
+oc adm groups sync --sync-config=/home/$USER/ocp/groupsync.yaml --confirm
 #+end_src
 
 #+begin_example
@@ -19142,16 +19249,16 @@ oc get group ose-fancy-dev -o yaml
 # kind: Group
 # metadata:
 #   annotations:
-#     openshift.io/ldap.sync-time: "2020-02-21T13:14:55Z"
+#     openshift.io/ldap.sync-time: "2020-03-03T16:51:28Z"
 #     openshift.io/ldap.uid: cn=ose-fancy-dev,cn=groups,cn=accounts,dc=auth,dc=openshiftworkshop,dc=com
 #     openshift.io/ldap.url: idm.openshiftworkshop.com:389
-#   creationTimestamp: "2020-02-21T13:14:55Z"
+#   creationTimestamp: "2020-03-03T16:51:28Z"
 #   labels:
 #     openshift.io/ldap.host: idm.openshiftworkshop.com
 #   name: ose-fancy-dev
-#   resourceVersion: "832003"
+#   resourceVersion: "131314"
 #   selfLink: /apis/user.openshift.io/v1/groups/ose-fancy-dev
-#   uid: 271480fd-54ac-11ea-b0e7-0a580a800016
+#   uid: 3a35a768-5574-4fc1-af61-30960353a1af
 # users:
 # - fancyuser1
 # - fancyuser2
@@ -19162,7 +19269,7 @@ oc get user
 #+end_src
 
 #+begin_example
-# No resources found.
+# No resources found in app-management namespace.
 #+end_example
 
 *** Change Group Policy
@@ -19195,7 +19302,7 @@ oc get projects
 #+end_src
 
 #+begin_example
-# No resources found.
+# No resources found in default namespace.
 #+end_example
 
 #+begin_src bash
@@ -19205,7 +19312,7 @@ oc login -u fancyuser1 -p openshift
 #+begin_example
 # Login successful.
 # 
-# You have access to 59 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 56 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -19222,9 +19329,6 @@ oc get projects
 # kube-public                                                            Active
 # kube-system                                                            Active
 # lab-ocp-cns                                                            Active
-# my-database-app                                                        Active
-# my-shared-storage                                                      Active
-# obc-test                                                               Active
 # openshift                                                              Active
 # openshift-apiserver                                                    Active
 # openshift-apiserver-operator                                           Active
@@ -19263,49 +19367,41 @@ oc get projects
 # openshift-marketplace                                                  Active
 # openshift-monitoring                                                   Active
 # openshift-multus                                                       Active
-# openshift-must-gather-td7bl                                            Active
 # openshift-network-operator                                             Active
 # openshift-node                                                         Active
 # openshift-openstack-infra                                              Active
 # openshift-operator-lifecycle-manager                                   Active
 # openshift-operators                                                    Active
+# openshift-ovirt-infra                                                  Active
 # openshift-sdn                                                          Active
 # openshift-service-ca                                                   Active
 # openshift-service-ca-operator                                          Active
 # openshift-service-catalog-apiserver-operator                           Active
 # openshift-service-catalog-controller-manager-operator                  Active
-# openshift-storage                                                      Active
+# openshift-user-workload-monitoring                                     Active
 #+end_example
 
 *** Create Projects for Collaboration
 
 #+begin_src bash
-oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
+oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p ${admin_pwd}
 #+end_src
 
 #+begin_example
-# Authentication required for https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443 (openshift)
-# Username: system:serviceaccount:lab-ocp-cns:dashboard-user
-# Password: 
 # error: username system:serviceaccount:lab-ocp-cns:dashboard-user is invalid for basic auth
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
-# Authentication required for https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443 (openshift)
-# Username: kubeadmin
-# Password: 
 # Login successful.
 # 
 # You have access to 59 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
-# Using project "default".
+# Using project "app-prod".
 #+end_example
-
-RmEAm-FN5EH-XhpAH-YYbf8
 
 #+begin_src bash
 oc adm new-project app-dev --display-name="Application Development"
@@ -19353,12 +19449,21 @@ oc adm policy add-role-to-group edit ose-fancy-dev -n app-prod
 oc login -u normaluser1 -p openshift
 #+end_src
 
+#+begin_example
+# Login successful.
+# 
+# You don't have any projects. You can try to create a new project, by running
+# 
+#     oc new-project <projectname>
+# 
+#+end_example
+
 #+begin_src bash
 oc get projects
 #+end_src
 
 #+begin_example
-# No resources found.
+# No resources found in default namespace.
 #+end_example
 
 #+begin_src bash
@@ -19393,7 +19498,7 @@ oc project app-prod
 #+end_src
 
 #+begin_example
-# Now using project "app-prod" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# Now using project "app-prod" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
 #+end_example
 
 #+begin_src bash
@@ -19429,7 +19534,7 @@ oc login -u fancyuser1 -p openshift
 #+begin_example
 # Login successful.
 # 
-# You have access to 62 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 59 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "app-prod".
 #+end_example
@@ -19439,8 +19544,8 @@ oc get route prometheus-k8s -n openshift-monitoring
 #+end_src
 
 #+begin_example
-# NAME             HOST/PORT                                                                              PATH   SERVICES         PORT   TERMINATION          WILDCARD
-# prometheus-k8s   prometheus-k8s-openshift-monitoring.apps.cluster-munich-e7ab.sandbox1596.opentlc.com          prometheus-k8s   web    reencrypt/Redirect   None
+# NAME             HOST/PORT                                                                                       PATH   SERVICES         PORT   TERMINATION          WILDCARD
+# prometheus-k8s   prometheus-k8s-openshift-monitoring.apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com          prometheus-k8s   web    reencrypt/Redirect   None
 #+end_example
 
 Before continuing, make sure to go to the OpenShift web console and log out by
@@ -19587,128 +19692,126 @@ oc new-project -h
 *** Modify the Project Request Template
 
 #+begin_src bash
-cat ~/support/project_request_template.yaml
+cat > ~/ocp/project_request_template.yaml <<-"_EOF"
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: project-request
+objects:
+- apiVersion: v1
+  kind: Project
+  metadata:
+    annotations:
+      openshift.io/description: ${PROJECT_DESCRIPTION}
+      openshift.io/display-name: ${PROJECT_DISPLAYNAME}
+      openshift.io/requester: ${PROJECT_REQUESTING_USER}
+    creationTimestamp: null
+    name: ${PROJECT_NAME}
+  spec: {}
+  status: {}
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: ${PROJECT_NAME}-quota
+  spec:
+    hard:
+      pods: 10
+      requests.cpu: 4000m
+      requests.memory: 8Gi
+      resourcequotas: 1
+      requests.storage: 50Gi
+      persistentvolumeclaims: 5
+- apiVersion: v1
+  kind: LimitRange
+  metadata:
+    name: ${PROJECT_NAME}-limits
+    creationTimestamp: null
+  spec:
+    limits:
+      -
+        type: Container
+        max:
+          cpu: 4000m
+          memory: 1024Mi
+        min:
+          cpu: 10m
+          memory: 5Mi
+        default:
+          cpu: 4000m
+          memory: 1024Mi
+        defaultRequest:
+          cpu: 100m
+          memory: 512Mi
+- apiVersion: v1
+  groupNames:
+  - system:serviceaccounts:${PROJECT_NAME}
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: system:image-pullers
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:image-puller
+  subjects:
+  - kind: SystemGroup
+    name: system:serviceaccounts:${PROJECT_NAME}
+  userNames: null
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: system:image-builders
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:image-builder
+  subjects:
+  - kind: ServiceAccount
+    name: builder
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:builder
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: system:deployers
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: system:deployer
+  subjects:
+  - kind: ServiceAccount
+    name: deployer
+  userNames:
+  - system:serviceaccount:${PROJECT_NAME}:deployer
+- apiVersion: v1
+  groupNames: null
+  kind: RoleBinding
+  metadata:
+    creationTimestamp: null
+    name: admin
+    namespace: ${PROJECT_NAME}
+  roleRef:
+    name: admin
+  subjects:
+  - kind: User
+    name: ${PROJECT_ADMIN_USER}
+  userNames:
+  - ${PROJECT_ADMIN_USER}
+parameters:
+- name: PROJECT_NAME
+- name: PROJECT_DISPLAYNAME
+- name: PROJECT_DESCRIPTION
+- name: PROJECT_ADMIN_USER
+- name: PROJECT_REQUESTING_USER
+_EOF
 #+end_src
-
-#+begin_example
-# apiVersion: v1
-# kind: Template
-# metadata:
-#   creationTimestamp: null
-#   name: project-request
-# objects:
-# - apiVersion: v1
-#   kind: Project
-#   metadata:
-#     annotations:
-#       openshift.io/description: ${PROJECT_DESCRIPTION}
-#       openshift.io/display-name: ${PROJECT_DISPLAYNAME}
-#       openshift.io/requester: ${PROJECT_REQUESTING_USER}
-#     creationTimestamp: null
-#     name: ${PROJECT_NAME}
-#   spec: {}
-#   status: {}
-# - apiVersion: v1
-#   kind: ResourceQuota
-#   metadata:
-#     name: ${PROJECT_NAME}-quota
-#   spec:
-#     hard:
-#       pods: 10
-#       requests.cpu: 4000m
-#       requests.memory: 8Gi
-#       resourcequotas: 1
-#       requests.storage: 50Gi
-#       persistentvolumeclaims: 5
-# - apiVersion: v1
-#   kind: LimitRange
-#   metadata:
-#     name: ${PROJECT_NAME}-limits
-#     creationTimestamp: null
-#   spec:
-#     limits:
-#       -
-#         type: Container
-#         max:
-#           cpu: 4000m
-#           memory: 1024Mi
-#         min:
-#           cpu: 10m
-#           memory: 5Mi
-#         default:
-#           cpu: 4000m
-#           memory: 1024Mi
-#         defaultRequest:
-#           cpu: 100m
-#           memory: 512Mi
-# - apiVersion: v1
-#   groupNames:
-#   - system:serviceaccounts:${PROJECT_NAME}
-#   kind: RoleBinding
-#   metadata:
-#     creationTimestamp: null
-#     name: system:image-pullers
-#     namespace: ${PROJECT_NAME}
-#   roleRef:
-#     name: system:image-puller
-#   subjects:
-#   - kind: SystemGroup
-#     name: system:serviceaccounts:${PROJECT_NAME}
-#   userNames: null
-# - apiVersion: v1
-#   groupNames: null
-#   kind: RoleBinding
-#   metadata:
-#     creationTimestamp: null
-#     name: system:image-builders
-#     namespace: ${PROJECT_NAME}
-#   roleRef:
-#     name: system:image-builder
-#   subjects:
-#   - kind: ServiceAccount
-#     name: builder
-#   userNames:
-#   - system:serviceaccount:${PROJECT_NAME}:builder
-# - apiVersion: v1
-#   groupNames: null
-#   kind: RoleBinding
-#   metadata:
-#     creationTimestamp: null
-#     name: system:deployers
-#     namespace: ${PROJECT_NAME}
-#   roleRef:
-#     name: system:deployer
-#   subjects:
-#   - kind: ServiceAccount
-#     name: deployer
-#   userNames:
-#   - system:serviceaccount:${PROJECT_NAME}:deployer
-# - apiVersion: v1
-#   groupNames: null
-#   kind: RoleBinding
-#   metadata:
-#     creationTimestamp: null
-#     name: admin
-#     namespace: ${PROJECT_NAME}
-#   roleRef:
-#     name: admin
-#   subjects:
-#   - kind: User
-#     name: ${PROJECT_ADMIN_USER}
-#   userNames:
-#   - ${PROJECT_ADMIN_USER}
-# parameters:
-# - name: PROJECT_NAME
-# - name: PROJECT_DISPLAYNAME
-# - name: PROJECT_DESCRIPTION
-# - name: PROJECT_ADMIN_USER
-# - name: PROJECT_REQUESTING_USER
-#+end_example
 
 *** Create the Template
 
 #+begin_src bash
-oc create -f ~/support/project_request_template.yaml -n openshift-config
+oc create -f ~/ocp/project_request_template.yaml -n openshift-config
 #+end_src
 
 #+begin_example
@@ -19723,6 +19826,7 @@ oc get template -n openshift-config
 # NAME              DESCRIPTION   PARAMETERS    OBJECTS
 # project-request                 5 (5 blank)   7
 #+end_example
+
 *** Setting the Default ProjectRequestTemplate
 
 #+begin_src bash
@@ -19731,23 +19835,6 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 
 #+begin_example
 # {
-#   "aggregatorConfig": {
-#     "allowedNames": [
-#       "kube-apiserver-proxy",
-#       "system:kube-apiserver-proxy",
-#       "system:openshift-aggregator"
-#     ],
-#     "clientCA": "/var/run/configmaps/aggregator-client-ca/ca-bundle.crt",
-#     "extraHeaderPrefixes": [
-#       "X-Remote-Extra-"
-#     ],
-#     "groupHeaders": [
-#       "X-Remote-Group"
-#     ],
-#     "usernameHeaders": [
-#       "X-Remote-User"
-#     ]
-#   },
 #   "apiServerArguments": {
 #     "minimal-shutdown-duration": [
 #       "3s"
@@ -19800,6 +19887,22 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #           "userGroups": [
 #             "system:authenticated",
 #             "system:unauthenticated"
+#           ]
+#         },
+#         {
+#           "level": "RequestResponse",
+#           "resources": [
+#             {
+#               "group": "user.openshift.io",
+#               "resources": [
+#                 "identities"
+#               ]
+#             }
+#           ],
+#           "verbs": [
+#             "create",
+#             "update",
+#             "patch"
 #           ]
 #         },
 #         {
@@ -19819,7 +19922,18 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #     "projectRequestMessage": ""
 #   },
 #   "routingConfig": {
-#     "subdomain": "apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
+#     "subdomain": "apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com"
+#   },
+#   "servingInfo": {
+#     "cipherSuites": [
+#       "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+#       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+#       "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+#       "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+#       "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+#       "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+#     ],
+#     "minTLSVersion": "VersionTLS12"
 #   },
 #   "storageConfig": {
 #     "urls": [
@@ -19830,23 +19944,21 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #+end_example
 
 #+begin_src bash
-cat ~/support/cr_project_request.yaml
+cat > ~/ocp/cr_project_request.yaml <<-"_EOF"
+apiVersion: "config.openshift.io/v1"
+kind: "Project"
+metadata: 
+  name: "cluster"
+  namespace: ""
+spec: 
+  projectRequestMessage: ""
+  projectRequestTemplate: 
+    name: "project-request"
+_EOF
 #+end_src
 
-#+begin_example
-# apiVersion: "config.openshift.io/v1"
-# kind: "Project"
-# metadata: 
-#   name: "cluster"
-#   namespace: ""
-# spec: 
-#   projectRequestMessage: ""
-#   projectRequestTemplate: 
-#     name: "project-request"
-#+end_example
-
 #+begin_src bash
-oc apply -f ~/support/cr_project_request.yaml -n openshift-config
+oc apply -f ~/ocp/cr_project_request.yaml -n openshift-config
 #+end_src
 
 #+begin_example
@@ -19860,23 +19972,6 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 
 #+begin_example
 # {
-#   "aggregatorConfig": {
-#     "allowedNames": [
-#       "kube-apiserver-proxy",
-#       "system:kube-apiserver-proxy",
-#       "system:openshift-aggregator"
-#     ],
-#     "clientCA": "/var/run/configmaps/aggregator-client-ca/ca-bundle.crt",
-#     "extraHeaderPrefixes": [
-#       "X-Remote-Extra-"
-#     ],
-#     "groupHeaders": [
-#       "X-Remote-Group"
-#     ],
-#     "usernameHeaders": [
-#       "X-Remote-User"
-#     ]
-#   },
 #   "apiServerArguments": {
 #     "minimal-shutdown-duration": [
 #       "3s"
@@ -19929,6 +20024,22 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #           "userGroups": [
 #             "system:authenticated",
 #             "system:unauthenticated"
+#           ]
+#         },
+#         {
+#           "level": "RequestResponse",
+#           "resources": [
+#             {
+#               "group": "user.openshift.io",
+#               "resources": [
+#                 "identities"
+#               ]
+#             }
+#           ],
+#           "verbs": [
+#             "create",
+#             "update",
+#             "patch"
 #           ]
 #         },
 #         {
@@ -19949,7 +20060,18 @@ oc get cm config -n openshift-apiserver -o jsonpath --template="{.data.config\.y
 #     "projectRequestTemplate": "openshift-config/project-request"
 #   },
 #   "routingConfig": {
-#     "subdomain": "apps.cluster-munich-e7ab.sandbox1596.opentlc.com"
+#     "subdomain": "apps.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com"
+#   },
+#   "servingInfo": {
+#     "cipherSuites": [
+#       "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+#       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+#       "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+#       "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+#       "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305",
+#       "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+#     ],
+#     "minTLSVersion": "VersionTLS12"
 #   },
 #   "storageConfig": {
 #     "urls": [
@@ -19966,7 +20088,7 @@ oc new-project template-test
 #+end_src
 
 #+begin_example
-# Now using project "template-test" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# Now using project "template-test" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
 # 
 # You can add applications to this project with the 'new-app' command. For example, try:
 # 
@@ -19984,14 +20106,14 @@ oc describe project template-test
 
 #+begin_example
 # Name:			template-test
-# Created:		22 seconds ago
+# Created:		7 seconds ago
 # Labels:			<none>
 # Annotations:		openshift.io/description=
 # 			openshift.io/display-name=
 # 			openshift.io/requester=kube:admin
-# 			openshift.io/sa.scc.mcs=s0:c27,c14
-# 			openshift.io/sa.scc.supplemental-groups=1000730000/10000
-# 			openshift.io/sa.scc.uid-range=1000730000/10000
+# 			openshift.io/sa.scc.mcs=s0:c26,c0
+# 			openshift.io/sa.scc.supplemental-groups=1000650000/10000
+# 			openshift.io/sa.scc.uid-range=1000650000/10000
 # Display Name:		<none>
 # Description:		<none>
 # Status:			Active
@@ -20008,9 +20130,26 @@ oc delete project template-test
 # project.project.openshift.io "template-test" deleted
 #+end_example
 
+#+begin_example
+# project.project.openshift.io "template-test" deleted
+#+end_example
+
 #+begin_src bash
 oc new-project template-test
 #+end_src
+
+#+begin_example
+# Already on project "template-test" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
+# 
+# You can add applications to this project with the 'new-app' command. For example, try:
+# 
+#     oc new-app django-psql-example
+# 
+# to build a new example application in Python. Or use kubectl to deploy a simple Kubernetes application:
+# 
+#     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
+# 
+#+end_example
 
 #+begin_src bash
 oc describe project template-test
@@ -20018,14 +20157,14 @@ oc describe project template-test
 
 #+begin_example
 # Name:		template-test
-# Created:	18 seconds ago
+# Created:	8 seconds ago
 # Labels:		<none>
 # Annotations:	openshift.io/description=
 # 		openshift.io/display-name=
 # 		openshift.io/requester=kube:admin
-# 		openshift.io/sa.scc.mcs=s0:c27,c24
-# 		openshift.io/sa.scc.supplemental-groups=1000750000/10000
-# 		openshift.io/sa.scc.uid-range=1000750000/10000
+# 		openshift.io/sa.scc.mcs=s0:c26,c10
+# 		openshift.io/sa.scc.supplemental-groups=1000670000/10000
+# 		openshift.io/sa.scc.uid-range=1000670000/10000
 # Display Name:	<none>
 # Description:	<none>
 # Status:		Active
@@ -20044,8 +20183,8 @@ oc describe project template-test
 # 	Name:		template-test-limits
 # 	Type		Resource	Min	Max	Default Request	Default Limit	Max Limit/Request Ratio
 # 	----		--------	---	---	---------------	-------------	-----------------------
-# 	Container	memory		5Mi	1Gi	512Mi		1Gi		-
 # 	Container	cpu		10m	4	100m		4		-
+# 	Container	memory		5Mi	1Gi	512Mi		1Gi		-
 #+end_example
 
 #+begin_src bash
@@ -20054,7 +20193,7 @@ oc get quota -n template-test
 
 #+begin_example
 # NAME                  CREATED AT
-# template-test-quota   2020-02-21T14:32:32Z
+# template-test-quota   2020-03-03T17:06:39Z
 #+end_example
 
 #+begin_src bash
@@ -20063,7 +20202,7 @@ oc get limitrange -n template-test
 
 #+begin_example
 # NAME                   CREATED AT
-# template-test-limits   2020-02-21T14:32:32Z
+# template-test-limits   2020-03-03T17:06:39Z
 #+end_example
 
 *** Clean Up
@@ -20071,6 +20210,10 @@ oc get limitrange -n template-test
 #+begin_src bash
 oc delete project template-test
 #+end_src
+
+#+begin_example
+# project.project.openshift.io "template-test" deleted
+#+end_example
 
 *** Redeploy the "Basics" section
 
@@ -20087,7 +20230,7 @@ oc project default
 #+end_src
 
 #+begin_example
-# Now using project "default" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# Now using project "default" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
 #+end_example
 
 *** Execute the Creation Script
@@ -20099,9 +20242,7 @@ cat > ~/ocp/create-net-projects.sh <<-"_EOF"
 # We want to bail if an error occurs.
 set -e
 
-
 cd $(dirname $0)
-
 
 image=$(oc get deployments -n openshift-image-registry image-registry --template '{{ range $x := .spec.template.spec.containers }} {{- $x.image -}} {{ end }}')
 
@@ -20113,6 +20254,10 @@ _EOF
 
 #+begin_src bash
 bash ~/ocp/create-net-projects.sh
+#+end_src
+
+#+begin_src bash
+bash ~/support/create-net-projects.sh
 #+end_src
 
 #+begin_example
@@ -20130,8 +20275,8 @@ oc get pods -n netproj-a
 
 #+begin_example
 # NAME           READY   STATUS      RESTARTS   AGE
-# ose-1-deploy   0/1     Completed   0          33s
-# ose-1-r2rml    1/1     Running     0          24s
+# ose-1-deploy   0/1     Completed   0          52s
+# ose-1-vbfrw    1/1     Running     0          44s
 #+end_example
 
 #+begin_src bash
@@ -20140,8 +20285,8 @@ oc get pods -n netproj-b
 
 #+begin_example
 # NAME           READY   STATUS      RESTARTS   AGE
-# ose-1-54mtk    1/1     Running     0          57s
-# ose-1-deploy   0/1     Completed   0          67s
+# ose-1-deploy   0/1     Completed   0          59s
+# ose-1-qrst2    1/1     Running     0          50s
 #+end_example
 
 *** Test Connectivity (should work)
@@ -20201,32 +20346,30 @@ bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
-# Getting Pod B's IP... 10.130.6.12
-# Getting Pod A's Name... ose-1-r2rml
+# Getting Pod B's IP... 10.130.2.9
+# Getting Pod A's Name... ose-1-vbfrw
 # Checking connectivity between Pod A and Pod B... worked
 #+end_example
 
 *** Restricting Access
 
 #+begin_src bash
-cat ~/support/network-policy-block-all.yaml
+cat > ~/ocp/network-policy-block-all.yaml <<-"_EOF"
+# deny everything into the project
+# even resources in project can't reach each other
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: deny-by-default
+spec:
+  podSelector:
+  ingress: []
+_EOF
 #+end_src
 
-#+begin_example
-# # deny everything into the project
-# # even resources in project can't reach each other
-# ---
-# kind: NetworkPolicy
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: deny-by-default
-# spec:
-#   podSelector:
-#   ingress: []
-#+end_example
-
 #+begin_src bash
-oc create -n netproj-b -f ~/support/network-policy-block-all.yaml
+oc create -n netproj-b -f ~/ocp/network-policy-block-all.yaml
 #+end_src
 
 #+begin_example
@@ -20240,41 +20383,39 @@ bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
-# Getting Pod B's IP... 10.130.6.12
-# Getting Pod A's Name... ose-1-r2rml
+# Getting Pod B's IP... 10.130.2.9
+# Getting Pod A's Name... ose-1-vbfrw
 # Checking connectivity between Pod A and Pod B..... FAILED!
 #+end_example
 
 *** Allow Access
 
 #+begin_src bash
-cat ~/support/network-policy-allow-all-from-netproj-a.yaml
+cat > ~/ocp/network-policy-allow-all-from-netproj-a.yaml <<-"_EOF"
+# allow access to TCP port 5000 for pods with the label "run: ose" specifically
+# from projects with the label "name: netproj-a".
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-tcp-5000-from-netproj-a-namespace
+spec:
+  podSelector:
+    matchLabels:
+      run: ose
+  ingress:
+  - ports:
+    - protocol: TCP
+      port: 5000
+    from:
+    - namespaceSelector:
+        matchLabels:
+          name: netproj-a
+_EOF
 #+end_src
 
-#+begin_example
-# # allow access to TCP port 5000 for pods with the label "run: ose" specifically
-# # from projects with the label "name: netproj-a".
-# ---
-# kind: NetworkPolicy
-# apiVersion: networking.k8s.io/v1
-# metadata:
-#   name: allow-tcp-5000-from-netproj-a-namespace
-# spec:
-#   podSelector:
-#     matchLabels:
-#       run: ose
-#   ingress:
-#   - ports:
-#     - protocol: TCP
-#       port: 5000
-#     from:
-#     - namespaceSelector:
-#         matchLabels:
-#           name: netproj-a
-#+end_example
-
 #+begin_src bash
-oc create -n netproj-b -f ~/support/network-policy-allow-all-from-netproj-a.yaml
+oc create -n netproj-b -f ~/ocp/network-policy-allow-all-from-netproj-a.yaml
 #+end_src
 
 #+begin_example
@@ -20288,8 +20429,8 @@ bash ~/ocp/test-connectivity.sh
 #+end_src
 
 #+begin_example
-# Getting Pod B's IP... 10.130.6.12
-# Getting Pod A's Name... ose-1-r2rml
+# Getting Pod B's IP... 10.130.2.9
+# Getting Pod A's Name... ose-1-vbfrw
 # Checking connectivity between Pod A and Pod B... worked
 #+end_example
 
@@ -20297,13 +20438,13 @@ bash ~/ocp/test-connectivity.sh
 *** Examine the Clusterrolebinding
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20335,11 +20476,11 @@ oc get clusterrolebinding.rbac self-provisioners -o yaml
 # metadata:
 #   annotations:
 #     rbac.authorization.kubernetes.io/autoupdate: "true"
-#   creationTimestamp: "2020-02-19T18:01:12Z"
+#   creationTimestamp: "2020-03-03T10:11:12Z"
 #   name: self-provisioners
-#   resourceVersion: "5664"
+#   resourceVersion: "7223"
 #   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/self-provisioners
-#   uid: d08ca25d-5341-11ea-857f-06399a073c9e
+#   uid: 5a60f9e4-c3b7-475e-aeaf-ec88285d0063
 # roleRef:
 #   apiGroup: rbac.authorization.k8s.io
 #   kind: ClusterRole
@@ -20378,11 +20519,11 @@ oc get clusterrolebinding.rbac self-provisioners -o yaml
 # metadata:
 #   annotations:
 #     rbac.authorization.kubernetes.io/autoupdate: "false"
-#   creationTimestamp: "2020-02-19T18:01:12Z"
+#   creationTimestamp: "2020-03-03T10:11:12Z"
 #   name: self-provisioners
-#   resourceVersion: "889255"
+#   resourceVersion: "140845"
 #   selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/self-provisioners
-#   uid: d08ca25d-5341-11ea-857f-06399a073c9e
+#   uid: 5a60f9e4-c3b7-475e-aeaf-ec88285d0063
 # roleRef:
 #   apiGroup: rbac.authorization.k8s.io
 #   kind: ClusterRole
@@ -20396,7 +20537,7 @@ oc login -u fancyuser1 -p openshift
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20410,13 +20551,13 @@ oc new-project fancyuserproject
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20438,7 +20579,7 @@ oc login -u fancyuser1 -p openshift
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20448,19 +20589,19 @@ oc new-project fancyuserproject
 #+end_src
 
 #+begin_example
-# Error from server (Forbidden): Please visit https://ticket.example.com to request a project
+# Error from server (Forbidden): You may not request a new project via this API.
 #+end_example
 
 *** Clean Up
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20483,13 +20624,13 @@ oc patch --type=json project.config.openshift.io cluster -p '[{"op": "remove", "
 *** Setting quota per user
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
 # Login successful.
 # 
-# You have access to 64 projects, the list has been suppressed. You can list all projects with 'oc projects'
+# You have access to 61 projects, the list has been suppressed. You can list all projects with 'oc projects'
 # 
 # Using project "default".
 #+end_example
@@ -20513,12 +20654,12 @@ oc get clusterresourcequotas for-user-normaluser1 -o yaml
 # apiVersion: quota.openshift.io/v1
 # kind: ClusterResourceQuota
 # metadata:
-#   creationTimestamp: "2020-02-21T15:10:35Z"
+#   creationTimestamp: "2020-03-03T17:15:07Z"
 #   generation: 1
 #   name: for-user-normaluser1
-#   resourceVersion: "893453"
+#   resourceVersion: "141805"
 #   selfLink: /apis/quota.openshift.io/v1/clusterresourcequotas/for-user-normaluser1
-#   uid: 4f85f5b1-54bc-11ea-99d2-0a84b9320ef6
+#   uid: b92a3efa-c5d5-4f5f-8648-77c3b2154f1e
 # spec:
 #   quota:
 #     hard:
@@ -20547,7 +20688,7 @@ oc get projects
 #+end_src
 
 #+begin_example
-# No resources found.
+# No resources found in default namespace.
 #+end_example
 
 #+begin_src bash
@@ -20556,7 +20697,7 @@ oc new-project welcome2
 #+end_src
 
 #+begin_example
-# Now using project "welcome1" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# Now using project "welcome1" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
 # 
 # You can add applications to this project with the 'new-app' command. For example, try:
 # 
@@ -20566,7 +20707,7 @@ oc new-project welcome2
 # 
 #     kubectl create deployment hello-node --image=gcr.io/hello-minikube-zero-install/hello-node
 # 
-# [lab-user@clientvm 0 ~/test master|✚1…6]$ Now using project "welcome2" on server "https://api.cluster-munich-e7ab.sandbox1596.opentlc.com:6443".
+# [generic_emea_ecrosbie@clientvm 0 ~/ocp master|✚1…17]$ Now using project "welcome2" on server "https://api.cluster-opitz-698d.opitz-698d.sandbox448.opentlc.com:6443".
 # 
 # You can add applications to this project with the 'new-app' command. For example, try:
 # 
@@ -20584,7 +20725,7 @@ oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
 #+end_src
 
 #+begin_example
-# --> Found container image a87cda2 (14 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
+# --> Found container image a87cda2 (15 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
 # 
 #     temp.builder.openshift.io/test/welcome-php-1:7d1b0ed6 
 #     ----------------------------------------------------- 
@@ -20605,7 +20746,7 @@ oc new-app -n welcome2 --name=php2 quay.io/redhatworkshops/welcome-php:latest
 #     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
 #      'oc expose svc/php1' 
 #     Run 'oc status' to view your app.
-# [lab-user@clientvm 0 ~/test master|✚1…6]$ --> Found container image a87cda2 (14 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
+# [generic_emea_ecrosbie@clientvm 0 ~/ocp master|✚1…17]$ --> Found container image a87cda2 (15 months old) from quay.io for "quay.io/redhatworkshops/welcome-php:latest"
 # 
 #     temp.builder.openshift.io/test/welcome-php-1:7d1b0ed6 
 #     ----------------------------------------------------- 
@@ -20747,7 +20888,7 @@ oc get events -n welcome2 | grep "Error creating" | head -1
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -20778,7 +20919,7 @@ oc describe clusterresourcequotas for-user-normaluser1
 *** Setting quota by label
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -20914,7 +21055,7 @@ oc new-app -n pricelist-backend --name backend quay.io/redhatworkshops/pricelist
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -20983,7 +21124,7 @@ oc get events -n pricelist-backend | grep "Error creating" | head -1
 *** Clean Up
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -21015,7 +21156,7 @@ oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -37678,7 +37819,7 @@ oc login -u kubeadmin
 # Using project "default".
 #+end_example
 
-RmEAm-FN5EH-XhpAH-YYbf8
+${admin_pwd}
 
 #+begin_src bash
 oc adm new-project app-dev --display-name="Application Development"
@@ -37852,7 +37993,7 @@ oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user
 #+end_example
 
 #+begin_src bash
-oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -37860,7 +38001,7 @@ oc login -u system:serviceaccount:lab-ocp-cns:dashboard-user -p RmEAm-FN5EH-XhpA
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -38674,7 +38815,7 @@ bash ~/support/test-connectivity.sh
 *** Examine the Clusterrolebinding
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -38787,7 +38928,7 @@ oc new-project fancyuserproject
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -38831,7 +38972,7 @@ oc new-project fancyuserproject
 *** Clean Up
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -38860,7 +39001,7 @@ oc patch --type=json project.config.openshift.io cluster -p '[{"op": "remove", "
 *** Setting quota per user
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39030,7 +39171,7 @@ oc get pods -n welcome2 -l app=php2
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39124,7 +39265,7 @@ oc get events -n welcome2 | grep "Error creating" | head -1
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39155,7 +39296,7 @@ oc describe clusterresourcequotas for-user-normaluser1
 *** Setting quota by label
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39291,7 +39432,7 @@ oc new-app -n pricelist-backend --name backend quay.io/redhatworkshops/pricelist
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39360,7 +39501,7 @@ oc get events -n pricelist-backend | grep "Error creating" | head -1
 *** Clean Up
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
@@ -39392,7 +39533,7 @@ oc delete projects pricelist-backend pricelist-frontend welcome1 welcome2
 #+end_example
 
 #+begin_src bash
-oc login -u kubeadmin -p RmEAm-FN5EH-XhpAH-YYbf8
+oc login -u kubeadmin -p ${admin_pwd}
 #+end_src
 
 #+begin_example
